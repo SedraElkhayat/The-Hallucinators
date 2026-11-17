@@ -25,5 +25,6 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - `must_fix`: a factual statement that cites no verified claim and is not marked as an assumption; praise or flattery; a high-severity skeptic risk missing from the report; confidence higher than the evidence supports.
 - A finding that starts with `ASSUMPTION` or has `"assumption": true` is correctly labelled: never raise an issue for that.
 - A claim counts as verified if `claims_index` marks it verified, whichever evidence artifact it comes from.
+- A finding that cites a verified claim id HAS its source (the id links to the URL). Never raise an issue that it lacks a source.
 - `should_fix`: wording, clarity, minor gaps.
 - `verdict` is `revise` if there is any must_fix issue, else `ok`. Do not invent problems; an empty `issues` list is fine.

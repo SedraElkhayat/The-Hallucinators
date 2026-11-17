@@ -2,7 +2,7 @@
 claims index built in code) or is marked as an assumption. It never chooses the gate verdict. On a revision
 round it reads ``ctx.extra["critique"]``."""
 from agents.base import Agent
-from agents.m2_common import (COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
+from agents.m2_common import (founder_budget, high_risks, report_mentions, get_artifact, COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
                               OPPORTUNITIES, REPORT, SCOPE, SCORES, SKEPTIC, as_list, claims_index, id_list, message)
 
 
@@ -18,7 +18,7 @@ class DiscoverSynthesizer(Agent):
     kind = "llm"
 
     def build_user_message(self, ctx) -> str:
-        extra = {"claims_index": claims_index(ctx)}
+        extra = {"claims_index": claims_index(ctx), "founder_budget": founder_budget(ctx.brief)}
         if ctx.extra.get("critique"):
             extra["critique"] = ctx.extra["critique"]
         return message(ctx, self.inputs + self.optional_inputs, extra, brief=False, compact=True)
@@ -55,4 +55,13 @@ class DiscoverSynthesizer(Agent):
             conf = "low"
         data["confidence"] = conf
         data["sources"] = sorted({s for f in findings for s in f.get("sources", [])})
+        # Every high- or medium-severity skeptic risk must be visible in the report (the critic's must_fix rule). A small model
+        # sometimes paraphrases or drops one, so code adds the missing ones word for word: more disclosure, never less.
+        added = []
+        for risk in high_risks(get_artifact(ctx, SKEPTIC) or {}):
+            if not report_mentions(data, risk):
+                data["limitations"].append(f"Risk (skeptic): {risk}")
+                added.append(risk)
+        if added:
+            data["risks_added_by_code"] = added
         return data

@@ -22,7 +22,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 |---|---|
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
-| Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run is a real `qwen3:8b` run of all six phases. Tests use the offline MockLLM (outputs labeled MOCKED) |
+| Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run in `outputs/` ran all six phases with the real local model (`qwen3:8b`), 0 agent errors. Offline tests use MockLLM (outputs labeled MOCKED) |
 | Pricing (Phase 4) | Working, but the demo run set no price: no verified source stated a comparable price, so `price_usd` is empty and labeled STUBBED until the founder sets it |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
@@ -35,7 +35,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 
 ## Architecture
 
-Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` evaluates criteria registered before the phase, and `approval.py` is the only door to anything outward-facing. AI agents (`agents/<role>.py`, prompts in `prompts/<role>.md`) only produce typed artifacts in `outputs/`, and every action is appended to `decision_log.json`. Market claims carry a source URL and an exact quote that code re-checks, or are labeled `ASSUMPTION`. See [ARCHITECTURE.md](ARCHITECTURE.md).
+Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` evaluates criteria registered before the phase, and `approval.py` is the only door to anything outward-facing. AI agents (`agents/<role>.py`, prompts in `prompts/<role>.md`) only produce typed artifacts in `outputs/`, and every action is appended to `decision_log.json`. Market claims carry a source URL and an exact quote that code re-checks (quote on the page, about this idea, and stating the claim), or are labeled `ASSUMPTION`. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Models and free resources
 
@@ -64,7 +64,7 @@ Link added after recording.
 
 ## How the project stays alive after the hackathon
 
-- Maintainers: the four team members, under the MIT licence.
-- Roadmap: see [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
-- Community: issues and pull requests welcome; new agents are one file plus one prompt.
-- Funding: none needed to run; it uses free local models.
+- **Maintainers:** the four team members, one per area, matching the code ownership used during the hackathon: platform and integration (orchestrator, UI, Docker); discovery and evidence quality (Phase 1, gates, claim checking); validation and build (Phases 2-3, founder website); commerce and safety (Phases 4-6, payments, guardrails). MIT licence.
+- **Roadmap (next three releases):** (1) a payment-provider adapter in test mode behind the existing webhook, idempotency and refund interface, used only with the founder's own keys and approval; (2) Arabic-first prompts and evaluation sets, since our first users are freelancers in Egypt and the MENA region; (3) more free evidence sources behind the same claim checks. Full list: [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
+- **Community:** issues and pull requests welcome. A new agent is one file (`agents/<role>.py`) plus one prompt (`prompts/<role>.md`) and a mock fixture, so contributions stay small and reviewable; every change must keep `python -m pytest -q` and `python scripts/verify_submission.py` green.
+- **Funding:** none needed to run it: open-weight local model, free self-hosted search (SearXNG), no paid API. Costs stay at $0 per run; any future hosted service would be optional and free for founders to self-host.

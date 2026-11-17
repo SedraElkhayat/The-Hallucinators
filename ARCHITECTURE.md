@@ -250,7 +250,7 @@ flowchart LR
 - **Artifacts** are the only way agents share data. Each artifact has a `.json` (machine) and `.md` (human) form.
 - **`decision_log.json`** is a JSON array; the code appends one entry per agent action with `timestamp`, `agent`, `action`, `sources`, `model`, `cost`, `approved_by` (and `outcome` for gates). The committed log is the demo run's.
 - **Cost** is summed per run from token counts and reported in the README.
-- **Claims** from research agents are re-checked by `core/claims.py` (fetch the source, match the quote) before they are counted anywhere.
+- **Claims** from research agents are re-checked in three steps before they are counted anywhere: (1) `core/claims.py` fetches the source and matches the exact quote; (2) `agents/m2_common.check_on_topic` keeps a claim verified only if the claim and its quote mention at least two of the idea's customer, problem or product terms (search engines return unrelated pages); (3) `agents/m2_common.check_support` asks the model, in one batched call per research agent, whether each quote really states its claim. Only a clear "no" downgrades a claim to `ASSUMPTION`; a failed call changes nothing, so this step can only remove evidence, never add it. Every downgrade is logged as `claim_downgraded` with its reason.
 
 ## Built vs. stubbed
 

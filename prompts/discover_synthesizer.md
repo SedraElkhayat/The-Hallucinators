@@ -28,3 +28,4 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - Use hedged language ("the evidence suggests", "unknown"). Never write that the idea will succeed.
 - Code turns any finding without a verified claim id into an ASSUMPTION and caps confidence at low with fewer than 3 verified claims.
 - Include the skeptic's main risks in the findings or limitations. No praise.
+- `founder_budget` is what the founder can SPEND to build and launch, never the product's price. Do not write that the product is priced at the budget; the price is set in Phase 4.

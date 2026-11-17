@@ -580,3 +580,85 @@ def test_critic_issue_about_untriggered_kill_criterion_is_not_must_fix():
     quiet, triggered = out["issues"][:2]
     assert quiet["severity"] == "should_fix" and quiet["downgraded_in_code"] == "kill criterion was not triggered"
     assert triggered["severity"] == "must_fix" and out["verdict"] == "revise"
+
+
+def test_critic_source_complaint_on_verified_claims_is_not_must_fix():
+    from agents.critic_phase1 import cited_claims_verified
+    t = ("The finding '49% of graphic designers work as freelancers.' cites claim_id C4, which is verified. "
+         "However, the report mentions this claim without providing a source.")
+    assert cited_claims_verified(t, {"C4"}) is True
+    assert cited_claims_verified(t, {"C2"}) is False  # C4 not verified: stays must_fix
+    assert cited_claims_verified("Finding C4 is praise without evidence.", {"C4"}) is False
+
+
+def test_founder_budget_is_labelled_not_a_price():
+    from agents.m2_common import founder_budget
+    b = founder_budget("**Budget:** USD 100 total.")
+    assert b["amount"] == "100" and "NOT the product price" in b["note"]
+    assert founder_budget("no money mentioned") is None
+
+
+class _FakeLLM:
+    model = "fake-real-model"
+
+    def __init__(self, data=None, fail=False):
+        self.data, self.fail = data, fail
+
+    def chat(self, system, user, agent, json_mode=True):
+        from types import SimpleNamespace
+        if self.fail:
+            raise TimeoutError("model down")
+        return SimpleNamespace(data=self.data, model=self.model, cost=0.0, tokens_in=50, tokens_out=10)
+
+
+def _support_ctx(llm):
+    from types import SimpleNamespace
+    logged = []
+    return SimpleNamespace(mock=False, llm=llm, log=SimpleNamespace(action=lambda *a, **k: logged.append((a, k)))), logged
+
+
+def test_support_check_downgrades_only_a_clear_no():
+    from agents.m2_common import check_support
+    claims = [{"claim": "A", "quote": "a", "verified": True}, {"claim": "B", "quote": "b", "verified": True},
+              {"claim": "C", "quote": "c", "verified": True}, {"claim": "D", "quote": "d", "verified": False}]
+    ctx, logged = _support_ctx(_FakeLLM({"results": [{"i": 1, "supported": True}, {"i": 2, "supported": False}]}))
+    check_support(ctx, {"claims": claims}, "market_scout")
+    assert [c["verified"] for c in claims] == [True, False, True, False]  # 3rd: no verdict -> unchanged
+    assert claims[1]["assumption"] is True and "support" in claims[1]["check"]
+    entry = [k for a, k in logged if a[1] == "claim_support_check"][0]
+    assert entry["model"] == "fake-real-model" and entry["checked"] == 3 and entry["downgraded"] == 1
+
+
+def test_support_check_failure_or_mock_changes_nothing():
+    from agents.m2_common import check_support
+    claims = [{"claim": "A", "quote": "a", "verified": True}]
+    ctx, logged = _support_ctx(_FakeLLM(fail=True))
+    check_support(ctx, {"claims": claims}, "market_scout")
+    assert claims[0]["verified"] is True and logged[0][0][1] == "claim_support_check_failed"
+    ctx, logged = _support_ctx(_FakeLLM({"results": [{"i": 1, "supported": False}]}))
+    ctx.mock = True
+    check_support(ctx, {"claims": claims}, "market_scout")
+    assert claims[0]["verified"] is True and logged == []
+
+
+def test_skeptic_risks_are_copied_into_report_and_critic_accepts_them():
+    from agents.m2_common import high_risks, report_mentions
+    from agents.critic_phase1 import risk_in_report
+    sk = {"risks": [{"text": "No evidence that designers will pay USD 100 for the pack.", "severity": "high"},
+                    {"text": "Bilingual preference is untested so far.", "severity": "medium"},
+                    {"text": "Minor wording risk.", "severity": "low"}]}
+    assert high_risks(sk) == ["No evidence that designers will pay USD 100 for the pack.",
+                              "Bilingual preference is untested so far."]
+    report = {"summary": "s", "findings": [], "assumptions": [],
+              "limitations": ["Risk (skeptic): No evidence that designers will pay USD 100 for the pack."]}
+    assert report_mentions(report, "no evidence that designers will pay usd 100 for the pack")
+    issue = "The report omits the high-severity risk: 'No evidence that designers will pay USD 100 for the pack.'"
+    assert risk_in_report(issue, report) is True
+    assert risk_in_report("The report omits the risk: 'Bilingual preference is untested so far.'", report) is False
+
+
+def test_no_clear_indication_is_missing_evidence():
+    from agents.m2_common import norm_risks
+    d = norm_risks({"risks": [], "kill_criteria": [{"text": "No willingness to pay", "triggered": True,
+                    "evidence": "Interview findings show no clear indication of willingness to pay for a solution."}]})
+    assert d["kill_criteria"][0]["triggered"] is False
