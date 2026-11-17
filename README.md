@@ -23,16 +23,16 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
 | Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run in `outputs/` ran all six phases with the real local model (`qwen3:8b`), 0 agent errors. Offline tests use MockLLM (outputs labeled MOCKED) |
-| Pricing (Phase 4) | Working, but the demo run set no price: no verified source stated a comparable price, so `price_usd` is empty and labeled STUBBED until the founder sets it |
+| Pricing (Phase 4) | Working. In the demo run no verified source stated a competitor's price, so no price is proposed: `price_usd` is empty and labeled `ASSUMPTION` until the founder sets it |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
 | Founder website (Phase 3 build from a template, Phase 5 store version with price and policies, website checks in Gates 3 and 5) | Working (never published by the system; the founder publishes it) |
 | Preview website and Download site folder buttons (local only; the system never publishes) | Working |
-| Demo founder: in the strong demo run the system recommends STOP at Gates 1 and 2 (thin evidence) and the scripted founder overrides both; the weak demo brief stops at Gate 1 with no override | Working (labeled SCRIPTED; the system's own verdict stays in the decision log) |
+| Founder answers and approvals in the committed demo run (`demo/founder_inputs*.json`) | MOCKED: scripted answers, labeled `SCRIPTED` in the log; the system's own gate verdicts are kept unchanged. In the web UI a real founder answers and approves: Working |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
-| Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
-| Real payment provider | STUBBED (roadmap) |
+| Publishing pages, sending posts or emails | STUBBED by design: the system only drafts them for founder approval; the founder publishes |
+| Real or sandbox payments | Not included, by the rules: no payments of any kind; sale to cash is MOCKED only |
 
 ### Known limits
 
@@ -92,6 +92,6 @@ Link added after recording.
 ## How the project stays alive after the hackathon
 
 - **Maintainers:** the four team members, one per area, matching the code ownership used during the hackathon: platform and integration (orchestrator, UI, Docker); discovery and evidence quality (Phase 1, gates, claim checking); validation and build (Phases 2-3, founder website); commerce and safety (Phases 4-6, payments, guardrails). MIT licence.
-- **Roadmap (next three releases):** (1) a payment-provider adapter in test mode behind the existing webhook, idempotency and refund interface, used only with the founder's own keys and approval; (2) Arabic-first prompts and evaluation sets, since our first users are freelancers in Egypt and the MENA region; (3) more free evidence sources behind the same claim checks. Full list: [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
+- **Roadmap (next three releases):** (1) Arabic-first prompts and evaluation sets, since our first users are freelancers in Egypt and the MENA region; (2) more free evidence sources behind the same claim checks, and a larger free open-weight model as an option for the reviewers; (3) helpers that prepare a founder-run demand test (waitlist page and reading rule) whose real results the founder enters, replacing today's `MOCKED` demand input. Payments stay out of scope: sale to cash remains a labeled mock. Full list: [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
 - **Community:** issues and pull requests welcome. A new agent is one file (`agents/<role>.py`) plus one prompt (`prompts/<role>.md`) and a mock fixture, so contributions stay small and reviewable; every change must keep `python -m pytest -q` and `python scripts/verify_submission.py` green.
 - **Funding:** none needed to run it: open-weight local model, free self-hosted search (SearXNG), no paid API. Costs stay at $0 per run; any future hosted service would be optional and free for founders to self-host.

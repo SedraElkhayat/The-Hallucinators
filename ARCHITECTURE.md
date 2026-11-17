@@ -272,12 +272,12 @@ This table states the current state of the code and is updated as components are
 | Mom Test interview notes in the demo run | SAMPLE input (labeled) |
 | Phase 6 inputs (support questions, results) | SAMPLE input (labeled) |
 | Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
-| Real payment provider integration | STUBBED (roadmap) |
+| Real or sandbox payments | Not included, by the rules (no payments of any kind); sale to cash is MOCKED only |
 
 ## Roadmap
 
 1. After the hackathon: real publishing helpers that still require an explicit founder approval per item.
-2. A real payment-provider adapter behind the same webhook and idempotency interface, enabled only with the founder's own credentials and approval.
+2. Founder-run demand tests: the system prepares the waitlist page and the reading rule, the founder enters the real results, replacing the `MOCKED` demand input. Payments stay out of scope; sale to cash remains a labeled mock.
 3. More free evidence sources and better claim matching (fuzzy quotes, multilingual).
 4. Arabic-first prompts and evaluation sets.
 5. Maintainers' guide and contribution process; community-run example briefs.

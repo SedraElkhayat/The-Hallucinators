@@ -36,7 +36,8 @@ founder override never edits the decision file; it is written to its own file an
 | Interview notes, support questions, Phase 6 results | `SAMPLE` |
 | Founder answers and approvals | `SCRIPTED` (logged as such) |
 | Sale to cash (orders, payment events, refund, reconciliation) | `MOCKED`; sample amounts, not the Phase 4 price |
-| Real payment provider, real publishing | `STUBBED` / not implemented |
+| Real or sandbox payments | not included (the rules exclude payments of any kind) |
+| Real publishing | `STUBBED`: the system drafts, the founder publishes |
 
 Consequences visible in the outputs: the scorecard caps demand evidence at `adequate` because the demand result is `MOCKED`;
 Phase 4 found no verified price comparable, so it proposes no price (an `ASSUMPTION`) and the store page says purchasing opens

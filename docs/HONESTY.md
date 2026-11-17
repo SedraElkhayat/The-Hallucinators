@@ -12,7 +12,7 @@ This page explains how the system keeps its outputs honest, and where to check e
 | `SCRIPTED` | A founder answer or approval that comes from the demo inputs file, not from a person. Always logged as such. |
 | `ASSUMPTION` | A statement nobody has checked against a source. Shown with this label; never as a fact. |
 | `SIMULATED, not real users` | Only for simulated people or numbers. The website never shows sign-up, waitlist or user numbers at all, even labeled. |
-| `STUBBED` | Not built on purpose (a real payment provider, real publishing). |
+| `STUBBED` | Not built on purpose (real publishing: the founder publishes). Payments of any kind are not included at all. |
 
 ## Rule, where code enforces it, where it is tested
 
