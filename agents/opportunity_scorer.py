@@ -3,7 +3,7 @@ using all Phase 1 evidence. The ranking is kept as pivot targets. ``chosen`` is 
 founder's); ``switch_suggested`` says when an alternative scores clearly higher."""
 from agents.base import Agent
 from agents.m2_common import (COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
-                              OPPORTUNITIES, SCORES, as_list, message)
+                              OPPORTUNITIES, SCORES, as_list, message, to_number, truthy)
 
 
 class OpportunityScorer(Agent):
@@ -24,13 +24,11 @@ class OpportunityScorer(Agent):
         for r in as_list(data.get("ranked")):
             if not isinstance(r, dict) or not str(r.get("name", "")).strip():
                 continue
-            try:
-                s = float(r.get("score"))
-            except (TypeError, ValueError):
-                s = 0.0
+            s = to_number(r.get("score"))
+            s = 0.0 if s is None else s
             r["score"] = max(0.0, min(10.0, s))
             r["reasons"] = [str(x) for x in as_list(r.get("reasons"))]
-            r["is_founder_idea"] = r.get("is_founder_idea") is True
+            r["is_founder_idea"] = truthy(r.get("is_founder_idea"))
             ranked.append(r)
         ranked.sort(key=lambda r: -r["score"])
         data["ranked"] = ranked

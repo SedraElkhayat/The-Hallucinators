@@ -63,6 +63,8 @@ class IdeaGenerator(Agent):
         from core.claims import verify_claims
         cands = []
         for c in (data.get("candidates") or [])[:5]:
+            if isinstance(c, dict) and not c.get("name") and isinstance(c.get("title"), str):
+                c["name"] = c["title"]
             if not isinstance(c, dict) or not isinstance(c.get("name"), str) or blocked(c["name"]):
                 continue
             c["claims"] = norm_claims(c.get("claims"))

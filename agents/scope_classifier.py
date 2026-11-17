@@ -19,7 +19,7 @@ def normalize_scope(data: dict) -> dict:
     v = data.get("is_digital")
     if isinstance(v, str):
         s = v.strip().lower()
-        v = True if s == "true" else False if s == "false" else "undetermined"
+        v = True if s in ("true", "yes") else False if s in ("false", "no") else "undetermined"
     if v not in (True, False):
         v = "undetermined"
     data["is_digital"] = v

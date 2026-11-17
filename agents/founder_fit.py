@@ -13,7 +13,7 @@ class FounderFit(Agent):
     kind = "llm"
 
     def build_user_message(self, ctx) -> str:
-        return message(ctx, self.inputs)
+        return message(ctx, self.inputs, compact=True)
 
     def post_process(self, ctx, data: dict) -> dict:
         return norm_rating(data)

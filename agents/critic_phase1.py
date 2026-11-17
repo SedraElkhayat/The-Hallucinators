@@ -4,7 +4,7 @@ for unsupported confidence; any must_fix forces verdict "revise" (up to 2 revisi
 import re
 
 from agents.base import Agent
-from agents.m2_common import (COMPETITORS, CRITIQUE, DEMAND, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list, claims_index,
+from agents.m2_common import (COMPETITORS, CRITIQUE, DEMAND, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list, claims_index, norm_severity,
                               get_artifact, message)
 
 PRAISE = re.compile(r"\b(excellent|amazing|fantastic|brilliant|incredible|huge potential|massive opportunity|"
@@ -32,7 +32,7 @@ class CriticPhase1(Agent):
             if isinstance(i, str):
                 i = {"severity": "should_fix", "text": i}
             if isinstance(i, dict) and str(i.get("text", "")).strip():
-                i["severity"] = "must_fix" if i.get("severity") == "must_fix" else "should_fix"
+                i["severity"] = norm_severity(i.get("severity"))
                 issues.append(i)
         report = get_artifact(ctx, REPORT) or {}
         texts = [str(report.get("summary", ""))] + [str(f.get("text", "")) for f in report.get("findings") or []
@@ -47,7 +47,7 @@ class CriticPhase1(Agent):
             issues.append({"severity": "must_fix", "found_in_code": True,
                            "text": f"Confidence 'high' with only {verified} verified claims."})
         data["issues"] = issues
-        v = str(data.get("verdict", "ok")).lower()
+        v = str(data.get("verdict", "ok")).strip().strip(".").lower()
         data["verdict"] = "revise" if any(i["severity"] == "must_fix" for i in issues) else (
             v if v in ("ok", "revise") else "ok")
         return data

@@ -364,3 +364,52 @@ def test_empty_search_is_logged_and_queries_are_keywords(tmp_path):
     assert results == [] and pages == []
     empties = [e for e in ctx.log.entries() if e["action"] == "search_empty"]
     assert len(empties) == 3 and all(e["agent"] == "market_scout" for e in empties)
+
+
+# ---------------------------------------------------------------- messy answers from small real models
+
+def test_helpers_read_messy_values():
+    from agents.m2_common import id_list, norm_severity, to_number, truthy
+    assert to_number("7/10") == 7.0 and to_number("score: 6.5") == 6.5 and to_number("n/a") is None
+    assert id_list("C1, C2") == ["C1", "C2"] and id_list(["C3"]) == ["C3"]
+    assert norm_severity("Must-Fix") == "must_fix" and norm_severity("minor") == "should_fix"
+    assert truthy("true") and truthy("Yes") and not truthy("false") and not truthy(None)
+
+
+def test_messy_scorer_synthesizer_critic_outputs(tmp_path):
+    ctx = ctx_for(tmp_path)
+    run_until(ctx, "opportunity_scorer")
+    ctx.llm = TransformLLM(only("opportunity_scorer", {
+        "ranked": [{"name": "Mine", "score": "6/10", "reasons": "MOCKED one reason", "is_founder_idea": "true"},
+                   {"name": "Alt", "score": "9", "reasons": []}], "chosen": "Mine"}))
+    get_agent("opportunity_scorer").run(ctx)
+    s = ctx.store.get("phase1_step7_opportunity_scores")
+    assert s["chosen"] == "Mine" and s["ranked"][0]["score"] == 9.0 and s["switch_suggested"] is True
+
+    run_until(ctx, "discover_synthesizer")
+    ctx.llm = TransformLLM(only("discover_synthesizer", {
+        "summary": "MOCKED", "findings": [{"text": "MOCKED", "claim_ids": "C1, C2"}],
+        "assumptions": "MOCKED one", "limitations": [], "confidence": "Medium"}))
+    get_agent("discover_synthesizer").run(ctx)
+    r = ctx.store.get("phase1_step9_discover_report")
+    assert r["findings"][0]["claim_ids"] == ["C1", "C2"] and r["confidence"] == "medium"
+    assert r["assumptions"] == ["MOCKED one"]
+
+    ctx.llm = TransformLLM(only("critic_phase1", {"issues": [{"severity": "Must-Fix", "text": "MOCKED"}],
+                                                  "verdict": "OK."}))
+    get_agent("critic_phase1").run(ctx)
+    c = ctx.store.get("phase1_step9_critique")
+    assert c["issues"][0]["severity"] == "must_fix" and c["verdict"] == "revise"
+
+
+def test_messy_scope_and_kill_criteria(tmp_path):
+    ctx = ctx_for(tmp_path)
+    ctx.llm = TransformLLM(only("scope_classifier", {"is_digital": "Yes", "product_type": "MOCKED",
+                                                     "excluded_reason": "null", "reasoning": "MOCKED"}))
+    get_agent("scope_classifier").run(ctx)
+    assert ctx.store.get("phase1_step1_scope")["is_digital"] is True
+    run_until(ctx, "skeptic")
+    ctx.llm = TransformLLM(only("skeptic", {"risks": [], "would_change_mind": [], "kill_criteria": [
+        {"text": "MOCKED", "triggered": "true", "evidence": "MOCKED interview findings"}]}))
+    get_agent("skeptic").run(ctx)
+    assert ctx.store.get("phase1_step8_skeptic")["kill_criteria"][0]["triggered"] is True

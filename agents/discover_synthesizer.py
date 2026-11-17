@@ -3,7 +3,7 @@ claims index built in code) or is marked as an assumption. It never chooses the 
 round it reads ``ctx.extra["critique"]``."""
 from agents.base import Agent
 from agents.m2_common import (COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
-                              OPPORTUNITIES, REPORT, SCOPE, SCORES, SKEPTIC, as_list, claims_index, message)
+                              OPPORTUNITIES, REPORT, SCOPE, SCORES, SKEPTIC, as_list, claims_index, id_list, message)
 
 
 class DiscoverSynthesizer(Agent):
@@ -31,7 +31,7 @@ class DiscoverSynthesizer(Agent):
                 f = {"text": f}
             if not isinstance(f, dict) or not str(f.get("text", "")).strip():
                 continue
-            ids = [str(i) for i in as_list(f.get("claim_ids"))]
+            ids = id_list(f.get("claim_ids"))
             good = [i for i in ids if i in index and index[i]["verified"]]
             bad = [i for i in ids if i not in good]
             f["claim_ids"] = good

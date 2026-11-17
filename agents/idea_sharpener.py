@@ -17,7 +17,7 @@ class IdeaSharpener(Agent):
 
     def build_user_message(self, ctx) -> str:
         extra = {"critique": ctx.extra.get("critique")} if ctx.extra.get("critique") else {}
-        return message(ctx, self.inputs + self.optional_inputs, extra)
+        return message(ctx, self.inputs + self.optional_inputs, extra, compact=True)
 
     def post_process(self, ctx, data: dict) -> dict:
         hyps = []

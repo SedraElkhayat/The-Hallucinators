@@ -15,7 +15,7 @@ class FeasibilityAnalyst(Agent):
     kind = "llm"
 
     def build_user_message(self, ctx) -> str:
-        return message(ctx, self.inputs + self.optional_inputs)
+        return message(ctx, self.inputs + self.optional_inputs, compact=True)
 
     def post_process(self, ctx, data: dict) -> dict:
         data = norm_rating(data)

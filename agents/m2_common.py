@@ -36,7 +36,7 @@ PIVOT_NOTES = "pivot_notes"
 EVIDENCE_STEPS = (OPPORTUNITIES, MARKET, DEMAND, COMPETITORS)
 RATINGS = ("strong", "adequate", "weak", "unknown")
 MAX_ARTIFACT_CHARS = 3000
-MAX_PAGE_CHARS = 2500
+MAX_PAGE_CHARS = 1800
 
 UNKNOWN_ANSWERS = {"", "unknown", "i don't know", "i dont know", "idk", "don't know", "dont know", "not sure",
                    "n/a", "none", "?", "لا أعرف", "لا اعرف", "مش عارف", "مش عارفة", "غير معروف"}
@@ -82,6 +82,14 @@ def digest(stem: str, art: dict) -> Any:
             out["competitors"] = [{k: str(c.get(k, ""))[:120] for k in ("name", "pricing", "positioning")}
                                   for c in (art.get("competitors") or [])[:6] if isinstance(c, dict)]
         return out
+    if stem in (CLARIFICATION, OPTIONS):
+        fields = {f: v.get("value") for f, v in (art.get("fields") or {}).items() if isinstance(v, dict)}
+        out = {"fields": fields}
+        if art.get("idea"):
+            out["idea"] = art["idea"]
+        return out
+    if stem == PIVOT_NOTES:
+        return clip(art, 1500)
     if stem in (FOUNDER_FIT, FEASIBILITY):
         return {k: clip(art.get(k), 400) for k in ("rating", "reasoning", "evidence_refs", "effort_hours_estimate")
                 if k in art}
@@ -204,9 +212,39 @@ def as_list(v) -> list:
     return [v]
 
 
+def truthy(v) -> bool:
+    """True for real booleans and for the strings small models write instead ("true", "yes")."""
+    if isinstance(v, bool):
+        return v
+    return str(v).strip().lower() in ("true", "yes", "y", "1", "نعم")
+
+
+def to_number(v):
+    """First number in a value: 7, "7", "7/10", "score 6.5" -> float; else None."""
+    if isinstance(v, bool):
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    m = re.search(r"-?\d+(?:\.\d+)?", str(v or ""))
+    return float(m.group(0)) if m else None
+
+
+def id_list(v) -> list[str]:
+    """Claim ids as a list, also when the model writes one string such as "C1, C2"."""
+    out = []
+    for x in as_list(v):
+        out += [p.strip() for p in re.split(r"[,;\s]+", str(x)) if p.strip()]
+    return out
+
+
+def norm_severity(v) -> str:
+    s = re.sub(r"[\s\-]+", "_", str(v or "").strip().lower())
+    return "must_fix" if s in ("must_fix", "mustfix", "critical", "blocker", "high") else "should_fix"
+
+
 def norm_rating(data: dict) -> dict:
     """A rating outside the allowed set, or a rating without evidence_refs, becomes 'unknown' (honesty rule)."""
-    r = str(data.get("rating", "unknown")).strip().lower()
+    r = str(data.get("rating", "unknown")).strip().strip(".").lower()
     refs = [str(x) for x in as_list(data.get("evidence_refs")) if str(x).strip()]
     data["evidence_refs"] = refs
     if r not in RATINGS:
@@ -248,7 +286,7 @@ def norm_risks(data: dict) -> dict:
         if isinstance(k, str):
             k = {"text": k, "triggered": False}
         if isinstance(k, dict) and k.get("text"):
-            trig = k.get("triggered") is True
+            trig = truthy(k.get("triggered"))
             if trig and not str(k.get("evidence", "")).strip():
                 # Honesty rule in code: a criterion only counts as triggered when the evidence is named.
                 k["triggered_without_evidence"] = True
@@ -331,7 +369,7 @@ class ResearchAgent(Agent):
     def build_user_message(self, ctx) -> str:
         results, pages = self.gather(ctx)
         extra = {
-            "search_results": results[:8],
+            "search_results": [dict(r, snippet=str(r.get("snippet", ""))[:200]) for r in results[:6]],
             "fetched_pages": pages,
             "note": "Quotes must be copied exactly from fetched_pages text. Anything else is an ASSUMPTION.",
         }
