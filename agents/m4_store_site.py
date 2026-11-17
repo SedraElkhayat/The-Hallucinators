@@ -8,7 +8,7 @@ marked "needs legal review"). Code renders everything with HTML escaping; the mo
 The result is checked with M3's agents.m3_site.check_site_dir(phase=5) (imported, never copied).
 
 No buy button or payment UI of any kind on the site (the founder publishes it; mocked sale to cash never
-appears on it). The price section says "Purchasing is not open yet; the founder sets it up." The template's
+appears on it). The price section says "Purchasing opens when the founder is ready to sell." The template's
 demo sign-up box stays (disabled, "Demo only: nothing is sent or stored"). The single-page draft
 phase5_step2_store_page.html keeps its labeled "MOCKED checkout" button.
 """
@@ -52,8 +52,8 @@ def price_text(price, is_assumption: bool) -> str:
     return f"Price: {float(price):.2f} USD{label}"
 
 
-# M1 asked for one honest line; M3's site checks ban payment words such as "checkout", so the line uses none.
-CHECKOUT_LINE = "Purchasing is not open yet; the founder sets it up."
+# Wording agreed with M3 so it passes the site checks (no payment words such as "checkout").
+CHECKOUT_LINE = "Purchasing opens when the founder is ready to sell."
 
 
 def policy_pages(documents: list[dict]) -> dict[str, str]:

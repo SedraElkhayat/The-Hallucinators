@@ -53,7 +53,7 @@ def test_store_site_written_and_checked(tmp_path):
     assert index.lower().count("<button") == 1 and "Demo only: nothing is sent or stored" in index
     assert "buy" not in index.lower() and "pay now" not in index.lower()
     assert "MOCKED checkout" not in index
-    assert "Purchasing is not open yet; the founder sets it up." in index
+    assert "Purchasing opens when the founder is ready to sell." in index
     # the single-page draft for M1's e2e test keeps its labeled MOCKED checkout button
     draft = (ctx.out_dir / "phase5_step2_store_page.html").read_text(encoding="utf-8")
     assert "MOCKED checkout: no real payment" in draft
@@ -88,7 +88,7 @@ def test_store_site_uses_m3_template_and_checks(tmp_path):
 
 def test_store_site_fallback_without_template(tmp_path):
     files = render_store_site({"title": "t", "description": "d", "bullets": ["f"]}, DOCS, False)
-    assert "Purchasing is not open yet; the founder sets it up." in files["index.html"]
+    assert "Purchasing opens when the founder is ready to sell." in files["index.html"]
     res = basic_site_checks(write_site(tmp_path, files))
     assert res["passed"], res["failures"]
 
