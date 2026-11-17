@@ -22,8 +22,8 @@ PIVOT_TO = None
 
 def gate_checks(ctx: Context) -> list[Check]:
     return [
-        Check("chk_p6_inputs_labeled", "inputs_labeled", ">=", 1.0, "stop"),
-        Check("chk_p6_memo_written", "memo_written", ">=", 1.0, "stop"),
+        Check("chk_p6_inputs_labeled", "inputs_labeled", ">=", 1.0, "repeat"),
+        Check("chk_p6_memo_written", "memo_written", ">=", 1.0, "repeat"),
     ]
 
 

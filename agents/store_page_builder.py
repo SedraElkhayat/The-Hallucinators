@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import html
 
+from agents.m4_store_site import SITE_DIR, render_store_site, site_checks, write_site
 from agents.m4_common import M4Agent, launch_copy_violations, price_from_pricing, to_float
 from core.contracts import Context
 
@@ -103,6 +104,15 @@ class StorePageBuilder(M4Agent):
         # Render static HTML
         html_content = self.render_html(data)
         ctx.store.put_file(self.step, "html", html_content, self.name)
+
+        # Store website (CONTEXT.md 4b.7): index.html + policy pages, checked before approval.
+        pricing = ctx.store.get("phase4_step1_pricing") if ctx.store.has("phase4_step1_pricing") else {}
+        documents = ctx.store.get("phase4_step3_policies").get("documents", []) if ctx.store.has("phase4_step3_policies") else []
+        files = render_store_site(data, documents, bool(pricing.get("is_assumption", True)))
+        root = write_site(ctx.out_dir, files)
+        checks = site_checks(root)
+        data["site"] = {"folder": SITE_DIR, "files": sorted(files), "site_checks": checks}
+        ctx.log.action(self.name, "store_site_written", outcome="passed" if checks["passed"] else "failed")
 
         # Request founder approval
         title = f"Store Page: {data.get('title')}"

@@ -28,7 +28,7 @@ def gate_checks(ctx: Context) -> list[Check]:
         Check("chk_p5_unapproved", "unapproved_released", "<=", 0.0, "stop"),
         Check("chk_p5_s2c_passed", "sale_to_cash_passed", ">=", 1.0, "repeat"),
         Check("chk_p5_double_deliv", "double_deliveries", "<=", 0.0, "stop"),
-        Check("chk_p5_reconcile", "reconcile_balanced", ">=", 1.0, "stop"),
+        Check("chk_p5_reconcile", "reconcile_balanced", ">=", 1.0, "repeat"),
         Check("chk_p5_compliance", "compliance_must_fix", "<=", 0.0, "repeat"),
     ]
 

@@ -28,7 +28,7 @@ PAYMENT_SDKS = ("stripe", "paypal", "paymob", "braintree", "square", "paddle", "
 
 def gate_checks(ctx: Context) -> list[Check]:
     return [
-        Check("chk_p4_price", "price_sourced_or_labeled", ">=", 1.0, "pivot"),
+        Check("chk_p4_price", "price_sourced_or_labeled", ">=", 1.0, "repeat"),
         Check("chk_p4_policies", "policies_labeled", ">=", 1.0, "repeat"),
         Check("chk_p4_claims", "banned_claims", "<=", 0.0, "repeat"),
         Check("chk_p4_no_payment_sdk", "payment_code_present", "<=", 0.0, "stop"),

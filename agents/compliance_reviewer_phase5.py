@@ -37,6 +37,9 @@ class ComplianceReviewerPhase5(M4Agent):
                 code_issues.append("store page: buy button must say 'MOCKED checkout: no real payment'")
         if ctx.store.has("phase5_step2_store_page"):
             sp = ctx.store.get("phase5_step2_store_page")
+            sc = (sp.get("site") or {}).get("site_checks")
+            if isinstance(sc, dict) and not sc.get("passed"):
+                code_issues += [f"store site: {f}" for f in sc.get("failures") or ["site checks failed"]]
             for t in [sp.get("title", ""), sp.get("description", "")] + list(sp.get("bullets") or []):
                 v = launch_copy_violations(str(t))
                 if v:
