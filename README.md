@@ -8,7 +8,7 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 docker compose up
 ```
 
-Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox.
+Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox. When Phase 3 has built the founder's website, the run page shows **Preview website** and **Download site folder**; the system never publishes it.
 
 Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`).
 
@@ -18,6 +18,8 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 |---|---|
 | Orchestrator, gates (pre-registered), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
+| Founder website (Phase 3 build, Phase 5 store version, website checks in Gate 3) | In progress |
+| Preview website and Download site folder buttons (local only; the system never publishes) | Working |
 | Search and fetch (free public sources, cached) | Working |
 | Phase 1 to 6 agents | In progress (STUBBED phases are labeled in the run) |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |

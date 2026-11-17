@@ -1,0 +1,13 @@
+{
+  "boxes": {
+    "customer_segments": "MOCKED: solo freelance designers who take on new clients every month (source: phase1_step4_idea_card)",
+    "problem": "MOCKED: client onboarding is redone by hand for every new client (source: phase1_step6_interview_findings, SAMPLE input)",
+    "unique_value_proposition": "MOCKED: an onboarding kit written for one-person design studios ASSUMPTION",
+    "solution": "MOCKED: checklist, intake questionnaire and welcome message templates (source: phase1_step4_idea_card)",
+    "channels": "MOCKED: design communities; the founder's newsletter ASSUMPTION",
+    "revenue_streams": "MOCKED: intended model is a one-time purchase of the kit; no payment is taken in this phase ASSUMPTION",
+    "cost_structure": "MOCKED: founder time to write and update templates (source: phase1_step6_feasibility)",
+    "key_metrics": "MOCKED: waitlist sign-ups during the demand test ASSUMPTION",
+    "unfair_advantage": "unknown ASSUMPTION (MOCKED)"
+  }
+}

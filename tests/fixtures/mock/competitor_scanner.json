@@ -1,0 +1,33 @@
+{
+  "competitors": [
+    {
+      "name": "MOCKED rival template shop",
+      "url": "https://example.com/mock/cs1",
+      "pricing": "MOCKED: 19 USD one-time",
+      "positioning": "MOCKED: English-only freelancer templates"
+    },
+    {
+      "name": "MOCKED generic project tool",
+      "url": "https://example.com/mock/cs2",
+      "pricing": "MOCKED: free plan, paid from 8 USD per month",
+      "positioning": "MOCKED: general project management for teams"
+    }
+  ],
+  "claims": [
+    {
+      "claim": "MOCKED: the rival template costs 19 USD",
+      "source_url": "https://example.com/mock/cs1",
+      "quote": "MOCKED quote: complete freelancer template bundle for 19 USD",
+      "verified": null,
+      "assumption": false
+    },
+    {
+      "claim": "MOCKED: the generic tool has a free plan",
+      "source_url": "https://example.com/mock/cs2",
+      "quote": "MOCKED quote: free plan available, paid plans from 8 USD",
+      "verified": null,
+      "assumption": false
+    }
+  ],
+  "insufficient_evidence": false
+}

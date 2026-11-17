@@ -1,0 +1,23 @@
+{
+  "findings": "MOCKED: the SAMPLE notes show tracking in chats and notebooks and one lost invoice; no commitment signals.",
+  "pain_points": [
+    {
+      "text": "MOCKED: lost one unpaid invoice last month",
+      "interviewee": "A"
+    }
+  ],
+  "current_solutions": [
+    {
+      "text": "MOCKED: WhatsApp chats and a notebook",
+      "interviewee": "A"
+    },
+    {
+      "text": "MOCKED: a free Trello board, abandoned after two weeks",
+      "interviewee": "B"
+    }
+  ],
+  "commitment_signals": [],
+  "weak_evidence": [
+    "MOCKED: would ask a friend before paying for a template (C)"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "market_definition": {
+    "segment": "MOCKED: freelance graphic designers in Egypt and MENA",
+    "size_note": "MOCKED: unknown (no page states a number)"
+  },
+  "claims": [
+    {
+      "claim": "MOCKED: freelancers report juggling several clients",
+      "source_url": "https://example.com/mock/ms1",
+      "quote": "MOCKED quote: most freelancers in the survey work with several clients at once",
+      "verified": null,
+      "assumption": false
+    },
+    {
+      "claim": "MOCKED: designers describe missed invoices",
+      "source_url": "https://example.com/mock/ms2",
+      "quote": "MOCKED quote: designers described invoices that were never paid",
+      "verified": null,
+      "assumption": false
+    }
+  ],
+  "insufficient_evidence": false
+}

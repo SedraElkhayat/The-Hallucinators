@@ -1,0 +1,22 @@
+{
+  "alternatives": [
+    {
+      "name": "MOCKED alternative: client onboarding kit",
+      "why": "MOCKED: onboarding questions recur"
+    },
+    {
+      "name": "MOCKED alternative: portfolio case-study template",
+      "why": "MOCKED: ASSUMPTION"
+    }
+  ],
+  "claims": [
+    {
+      "claim": "MOCKED: designers ask for client onboarding templates",
+      "source_url": "https://example.com/mock/of1",
+      "quote": "MOCKED quote: designers keep asking for a simple client onboarding template",
+      "verified": null,
+      "assumption": false
+    }
+  ],
+  "insufficient_evidence": false
+}
