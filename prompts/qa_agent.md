@@ -25,24 +25,7 @@ Artifact `phase3_step5_qa_report`:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "results": [
-    {
-      "id": "<test id>",
-      "passed": "<true only if the check ran and passed>",
-      "detail": "<check, path, result>"
-    }
-  ],
-  "pass_ratio": "<passed / total>",
-  "total": "<integer>",
-  "passed": "<integer>",
-  "site_checks": {
-    "passed": "<true only if every website check passed>",
-    "failures": [
-      "<failed check and where>"
-    ]
-  }
-}
+{"results": [{"id": "<test id>", "passed": "<true only if the check ran and passed>", "detail": "<check, path, result>"}], "pass_ratio": "<passed / total>", "total": "<integer>", "passed": "<integer>", "site_checks": {"passed": "<true only if every website check passed>", "failures": ["<failed check and where>"]}}
 ```
 
 ## Rules

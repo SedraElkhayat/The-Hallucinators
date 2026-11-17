@@ -9,32 +9,27 @@ Write the headline, value proposition, features, FAQ and the claims to show as e
 ## Inputs
 - `phase3_step1_spec`: mvp_scope, user_stories, acceptance_tests (texts the page must contain), out_of_scope.
 - `phase3_step2_page_copy`: headline, features, faq, cta (tested copy to reuse).
-- When present: `phase1_step4_idea_card`, `phase2_step2_lean_canvas`, `phase2_step1_competitor_analysis`, and the Phase 1 evidence artifacts (`claims` with `source_url`, `quote`, `verified`).
+- When present: `phase1_step4_idea_card`, and `verified_claims` (claim, source_url, quote): the verified claims that the competitor analysis re-cites from Phase 1.
 
 ## Output
 JSON object with exactly these keys:
 - `headline`: string, at most 12 words.
 - `value_proposition`: string, at most 40 words.
-- `features`: list of strings (at most 8), each something the product does.
-- `faq`: list of `{"q": str, "a": str}` (at most 8).
-- `claims`: list of `{"claim": str, "source_url": str, "quote": str}` copied exactly from the inputs (at most 10). Without the exact `quote` the claim cannot be checked and is shown as ASSUMPTION.
+- `features`: list of strings (at most 5), each something the product does.
+- `faq`: list of `{"q": str, "a": str}` (at most 5).
+- `claims`: list of `{"claim": str, "source_url": str, "quote": str}` copied exactly from the inputs (at most 6). Without the exact `quote` the claim cannot be checked and is shown as ASSUMPTION.
 - `cta`: string, at most 6 words, about joining the waitlist (optional).
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "headline": "<what the product is, for whom>",
-  "value_proposition": "<the problem it solves and how, in plain words>",
-  "features": ["<what the product does>"],
-  "faq": [{"q": "<practical question>", "a": "<honest answer>"}],
-  "claims": [{"claim": "<exact claim text from an input artifact>", "source_url": "<its exact source_url>", "quote": "<its exact quote>"}],
-  "cta": "<join-the-waitlist wording>"
-}
+{"headline": "<what the product is, for whom>", "value_proposition": "<the problem it solves and how, in plain words>", "features": ["<what the product does>"], "faq": [{"q": "<practical question>", "a": "<honest answer>"}], "claims": [{"claim": "<exact claim text from an input artifact>", "source_url": "<its exact source_url>", "quote": "<its exact quote>"}], "cta": "<join-the-waitlist wording>"}
 ```
 
 ## Rules
 - Plain text only: no HTML, no markdown, no links outside `claims`.
 - No price (Phase 4 sets it), no policies (Phase 4 drafts them), no payment words.
 - No numbers in the headline, value proposition, features or FAQ unless they come from a claim; a number that cannot be sourced is removed by code.
-- No testimonials, reviews, ratings, user or sign-up counts, urgency, countdowns or income promises. Anything simulated must say "SIMULATED, not real users".
+- No ratings, user counts or urgency. Anything simulated must say "SIMULATED, not real users".
 - Include the exact texts that the spec's acceptance tests look for.
+- FAQ answers address buyer questions (what is included, how it is used, languages). Never mention technical limits of the system (scripts, backend, analytics, payment processing, accounts).
+- Keep every text value short (one or two sentences); no more than 6 items per list (features 5, faq 5, claims 6).

@@ -17,52 +17,7 @@ JSON object with one key `dimensions` holding exactly these six keys: `problem_s
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "dimensions": {
-    "problem_severity": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    },
-    "demand_evidence": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    },
-    "competition": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    },
-    "founder_fit": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    },
-    "feasibility": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    },
-    "monetization": {
-      "rating": "<strong|adequate|weak|unknown>",
-      "evidence_refs": [
-        "<artifact stem or source_url>"
-      ],
-      "note": "<why; say MOCKED or SAMPLE where it applies>"
-    }
-  }
-}
+{"dimensions": {"problem_severity": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}, "demand_evidence": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}, "competition": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}, "founder_fit": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}, "feasibility": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}, "monetization": {"rating": "<strong|adequate|weak|unknown>", "evidence_refs": ["<artifact stem or source_url>"], "note": "<why; say MOCKED or SAMPLE where it applies>"}}}
 ```
 
 ## Rules
@@ -70,4 +25,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - A demand result with provenance `MOCKED` is not real behavior evidence: `demand_evidence` is at most `adequate` (it stays `weak` below 0.5). The code enforces this.
 - Empty `evidence_refs` means `unknown`, whatever you think. The code enforces this.
 - Say in the note when a result is MOCKED or an input is SAMPLE.
-- No praise; ratings follow evidence only.
+- Ratings follow evidence only.
+- Keep every text value short (one or two sentences); no more than 3 items per list (`evidence_refs`: no more than 3 per dimension).

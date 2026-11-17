@@ -18,19 +18,12 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "issues": [
-    {
-      "severity": "<must_fix|should_fix>",
-      "text": "<quoted problem and why>",
-      "file": "<file or artifact>"
-    }
-  ],
-  "verdict": "<ok|revise>"
-}
+{"issues": [{"severity": "<must_fix|should_fix>", "text": "<quoted problem and why>", "file": "<file or artifact>"}], "verdict": "<ok|revise>"}
 ```
 
 ## Rules
 - Fake proof, promises, invented numbers and unlabeled sample content are always `must_fix`.
+- A claim labeled `ASSUMPTION` is honest handling, not an issue (at most `should_fix` if the label is unclear). `must_fix` only for a claim shown without an `ASSUMPTION` label and without a source link, or shown as verified without a source link. The evidence list is also checked in code.
 - Any `must_fix` issue means `verdict` is `revise`; with no issues return an empty list and `ok`.
 - Quote the problem text briefly so it can be found.
+- Keep every text value short (one or two sentences); no more than 6 items per list.

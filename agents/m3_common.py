@@ -13,7 +13,7 @@ from typing import Any, Iterable, Optional
 ROOT = Path(__file__).resolve().parent.parent
 PROMPTS_DIR = ROOT / "prompts"
 SITE_DIRNAME = "phase3_step3_site"  # outputs/ folder of the founder website (phase<N>_step<M>_<name>/)
-MAX_ARTIFACT_CHARS = 6000
+MAX_ARTIFACT_CHARS = 3500  # per input artifact in a model message; small local models and 8k tokens/min caps
 
 # Artifact stems used by Phase 2 and 3 (CONTEXT.md section 5).
 P1_CLARIFICATION = "phase1_step2_clarification"
@@ -63,11 +63,25 @@ def get_artifact(ctx, step: str) -> Optional[dict]:
     return data if isinstance(data, dict) else None
 
 
+TRUNCATED = " [truncated]"
+# Claim-checker bookkeeping that the model does not need (the verified/assumption flags themselves are kept).
+_NOISE_KEYS = {"check", "fetch_error", "duplicate"}
+
+
+def _slim(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: _slim(v) for k, v in obj.items() if not str(k).startswith("_") and k not in _NOISE_KEYS}
+    if isinstance(obj, list):
+        return [_slim(v) for v in obj]
+    return obj
+
+
 def _clip(obj: Any, limit: int = MAX_ARTIFACT_CHARS) -> Any:
-    text = json.dumps(obj, ensure_ascii=False, default=str)
+    """The object itself if its compact JSON fits the limit, else the START of that JSON plus " [truncated]"."""
+    text = json.dumps(obj, ensure_ascii=False, default=str, separators=(",", ":"))
     if len(text) <= limit:
         return obj
-    return text[:limit] + " ...[truncated]"
+    return text[:limit] + TRUNCATED
 
 
 def inputs_message(ctx, stems: Iterable[str], extra: Optional[dict] = None) -> str:
@@ -76,12 +90,12 @@ def inputs_message(ctx, stems: Iterable[str], extra: Optional[dict] = None) -> s
     for stem in stems:
         art = get_artifact(ctx, stem)
         if art is not None:
-            art = {k: v for k, v in art.items() if not str(k).startswith("_") and k != "mocked"}
+            art = _slim({k: v for k, v in art.items() if k != "mocked"})
             payload["inputs"][stem] = _clip(art)
     for key, value in (extra or {}).items():
         if value is not None:
             payload[key] = _clip(value)
-    body = json.dumps(payload, ensure_ascii=False, indent=1, default=str)
+    body = json.dumps(payload, ensure_ascii=False, default=str, separators=(",", ":"))
     return f"<data>\n{body}\n</data>\nAnswer with the JSON object described in your instructions."
 
 
