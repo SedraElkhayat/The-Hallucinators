@@ -1,0 +1,19 @@
+{
+  "headline": "MOCKED: Client onboarding templates for solo designers",
+  "features": [
+    "MOCKED: step-by-step onboarding checklist (Markdown)",
+    "MOCKED: intake questionnaire (Markdown)",
+    "MOCKED: welcome message template (plain text)"
+  ],
+  "faq": [
+    {
+      "q": "MOCKED: what file formats are included?",
+      "a": "MOCKED: Markdown, plain text and one HTML page."
+    },
+    {
+      "q": "MOCKED: does the kit send emails for me?",
+      "a": "MOCKED: no. You copy the templates and send them yourself."
+    }
+  ],
+  "cta": "Join the waitlist (MOCKED)"
+}

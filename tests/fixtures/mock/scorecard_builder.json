@@ -1,0 +1,46 @@
+{
+  "dimensions": {
+    "problem_severity": {
+      "rating": "adequate",
+      "evidence_refs": [
+        "phase1_step6_interview_findings"
+      ],
+      "note": "MOCKED: pain described in SAMPLE interview notes"
+    },
+    "demand_evidence": {
+      "rating": "strong",
+      "evidence_refs": [
+        "phase2_step5_demand_results"
+      ],
+      "note": "MOCKED: ratio against the pre-set target (MOCKED result)"
+    },
+    "competition": {
+      "rating": "adequate",
+      "evidence_refs": [
+        "phase2_step1_competitor_analysis"
+      ],
+      "note": "MOCKED: rivals target agencies"
+    },
+    "founder_fit": {
+      "rating": "strong",
+      "evidence_refs": [
+        "phase1_step5_founder_fit"
+      ],
+      "note": "MOCKED: founder has the design skills"
+    },
+    "feasibility": {
+      "rating": "strong",
+      "evidence_refs": [
+        "phase1_step6_feasibility"
+      ],
+      "note": "MOCKED: templates fit the founder's hours"
+    },
+    "monetization": {
+      "rating": "adequate",
+      "evidence_refs": [
+        "https://example.com/mock/1"
+      ],
+      "note": "MOCKED: a rival charges for a similar kit"
+    }
+  }
+}
