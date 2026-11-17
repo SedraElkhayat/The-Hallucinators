@@ -16,6 +16,9 @@ ARCH_SECTIONS = ["Overview", "Phases", "Gates", "Sale to cash", "Data flow", "Bu
 LOG_KEYS = ("timestamp", "agent", "action", "sources", "model", "cost", "approved_by")
 SECRET_RX = re.compile(r"(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)")
 NAME_RX = re.compile(r"^(phase\d+_(step\d+_[\w-]+|gate_[\w-]+)\.(md|json|csv|txt|html)|payment_test_log\.md|\.gitkeep)$")
+DIR_RX = re.compile(r"^phase\d+_step\d+_[\w-]+$")          # e.g. outputs/phase3_step3_site/
+TEXT_EXT = {".md", ".json", ".csv", ".txt", ".html"}           # CLAUDE.md: text formats only
+MAX_OUTPUT_BYTES = 300_000                                      # "keep each file small"
 
 results: list[tuple[str, str]] = []
 
@@ -59,10 +62,18 @@ def run_checks(run_tests: bool = True) -> list[tuple[str, str]]:
         check("FAIL", False, f"decision_log.json readable ({e})")
 
     out = ROOT / "outputs"
-    names = [p.name for p in out.iterdir()] if out.is_dir() else []
+    entries = list(out.iterdir()) if out.is_dir() else []
+    names = [p.name for p in entries if p.is_file()]
+    dirs = [p for p in entries if p.is_dir()]
     check("FAIL", out.is_dir(), "outputs/ present")
-    wrong = [n for n in names if not NAME_RX.match(n)]
+    wrong = [n for n in names if not NAME_RX.match(n)] + [d.name + "/" for d in dirs if not DIR_RX.match(d.name)]
     check("FAIL", not wrong, f"outputs/ naming (wrong: {wrong[:5]})")
+    nested = [f for d in dirs for f in d.rglob("*") if f.is_file()]
+    bad_ext = [f.relative_to(out).as_posix() for f in nested if f.suffix.lower() not in TEXT_EXT]
+    check("FAIL", not bad_ext, f"outputs/ folders hold text files only (wrong: {bad_ext[:5]})")
+    big = [f.relative_to(out).as_posix() for f in [out / n for n in names] + nested
+           if f.stat().st_size > MAX_OUTPUT_BYTES]
+    check("FAIL", not big, f"outputs/ files are small (over {MAX_OUTPUT_BYTES // 1000} KB: {big[:5]})")
     check("WARN", any(re.match(r"phase\d+_gate_decision\.md", n) for n in names), "outputs/ has a gate decision")
     check("WARN", "payment_test_log.md" in names, "outputs/payment_test_log.md present")
     check("WARN", any("stop" in (out / n).read_text(encoding="utf-8").lower()
