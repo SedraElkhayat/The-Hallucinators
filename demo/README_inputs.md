@@ -20,4 +20,6 @@
 | `phase6_results` | metrics_analyst | CSV text |
 | `gate_override_<N>` | orchestrator, only when a gate verdict is rejected | `go`, `repeat`, `pivot` or `stop` |
 
-`prefix_defaults` answers any missing key by its longest matching prefix (for example `clarify_`). A key with no answer and no matching prefix stops the run with a clear error. `approvals.default` (and optionally `approvals.<kind>`) is `approve` or `reject` for every approval request.
+`prefix_defaults` answers any missing key by its longest matching prefix (for example `clarify_`). A key with no answer and no matching prefix stops the run with a clear error. `approvals.default` (and optionally `approvals.<kind>`) is `approve` or `reject` for every approval request. `approvals.<kind>_<N>` (for example `gate_1`) answers only the request of that kind in phase N and wins over `approvals.<kind>`. For gates, `approvals.gate_<N>_<outcome>` (for example `gate_1_stop`) answers only when the system recommends that outcome, and wins over both.
+
+`founder_inputs.json` rejects the Gate 1 verdict only when it is STOP (`approvals.gate_1_stop: reject`); a GO or REPEAT is approved as recommended. A rejected STOP is overridden with `gate_override_1: go`: a founder decision, not a gate rule change. The system's Gate 1 verdict stays in `phase1_gate_decision.md`; the override is in `phase1_gate_founder_override.md` and in `decision_log.json` (`gate_override_1`, `approved_by: founder`). Later gates are approved as recommended.

@@ -142,3 +142,58 @@ def test_gate_rejection_uses_founder_override(env, tmp_path):
     assert r["outcome"] == "stop"
     e = [e for e in ctx.log.entries() if e["action"] == "gate_override_1"][0]
     assert e["approved_by"] == "founder" and e["system_outcome"] == "go"
+
+
+def test_override_only_gate_1_and_visible_in_outputs(env, tmp_path):
+    ctx, phases, add = env
+    ctx = make_ctx(tmp_path / "o", founder_inputs={"approvals": {"default": "approve", "gate_1": "reject"},
+                                                   "gate_override_1": "go",
+                                                   "prefix_defaults": {"gate_override_": "stop"}})
+    add(_agent("a"))
+    add(_agent("b"))
+    phases[1] = _phase(1, [["a"]])
+    phases[2] = _phase(2, [["b"]])
+    r = orchestrator.run(ctx, through=2)
+    assert r["outcome"] == "go" and r["history"] == [(1, 0, "go"), (2, 0, "go")]
+    acts = [e["action"] for e in ctx.log.entries()]
+    assert "gate_override_1" in acts and "gate_override_2" not in acts
+    text = (ctx.out_dir / "phase1_gate_founder_override.md").read_text()
+    assert "chose **GO**" in text
+    assert not (ctx.out_dir / "phase2_gate_founder_override.md").exists()
+    assert "Gate 1: system GO, founder chose GO" in (ctx.out_dir / "phase2_gate_final_report.md").read_text()
+
+
+def test_demo_inputs_override_gate_1_only():
+    import json
+    from core.founder import ScriptedInputs
+    from tests.helpers import DEMO_INPUTS
+    s = ScriptedInputs(DEMO_INPUTS)
+    assert json.loads(DEMO_INPUTS.read_text())["gate_override_1"] == "go"
+    assert s.approval("gate", 1, "stop") == "reject" and s.lookup("gate_override_1") == "go"
+    assert s.approval("gate", 1, "go") == "approve" and s.approval("gate", 1, "repeat") == "approve"
+    assert all(s.approval("gate", n, o) == "approve" for n in range(2, 7) for o in ("go", "repeat", "pivot", "stop"))
+    assert s.approval("page", 3) == "approve"
+
+
+
+@pytest.mark.parametrize("system, expected_history", [
+    ("stop", [(1, "go")]),            # STOP rejected and overridden with go
+    ("go", [(1, "go")]),              # GO approved as recommended, no override
+    ("repeat", [(1, "repeat"), (1, "go")]),  # REPEAT approved: the phase really repeats
+])
+def test_gate_stop_only_override(env, tmp_path, system, expected_history):
+    ctx, phases, add = env
+    ctx = make_ctx(tmp_path / system, founder_inputs={
+        "approvals": {"default": "approve", "gate_1_stop": "reject"}, "gate_override_1": "go"})
+    add(_agent("a"))
+    if system == "stop":
+        checks, measure = [Check("s", "x", ">=", 1, "stop")], (lambda c: {"x": 0})
+    elif system == "repeat":
+        checks, measure = [Check("r", "runs", ">=", 2, "repeat")], (lambda c: {"runs": CALLS.count("a")})
+    else:
+        checks, measure = [], (lambda c: {})
+    phases[1] = _phase(1, [["a"]], checks=checks, measure=measure)
+    r = orchestrator.run(ctx, through=1)
+    assert [(p, o) for p, _, o in r["history"]] == expected_history
+    overrides = [e for e in ctx.log.entries() if e["action"] == "gate_override_1"]
+    assert len(overrides) == (1 if system == "stop" else 0)
