@@ -199,3 +199,6 @@ def test_gate_stop_only_override(env, tmp_path, system, expected_history):
     assert [(p, o) for p, _, o in r["history"]] == expected_history
     overrides = [e for e in ctx.log.entries() if e["action"] == "gate_override_1"]
     assert len(overrides) == (1 if system == "stop" else 0)
+    for o in overrides:
+        assert o["system_outcome"] == "stop" and o["outcome"] == "go" and o["provenance"] == "SCRIPTED"
+        assert "STOP" in (ctx.out_dir / "phase1_gate_decision.md").read_text()  # system verdict kept
