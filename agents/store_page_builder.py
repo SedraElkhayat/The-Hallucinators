@@ -71,11 +71,12 @@ class StorePageBuilder(M4Agent):
 """
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        pricing_price = price_from_pricing(ctx)
-        data["price_usd"] = to_float(data.get("price_usd"), pricing_price)
-        if pricing_price is not None and data["price_usd"] != pricing_price:
-            # The page shows the price chosen in Phase 4, not a new one.
-            data["price_usd"] = pricing_price
+        # The page shows only the price chosen in Phase 4, never a new one from the model. Without a Phase 4
+        # price it says the founder sets it (a real run once copied the brief's USD 100 *budget* here).
+        model_price = to_float(data.get("price_usd"))
+        data["price_usd"] = price_from_pricing(ctx)
+        if model_price is not None and model_price != data["price_usd"]:
+            data["model_price_ignored"] = model_price
 
         bullets = data.get("bullets")
         if not isinstance(bullets, list) or not bullets:

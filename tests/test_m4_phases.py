@@ -138,8 +138,8 @@ def test_phase6_measure_and_gate_go(tmp_path):
     ctx = make_ctx(tmp_path)
 
     ctx.store.put("phase6_step2_metrics", {
-        "comparison": {"target": 100, "actual": 140},
-        "provenance": "SAMPLE",
+        "comparison": {"target": 100, "actual": 140, "target_status": "met"},
+        "provenance": "FOUNDER-PROVIDED (unverified)",
         "gaps": [],
     }, "# Metrics", "metrics_analyst")
 
