@@ -147,3 +147,30 @@ def test_search_fetch_then_quote_verifies(tmp_path, monkeypatch):
     text = b.fetch("scout", url)
     assert quote_found("they would pay $20 for a client tracker", text)
     assert not quote_found("they would pay $50 for a client tracker", text)
+
+
+
+def test_default_order_has_no_bing(monkeypatch):
+    from core.tools import backend_order
+    monkeypatch.delenv("SEARCH_BACKENDS", raising=False)
+    monkeypatch.delenv("SEARXNG_URL", raising=False)
+    assert backend_order() == ["hn", "duckduckgo"]
+    monkeypatch.setenv("SEARXNG_URL", "http://searxng:8080")
+    assert backend_order() == ["searxng", "hn", "duckduckgo"]
+    monkeypatch.setenv("SEARCH_BACKENDS", "bing,hn")
+    assert backend_order() == ["bing", "hn"]  # still available when asked for
+
+
+def test_hn_query_words_are_optional(monkeypatch):
+    import requests
+    import core.tools as T
+    seen = {}
+
+    class R:
+        status_code, text = 200, ""
+
+        def json(self):
+            return {"hits": []}
+    monkeypatch.setattr(requests, "get", lambda url, params=None, headers=None, timeout=None: (seen.update(params or {}), R())[1])
+    T._search_hn("freelance designers project status")
+    assert seen["optionalWords"] == "freelance designers project status"

@@ -64,7 +64,7 @@ services:
       APP_PORT: ${APP_PORT:-8000}
       # web search: backends tried in order until 3 results; searxng only when SEARXNG_URL is set
       SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
-      SEARCH_BACKENDS: ${SEARCH_BACKENDS:-searxng,bing,hn,duckduckgo}
+      SEARCH_BACKENDS: ${SEARCH_BACKENDS:-searxng,hn,duckduckgo}
       TOOL_BUDGET: ${TOOL_BUDGET:-8}
     ports:
       - "8000:8000"

@@ -19,7 +19,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
 | Phase 1 to 6 agents (one file and one prompt each) | Working offline with MockLLM (outputs labeled MOCKED); first real-model run in progress |
-| Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Bing, Hacker News API, DuckDuckGo as fallbacks; a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
 | Founder website (Phase 3 build, Phase 5 store version, website checks in Gate 3) | In progress |
 | Preview website and Download site folder buttons (local only; the system never publishes) | Working |

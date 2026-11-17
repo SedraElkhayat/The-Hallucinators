@@ -23,7 +23,9 @@ HEADERS = {"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,applicat
            "Accept-Language": "en-US,en;q=0.9"}
 # Search backends, tried in this order until MIN_RESULTS distinct results are found.
 # searxng is used only when SEARXNG_URL is set (docker compose sets it to its own container).
-DEFAULT_BACKENDS = "searxng,bing,hn,duckduckgo"
+# Bing is not in the default order: on some networks it returns off-topic pages for every query,
+# which then pass the quote check as "verified" junk. It can still be enabled with SEARCH_BACKENDS.
+DEFAULT_BACKENDS = "searxng,hn,duckduckgo"
 MIN_RESULTS = 3
 
 
@@ -194,7 +196,8 @@ def _search_bing(query: str) -> list[dict]:
 
 
 def _search_hn(query: str) -> list[dict]:
-    r = requests.get("https://hn.algolia.com/api/v1/search", params={"query": query, "hitsPerPage": 10},
+    r = requests.get("https://hn.algolia.com/api/v1/search", params={"query": query, "hitsPerPage": 10,
+                             "optionalWords": query},  # long queries: any word may match
                      headers={"User-Agent": UA}, timeout=10)
     why = block_reason(r.status_code, "", True)
     if why:
