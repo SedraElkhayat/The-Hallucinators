@@ -122,8 +122,9 @@ def founder_gate(ctx: Context, phase: int, res: gates.GateResult) -> str:
                              ["go", "repeat", "pivot", "stop"]).strip().lower()
     if choice not in gates.SEVERITY:
         choice = "stop"
+    provenance = {"scripted": "SCRIPTED", "cli": "CLI", "web": "WEB"}.get(getattr(ctx.founder, "mode", ""), "")
     ctx.log.action("founder", f"gate_override_{phase}", approved_by="founder", outcome=choice,
-                   system_outcome=res.outcome)
+                   system_outcome=res.outcome, provenance=provenance)
     write_override(ctx, phase, res, choice)
     return choice
 
