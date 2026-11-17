@@ -5,8 +5,7 @@ Founder input key: ``demand_results`` = JSON text {"signups": int, "days": int, 
 import json
 
 from agents.base import Agent
-from agents.m3_common import P2_PLAN, P2_RESULTS, log_action, plan_target
-from core.contracts import AgentResult
+from agents.m3_common import P2_PLAN, P2_RESULTS, plan_target
 
 
 def _int(v):
@@ -50,6 +49,7 @@ class DemandResults(Agent):
     kind = "founder"
 
     def run(self, ctx):
+        self.check_inputs(ctx)
         target, window = plan_target(ctx)
         prompt = (f"Enter the demand-test result as JSON: "
                   f'{{"signups": <whole number>, "days": <whole number>, "provenance": "REAL" or "MOCKED"}}. '
@@ -82,6 +82,5 @@ class DemandResults(Agent):
             md += "\nThis result is MOCKED: it did not come from real visitors.\n"
         if note:
             md += f"\nNote: {note}\n"
-        ctx.store.put(self.step, data, md, self.name, [])
-        log_action(ctx, self.name, "record_demand_results", provenance=prov, ratio=ratio)
-        return AgentResult(data=data, markdown=md, sources=[], model=None, cost=0.0, mocked=(prov == "MOCKED"))
+        return self.save(ctx, data, markdown=md, sources=[], model=None, cost=0.0, mocked=(prov == "MOCKED"),
+                         action="record_demand_results", provenance=prov, ratio=ratio)

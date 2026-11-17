@@ -2,7 +2,7 @@
 import re
 
 from agents.base import Agent
-from agents.m3_common import (M3InputsMixin, P1_DEMAND_SIGNALS, P1_FEASIBILITY, P1_FOUNDER_FIT,
+from agents.m3_common import (BLOCK_MARK, M3InputsMixin, P1_DEMAND_SIGNALS, P1_FEASIBILITY, P1_FOUNDER_FIT,
                               P1_IDEA_CARD, P1_INTERVIEWS, P1_MARKET, P1_REPORT,
                               P2_CANVAS, P2_COMPETITOR_ANALYSIS)
 
@@ -29,6 +29,8 @@ class LeanCanvasDrafter(M3InputsMixin, Agent):
             if isinstance(v, (list, tuple)):
                 v = "; ".join(str(x) for x in v)
             text = str(v or "").strip() or "unknown"
+            if BLOCK_MARK in text:
+                text = "unknown ASSUMPTION (the model's text was removed by the guardrails)"
             # Every statement is sourced or ends with ASSUMPTION (enforced in code).
             if not _SOURCED.search(text) and "ASSUMPTION" not in text:
                 text = text.rstrip(". ") + " ASSUMPTION"

@@ -69,12 +69,13 @@ def _clip(obj: Any, limit: int = MAX_ARTIFACT_CHARS) -> Any:
 
 
 def inputs_message(ctx, stems: Iterable[str], extra: Optional[dict] = None) -> str:
-    """JSON of the available input artifacts (plus extras) wrapped in <data> tags."""
-    payload: dict = {}
+    """Brief plus the available input artifacts (and extras) as JSON wrapped in <data> tags."""
+    payload: dict = {"brief": _clip(getattr(ctx, "brief", "") or "", 3000), "inputs": {}}
     for stem in stems:
         art = get_artifact(ctx, stem)
         if art is not None:
-            payload[stem] = _clip(art)
+            art = {k: v for k, v in art.items() if not str(k).startswith("_") and k != "mocked"}
+            payload["inputs"][stem] = _clip(art)
     for key, value in (extra or {}).items():
         if value is not None:
             payload[key] = _clip(value)
@@ -101,15 +102,6 @@ class M3InputsMixin:
 
     def extra_payload(self, ctx) -> dict:
         return {}
-
-
-def load_system_prompt(name: str) -> str:
-    parts = []
-    for fname in (f"{name}.md", "_common.md"):
-        p = PROMPTS_DIR / fname
-        if p.exists():
-            parts.append(p.read_text(encoding="utf-8"))
-    return "\n\n".join(parts)
 
 
 # ---------------------------------------------------------------- logging
@@ -149,7 +141,10 @@ def guardrail_findings(text: str) -> list[str]:
 
 
 # Honesty and safety patterns checked in code for pages and built files.
+BLOCK_MARK = "[BLOCKED by guardrails]"  # what agents/base.py writes in place of a blocked string
+
 _BANNED_SUBSTRINGS = {
+    BLOCK_MARK.lower(): "blocked by guardrails",
     "<script": "script tag",
     "<form": "form element",
     "<iframe": "iframe",

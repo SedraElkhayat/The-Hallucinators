@@ -6,10 +6,7 @@ import pytest
 import gates
 from phases import phase3
 
-try:
-    from test_m3_helpers import PHASE3_AGENTS, ScriptedLLM, fixture, get_agent, make_ctx, put
-except ImportError:
-    from tests.test_m3_helpers import PHASE3_AGENTS, ScriptedLLM, fixture, get_agent, make_ctx, put
+from tests.test_m3_helpers import PHASE3_AGENTS, ScriptedLLM, fixture, get_agent, make_ctx, put
 
 from agents.builder import check_file, validate_files
 from agents.qa_agent import run_check

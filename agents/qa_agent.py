@@ -2,8 +2,7 @@
 from pathlib import Path
 
 from agents.base import Agent
-from agents.m3_common import P3_BUILD, P3_QA, P3_SPEC, build_dir, get_artifact, log_action, safe_rel_path
-from core.contracts import AgentResult
+from agents.m3_common import P3_BUILD, P3_QA, P3_SPEC, build_dir, get_artifact, safe_rel_path
 
 
 def run_check(root: Path, check: dict) -> tuple:
@@ -42,6 +41,7 @@ class QaAgent(Agent):
     kind = "code"
 
     def run(self, ctx):
+        self.check_inputs(ctx)
         spec = get_artifact(ctx, P3_SPEC) or {}
         root = build_dir(ctx)
         results = []
@@ -60,6 +60,5 @@ class QaAgent(Agent):
         if not total:
             lines.append("\nNo acceptance tests were found in the spec, so nothing passed.")
         md = "\n".join(lines) + "\n"
-        ctx.store.put(self.step, data, md, self.name, [])
-        log_action(ctx, self.name, "run_acceptance_tests", passed=passed, total=total)
-        return AgentResult(data=data, markdown=md, sources=[], model=None, cost=0.0, mocked=False)
+        return self.save(ctx, data, markdown=md, sources=[], model=None, cost=0.0, mocked=False,
+                         action="run_acceptance_tests", passed_count=passed, total_count=total)

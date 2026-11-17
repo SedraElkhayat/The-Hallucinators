@@ -36,7 +36,11 @@ Example:
   },
   "differentiation_possible": "unknown",
   "differentiation_reason": "The evidence shows rivals for agencies but says nothing about solo designers ASSUMPTION",
-  "claim_refs": [{"claim": "Example Kit A sells templates for agencies", "source_url": "https://example.com/mock/1"}],
+  "claim_refs": [
+    {"claim": "Example Kit A sells templates for agencies", "source_url": "https://example.com/mock/1"},
+    {"claim": "Example Kit A costs $49", "source_url": "https://example.com/mock/1"},
+    {"claim": "free checklists are common", "source_url": "https://example.com/mock/2"}
+  ],
   "insufficient_evidence": false
 }
 ```

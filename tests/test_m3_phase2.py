@@ -6,10 +6,7 @@ import pytest
 import gates
 from phases import phase2
 
-try:
-    from test_m3_helpers import PHASE2_AGENTS, fixture, get_agent, make_ctx, put
-except ImportError:
-    from tests.test_m3_helpers import PHASE2_AGENTS, fixture, get_agent, make_ctx, put
+from tests.test_m3_helpers import PHASE2_AGENTS, ScriptedLLM, fixture, get_agent, make_ctx, put
 
 
 def _card(**ratings):
@@ -137,10 +134,6 @@ def test_rejected_landing_page_halts_phase(tmp_path):
 
 def test_demand_plan_defaults_and_locked_target(tmp_path):
     agent = get_agent("demand_test_designer")
-    try:
-        from test_m3_helpers import ScriptedLLM
-    except ImportError:
-        from tests.test_m3_helpers import ScriptedLLM
     bad = dict(fixture("demand_test_designer"), target="many", window_days=-3)
     ctx = make_ctx(tmp_path, llm=ScriptedLLM({"demand_test_designer": bad}), seed=agent.inputs)
     data = agent.run(ctx).data
@@ -162,10 +155,6 @@ def test_risk_analyst_marks_low_ratio_kill_criterion(tmp_path):
 
 
 def test_validation_report_never_picks_verdict(tmp_path):
-    try:
-        from test_m3_helpers import ScriptedLLM
-    except ImportError:
-        from tests.test_m3_helpers import ScriptedLLM
     agent = get_agent("validation_synthesizer")
     resp = dict(fixture("validation_synthesizer"), verdict="go", recommendation="go")
     ctx = make_ctx(tmp_path, llm=ScriptedLLM({"validation_synthesizer": resp}), seed=agent.inputs)
@@ -175,10 +164,6 @@ def test_validation_report_never_picks_verdict(tmp_path):
 
 
 def test_critic_must_fix_forces_revise(tmp_path):
-    try:
-        from test_m3_helpers import ScriptedLLM
-    except ImportError:
-        from tests.test_m3_helpers import ScriptedLLM
     agent = get_agent("critic_phase2")
     resp = {"issues": [{"severity": "must_fix", "text": "MOCKED unsupported statement"}], "verdict": "ok"}
     ctx = make_ctx(tmp_path, llm=ScriptedLLM({"critic_phase2": resp}), seed=agent.inputs)
@@ -186,10 +171,6 @@ def test_critic_must_fix_forces_revise(tmp_path):
 
 
 def test_competitor_analyst_drops_unknown_claim_refs(tmp_path):
-    try:
-        from test_m3_helpers import ScriptedLLM
-    except ImportError:
-        from tests.test_m3_helpers import ScriptedLLM
     agent = get_agent("competitor_analyst")
     resp = fixture("competitor_analyst")
     resp["claim_refs"].append({"claim": "MOCKED invented claim", "source_url": "https://example.com/mock/999"})

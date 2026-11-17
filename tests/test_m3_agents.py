@@ -5,12 +5,8 @@ from pathlib import Path
 
 import pytest
 
-try:
-    from test_m3_helpers import (M3_AGENTS, NON_LLM_AGENTS, REQUIRED_LOG_KEYS, ROOT, STEPS, ScriptedLLM,
-                                 fixture, get_agent, log_entries, make_ctx)
-except ImportError:  # tests/ is a package
-    from tests.test_m3_helpers import (M3_AGENTS, NON_LLM_AGENTS, REQUIRED_LOG_KEYS, ROOT, STEPS, ScriptedLLM,
-                                       fixture, get_agent, log_entries, make_ctx)
+from tests.test_m3_helpers import (M3_AGENTS, NON_LLM_AGENTS, REQUIRED_LOG_KEYS, ROOT, STEPS, ScriptedLLM,
+                                 fixture, get_agent, log_entries, make_ctx, put, seed_data)
 
 VIOLATION = " We guarantee 5-star results, a great idea."
 
@@ -23,7 +19,11 @@ def _run(name, tmp_path, llm=None):
     agent = get_agent(name)
     ctx = make_ctx(tmp_path, llm=llm, seed=_seed_for(agent))
     if name == "qa_agent":  # QA needs built files: run the builder on the seeded spec first
-        get_agent("builder").run(ctx)
+        builder = get_agent("builder")
+        for step in _seed_for(builder):
+            if not ctx.store.has(step):
+                put(ctx, step, seed_data(step))
+        builder.run(ctx)
     result = agent.run(ctx)
     return agent, ctx, result
 

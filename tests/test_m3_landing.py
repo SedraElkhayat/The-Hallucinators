@@ -1,10 +1,7 @@
 """Landing page: static, honest HTML; the founder approval is requested in code."""
 from pathlib import Path
 
-try:
-    from test_m3_helpers import ScriptedLLM, fixture, get_agent, make_ctx
-except ImportError:
-    from tests.test_m3_helpers import ScriptedLLM, fixture, get_agent, make_ctx
+from tests.test_m3_helpers import ScriptedLLM, fixture, get_agent, make_ctx
 
 from agents.landing_page_builder import DRAFT_LINE, render_landing_html
 

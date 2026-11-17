@@ -9,7 +9,7 @@ from pathlib import Path
 
 from agents.base import Agent
 from agents.m3_common import (BUILD_DIRNAME, M3InputsMixin, P3_BUILD, P3_COPY, P3_SPEC, build_dir,
-                              content_violations, guardrail_findings, load_system_prompt, log_action,
+                              content_violations, guardrail_findings, log_action,
                               network_code_present, safe_rel_path)
 
 ALLOWED_EXTENSIONS = (".html", ".md", ".txt", ".csv", ".json")
@@ -69,7 +69,7 @@ class Builder(M3InputsMixin, Agent):
         user = self.build_user_message(ctx) + "\n<data>\n" + json.dumps(
             {"rewrite_request": request}, ensure_ascii=False) + "\n</data>\nRewrite only these files so they follow every rule."
         try:
-            resp = ctx.llm.chat(load_system_prompt(self.name), user, agent=self.name, json_mode=True)
+            resp = ctx.llm.chat(self.system_prompt(), user, agent=self.name, json_mode=True)
         except Exception as exc:  # noqa: BLE001 - a failed rewrite leaves the files dropped
             log_action(ctx, self.name, "rewrite_rejected_files", error=str(exc)[:200])
             return []

@@ -21,7 +21,7 @@ Example:
 ```json
 {
   "boxes": {
-    "customer_segments": "Solo freelance designers who onboard 2 to 5 new clients a month (source: phase1_step4_idea_card)",
+    "customer_segments": "Solo freelance designers who take on new clients regularly (source: phase1_step4_idea_card)",
     "problem": "Onboarding new clients is repeated by hand each time (source: phase1_step6_interview_findings)",
     "unique_value_proposition": "A ready onboarding kit written for one-person studios ASSUMPTION",
     "solution": "Checklist, intake questionnaire and welcome message templates (source: phase1_step4_idea_card)",
