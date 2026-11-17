@@ -18,10 +18,10 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 |---|---|
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
-| Phase 1 to 6 agents (one file and one prompt each) | Working offline with MockLLM (outputs labeled MOCKED); first real-model run in progress |
-| Search and fetch (free public sources, cached) and claim re-checking | Working (code); first real-model run in progress |
+| Phase 1 to 6 agents (one file and one prompt each) | Working offline with MockLLM (outputs labeled MOCKED). Real-model runs: Phases 2 and 3 checked; the full real run is the committed demo run |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
-| Founder website (Phase 3 build, Phase 5 store version, website checks in Gate 3) | In progress |
+| Founder website (Phase 3 build from a template, Phase 5 store version with price and policies, website checks in Gates 3 and 5) | Working (never published by the system; the founder publishes it) |
 | Preview website and Download site folder buttons (local only; the system never publishes) | Working |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
@@ -35,7 +35,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 ## Models and free resources
 
 - Default model: `qwen3:8b` (open weights) served locally by Ollama, pulled and started by `docker compose up`.
-- Optional: `gpt-oss:20b` (set `LLM_MODEL=gpt-oss:20b` in `.env`), or any free OpenAI-compatible endpoint via `LLM_BASE_URL`.
+- Optional: any free OpenAI-compatible endpoint via `LLM_BASE_URL`, `LLM_MODEL` and `LLM_API_KEY` in `.env` (for example GPT-OSS on a free tier). The key stays in the untracked `.env`.
 - Web evidence comes from free public search and pages, cached on disk.
 - No paid API, key or account is needed.
 

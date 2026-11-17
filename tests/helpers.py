@@ -15,6 +15,12 @@ DECISION_KEYS = ("timestamp", "agent", "action", "sources", "model", "cost", "ap
 def make_ctx(tmp_path: Path, brief: str = "SAMPLE brief: a Notion template pack for freelance designers.",
              founder_inputs: Path | dict | None = None):
     """Offline Context: MockLLM, mocked tools, scripted founder."""
+    if founder_inputs is None:
+        # gate mechanics tests: the demo answers, but every gate verdict approved as recommended
+        # (the demo file's founder override of Gate 1 is tested on its own)
+        founder_inputs = json.loads(DEMO_INPUTS.read_text(encoding="utf-8"))
+        founder_inputs["approvals"] = {"default": "approve"}
+        founder_inputs = {k: v for k, v in founder_inputs.items() if not k.startswith(("gate_override_", "_gate_"))}
     if isinstance(founder_inputs, dict):
         tmp_path.mkdir(parents=True, exist_ok=True)
         p = tmp_path / "founder_inputs.json"

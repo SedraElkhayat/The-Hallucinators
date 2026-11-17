@@ -23,3 +23,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - Only claims with `verified: true` count as evidence; unverified claims and missing artifacts lower the score.
 - Do not raise a score because the idea sounds appealing. No praise.
 - Alternatives without any evidence score low and say "no evidence".
+- Keep it short: at most 4 entries in `ranked` (the founder's idea plus up to 3 alternatives), exactly 4 reasons each, each reason at most 12 words. Write compact JSON without indentation.
+- Set `is_founder_idea: true` on the founder's own idea.

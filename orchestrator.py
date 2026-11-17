@@ -123,7 +123,22 @@ def founder_gate(ctx: Context, phase: int, res: gates.GateResult) -> str:
         choice = "stop"
     ctx.log.action("founder", f"gate_override_{phase}", approved_by="founder", outcome=choice,
                    system_outcome=res.outcome)
+    write_override(ctx, phase, res, choice)
     return choice
+
+
+def write_override(ctx: Context, phase: int, res: gates.GateResult, choice: str) -> None:
+    """Make a founder override visible next to the gate decision it overrides."""
+    path = ctx.out_dir / f"phase{phase}_gate_founder_override.md"
+    md = [f"# Gate {phase}: founder override", "",
+          f"The system recommended **{res.outcome.upper()}**. The founder rejected that verdict and chose "
+          f"**{choice.upper()}** (logged as `gate_override_{phase}`, `approved_by: founder`, "
+          f"`system_outcome: {res.outcome}` in decision_log.json)."
+          + (" This is the same as the system's verdict, so nothing changed." if choice == res.outcome else ""), "",
+          f"The system's verdict and its checks are unchanged in `phase{phase}_gate_decision.md`.", "",
+          "Reasons the system gave:"] + ([f"- {r}" for r in res.reasons] or ["- (none)"]) + [""]
+    prev = path.read_text(encoding="utf-8") + "\n---\n\n" if path.exists() else ""
+    path.write_text(prev + "\n".join(md), encoding="utf-8")
 
 
 def final_report(ctx: Context, phase: int, outcome: str, history: list) -> None:
@@ -133,6 +148,11 @@ def final_report(ctx: Context, phase: int, outcome: str, history: list) -> None:
           f"Mode: {'MOCKED (MockLLM, offline)' if ctx.mock else 'real model'}", "",
           "| Phase | Attempt | Outcome |", "|---|---|---|"]
     md += [f"| {p} | {a} | {o} |" for p, a, o in history]
+    overrides = [e for e in ctx.log.entries() if str(e.get("action", "")).startswith("gate_override_")]
+    if overrides:
+        md += ["", "Founder overrides (the founder rejected the system's gate verdict):", ""]
+        md += [f"- Gate {e['action'].rsplit('_', 1)[-1]}: system {str(e.get('system_outcome')).upper()}, "
+               f"founder chose {str(e.get('outcome')).upper()}" for e in overrides]
     md += ["", f"Model calls: {t['calls']}, tokens in {run_tokens['tokens_in']}, out {run_tokens['tokens_out']}, "
                f"cost per run ${run_cost:.4f}", ""]
     (ctx.out_dir / f"phase{phase}_gate_final_report.md").write_text("\n".join(md), encoding="utf-8")
@@ -154,6 +174,9 @@ def run(ctx: Context, through: int = 6, start: int = 1) -> dict:
             outcome = "stop"
             break
         ctx.extra.pop("halt_phase", None)
+        # fresh tool budget per gate attempt: a REPEAT round must be able to search again
+        if hasattr(ctx.tools, "reset_budget"):
+            ctx.tools.reset_budget(f"phase {phase} attempt {attempt}")
         gates.preregister(ctx, phase, mod.gate_checks(ctx))
         if not mod.STAGES:
             ctx.log.action("orchestrator", "phase_stubbed", phase=phase, note="STUBBED: no agents yet")
