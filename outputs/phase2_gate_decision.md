@@ -3,7 +3,7 @@
 System recommendation: STOP: the evidence does not support continuing.
 The founder approves or overrides this recommendation; an override is logged.
 
-Attempt: 1 (max repeats 1)
+Attempt: 0 (max repeats 1)
 Criteria hash (sha256, pre-registered before the phase ran): `165f57378decdfe98ec3e2970449f9a9fee128872f6db0cf3f56fc03abf53548`
 
 ## Checks
@@ -17,20 +17,21 @@ Criteria hash (sha256, pre-registered before the phase ran): `165f57378decdfe98e
 | `demand_ratio_above_0_2` | `demand_ratio` | >= 0.2 | 1.4 | PASS | stop |
 | `demand_ratio_above_0_5` | `demand_ratio` | >= 0.5 | 1.4 | PASS | pivot |
 | `demand_ratio_reaches_target` | `demand_ratio` | >= 1 | 1.4 | PASS | repeat |
-| `no_kill_criterion` | `kill_triggered` | == 0 | 0 | PASS | stop |
-| `no_open_must_fix` | `open_must_fix` | == 0 | 1 | FAIL | repeat |
+| `no_kill_criterion` | `kill_triggered` | == 0 | 1 | FAIL | stop |
+| `no_open_must_fix` | `open_must_fix` | == 0 | 2 | FAIL | repeat |
 
 ## Reasons
 
-- no_open_must_fix: open_must_fix=1 fails == 0 -> repeat
-- repeat budget exhausted (attempt 1, max repeats 1) -> stop
+- no_kill_criterion: kill_triggered=1 fails == 0 -> stop
+- no_open_must_fix: open_must_fix=2 fails == 0 -> repeat
 
 ## What would change this verdict
 
-- `open_must_fix` would need to be == 0 (it is 1) to clear `no_open_must_fix`.
-- Evidence that interviewees are willing to pay for a bilingual template pack. (from `phase2_step7_risks`)
-- Clear data on the market size for freelance designers in Egypt and the MENA region. (from `phase2_step7_risks`)
-- Competitors offering similar tools with worse positioning or pricing. (from `phase2_step7_risks`)
+- `kill_triggered` would need to be == 0 (it is 1) to clear `no_kill_criterion`.
+- `open_must_fix` would need to be == 0 (it is 2) to clear `no_open_must_fix`.
+- Evidence that freelance designers are willing to pay USD 100 for a bilingual template pack. (from `phase2_step7_risks`)
+- Evidence that the founder can build the template pack effectively and efficiently. (from `phase2_step7_risks`)
+- Evidence that the market demand for a paid solution is clear and substantial. (from `phase2_step7_risks`)
 
 ## Metrics (computed in code from the artifacts)
 
@@ -41,7 +42,7 @@ Criteria hash (sha256, pre-registered before the phase ran): `165f57378decdfe98e
   "any_weak_dimension": 0,
   "unknown_count": 1,
   "demand_ratio": 1.4,
-  "kill_triggered": 0,
-  "open_must_fix": 1
+  "kill_triggered": 1,
+  "open_must_fix": 2
 }
 ```

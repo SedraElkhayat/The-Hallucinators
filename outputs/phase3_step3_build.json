@@ -1,40 +1,40 @@
 {
-  "headline": "Track projects, invoices, and revisions with ease",
-  "value_proposition": "A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no client data collection.",
+  "headline": "Track projects, invoices, and revisions effortlessly",
+  "value_proposition": "Bilingual Arabic and English, built for local freelancing habits, with no subscriptions that lock users in and no collection of client data.",
   "cta": "Join the waitlist",
   "features": [
-    "Track client projects, invoices, and revision rounds using Notion and Google Sheets",
-    "Bilingual support for Arabic and English to work with local and international clients",
-    "No subscriptions, no client data collection, and no user accounts",
-    "Simple templates for easy use without complex setup",
-    "Helps manage multiple clients without stress"
+    "Track client projects with organized templates",
+    "Manage invoices sent and revision rounds in one place",
+    "Built for local freelancing habits in Arabic and English",
+    "No subscriptions, no client data collected",
+    "Simple and easy to use for multiple clients"
   ],
   "faq": [
     {
       "q": "What is included in the template pack?",
-      "a": "The template pack includes Notion and Google Sheets templates for tracking client projects, invoices sent, and revision rounds."
+      "a": "The template pack includes Notion and Google Sheets templates to help you track client projects, invoices sent, and revision rounds."
     },
     {
-      "q": "Can I use the templates in Arabic and English?",
-      "a": "Yes, the templates are bilingual and support both Arabic and English for seamless use with local and international clients."
+      "q": "What file formats are available?",
+      "a": "The templates are available in Notion and Google Sheets formats for easy use and customization."
+    },
+    {
+      "q": "Can I use the templates in both Arabic and English?",
+      "a": "Yes, the templates are bilingual and support both Arabic and English for local freelancing needs."
     },
     {
       "q": "Does the product collect client data?",
-      "a": "No, the product does not collect any client data. It is designed to help you manage your projects without storing sensitive information."
+      "a": "No, the product does not collect client data, ensuring your privacy and security."
     },
     {
-      "q": "Are there any subscriptions involved?",
-      "a": "No, there are no subscriptions. The template pack is a one-time purchase with no recurring fees."
-    },
-    {
-      "q": "What file formats are the templates available in?",
-      "a": "The templates are available in Notion and Google Sheets formats for easy access and use."
+      "q": "What does the product not do?",
+      "a": "The product does not include payment integration, user accounts, or dynamic content. It is a static template pack for tracking and organizing client information."
     }
   ],
   "claims": [
     {
-      "claim": "Notion Freelance Templates are designed for independent professionals, including freelancers, with tools for project proposals, client management, invoice tracking, and time management.",
-      "source_url": "https://www.notion.com/templates/category/freelance",
+      "claim": "Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+      "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
       "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
       "verified": true,
       "supported_by_quote": true,
@@ -42,18 +42,9 @@
       "shown_as": "fact"
     },
     {
-      "claim": "Notion Project Management Templates include options for solo users, freelancers with clients, and Agile teams.",
-      "source_url": "https://sync2sheets.com/blog/notion-project-management-templates/",
-      "quote": "Solo users do well with Project Tracker or Minimalist Project Manager, freelancers with clients suit Projects Manager, and Agile teams should...",
-      "verified": true,
-      "supported_by_quote": true,
-      "assumption": false,
-      "shown_as": "fact"
-    },
-    {
-      "claim": "The global graphic design market reached $55.1 billion in 2025.",
-      "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
-      "quote": "The global graphic design market reached $55.1 billion in 2025",
+      "claim": "Sync2Sheets offers a 7-day free trial for real-time 2-way sync between Notion databases and Google Sheets.",
+      "source_url": "https://www.notion.com/connections/sync2sheets",
+      "quote": "install Sync2Sheets in Google Sheets (7-day free trial, no credit card), connect your Notion workspace, and pick the databases you want to sync.",
       "verified": true,
       "supported_by_quote": true,
       "assumption": false,
@@ -65,20 +56,19 @@
   "files": [
     {
       "path": "index.html",
-      "chars": 6007
+      "chars": 5654
     }
   ],
   "dropped": [],
-  "claims_shown_as_fact": 3,
+  "claims_shown_as_fact": 2,
   "claims_shown_as_assumption": 0,
   "publish_guide": "phase3_step7_publish_guide",
   "deployed": false,
   "_meta": {
     "agent": "builder",
     "sources": [
-      "https://www.notion.com/templates/category/freelance",
-      "https://sync2sheets.com/blog/notion-project-management-templates/",
-      "https://www.einvoicegenerator.com/blog/graphic-design-statistics"
+      "https://www.notion.com/templates/category/free-freelance-templates",
+      "https://www.notion.com/connections/sync2sheets"
     ]
   }
 }

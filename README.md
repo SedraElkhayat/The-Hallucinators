@@ -46,7 +46,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Cost per run
 
-About $0.00 per run (local `qwen3:8b`, no paid API). The committed strong-brief run used 92 model calls and about 256k tokens (222k in, 33k out) and took about 5.5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 24 calls and about 53k tokens. Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`.
+**$0.00 per run** (local open-weight `qwen3:8b` via Ollama, free self-hosted SearXNG search, no paid API). Measured in the committed demo run (`decision_log.json`): strong brief, all six phases, 255,345 tokens in and 37,806 out; weak brief (stopped at Gate 1), 105,062 tokens in and 14,696 out. About 5 minutes for the strong brief on an RTX 5080 (16 GB); a CPU-only machine is much slower.
 
 ## Demo video
 

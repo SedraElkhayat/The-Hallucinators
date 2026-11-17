@@ -14,61 +14,30 @@
 ```json
 [
   {
-    "claim": "90% of graphic designers choose the freelance path.",
-    "source_url": "https://artaux.substack.com/p/90-of-graphic-designers-freelance",
-    "quote": "Explore the thriving world of graphic design, where 90% of designers choose the freelance path.",
-    "verified": true,
-    "assumption": false,
-    "check": "quote found on the source page",
-    "topic_terms": [
-      "desig",
-      "freel",
-      "graph"
-    ]
-  },
-  {
-    "claim": "The global graphic design market reached $55.1 billion in 2025.",
-    "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
-    "quote": "The global graphic design market reached $55.1 billion in 2025",
-    "verified": true,
-    "assumption": false,
-    "check": "quote found on the source page",
-    "topic_terms": [
-      "desig",
-      "graph"
-    ]
-  },
-  {
-    "claim": "49% of graphic designers work as freelancers.",
-    "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
-    "quote": "49% of graphic designers work as freelancers — making this one of the most freelance-heavy professions",
-    "verified": true,
-    "assumption": false,
-    "check": "quote found on the source page",
-    "topic_terms": [
-      "desig",
-      "freel",
-      "graph"
-    ]
-  },
-  {
-    "claim": "75% of designers now use AI tools in their workflow.",
-    "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
-    "quote": "75% of designers now use AI tools in their workflow, up from 35% in 2023",
+    "claim": "Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.",
+    "source_url": "https://news.ycombinator.com/item?id=33077397",
+    "quote": "most of my clients couldn't distinguish a good design from a better one! I interviewed my clients, and 90% of them told me the only way they could identify a designer professional or not wasn't by their work but by their project management and communication abilities.",
     "verified": false,
     "assumption": true,
-    "check": "off-topic: the quote is on the page but does not mention this idea's customer, problem or product"
+    "check": "unsupported: the quote is on the page but does not say this (the quote shares 3 of 12 keywords with the claim)",
+    "topic_terms": [
+      "clien",
+      "desig",
+      "proje"
+    ]
   },
   {
-    "claim": "Freelance graphic designers in the U.S. have a median annual wage of $61,300.",
-    "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
-    "quote": "Median graphic designer salary: $61,300 per year (BLS, May 2024)",
-    "verified": true,
-    "assumption": false,
-    "check": "quote found on the source page",
+    "claim": "Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
+    "source_url": "https://news.ycombinator.com/item?id=33077397",
+    "quote": "It would help many freelance designers if I built a project management tool specifically for them! Freelance designers usually spend at least five meetings to confirm a design direction; we automate the process through survey templates.",
+    "verified": false,
+    "assumption": true,
+    "check": "quote does not state the claim (model support check)",
     "topic_terms": [
       "desig",
-      "graph"
+      "freel",
+      "proje",
+      "templ"
     ]
   }
 ]
@@ -76,8 +45,8 @@
 
 ## insufficient_evidence
 
-False
+True
 
 ## verified_claim_count
 
-4
+0

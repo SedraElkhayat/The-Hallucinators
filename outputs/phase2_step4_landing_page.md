@@ -2,7 +2,7 @@
 
 ## headline
 
-Track projects, invoices, and revisions with ease
+Track projects, invoices, and revisions effortlessly
 
 ## subheadline
 
@@ -12,11 +12,11 @@ A bilingual template pack for freelance designers in Egypt and the MENA region
 
 ```json
 [
-  "Track client projects, invoices, and revision rounds in one place",
-  "Built for local freelancing habits with Arabic and English support",
-  "No subscriptions, no client data collection",
-  "Simple Notion and Google Sheets templates for easy use",
-  "Helps manage multiple clients without stress"
+  "Track client projects with organized templates",
+  "Manage invoices sent and revision rounds in one place",
+  "Built for local freelancing habits in Arabic and English",
+  "No subscriptions, no client data collected",
+  "Simple and easy to use for multiple clients"
 ]
 ```
 

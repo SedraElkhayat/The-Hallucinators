@@ -8,7 +8,7 @@
     "name": "Basic Template Pack",
     "price_usd": null,
     "includes": [
-      "Digital template pack for tracking client projects, invoices sent, and revision rounds using Notion and Google Sheets"
+      "Digital template pack for project tracking, invoice management, and revision rounds in Notion and Google Sheets"
     ]
   }
 ]
@@ -16,4 +16,4 @@
 
 ## positioning
 
-A digital template pack for freelance graphic designers in Egypt and the MENA region, helping them track client projects, invoices, and revision rounds using Notion and Google Sheets.
+For freelance graphic designers in Egypt and the MENA region, this pack helps manage client projects, invoices, and revisions efficiently.

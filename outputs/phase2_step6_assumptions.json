@@ -2,54 +2,62 @@
   "assumptions": [
     {
       "id": "A1",
-      "text": "Freelance graphic designers in Egypt and the MENA region need a way to track client projects, invoices sent, and revision rounds.",
-      "source": "phase1_step9_discover_report",
+      "text": "Freelance graphic designers in Egypt and the MENA region will pay USD 100 for a digital template pack that helps them track client projects, invoices sent, and revision rounds.",
+      "source": "phase2_step3_demand_test_plan",
       "tested": false,
-      "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their current workflow and whether they need a tool for tracking.",
+      "cheapest_test": "Create a landing page with a call-to-action to purchase the template pack and track the number of sign-ups or pre-orders within a week.",
       "impact": "high"
     },
     {
       "id": "A2",
-      "text": "There is no clear evidence of willingness to pay for a bilingual template pack priced at USD 100.",
-      "source": "phase1_step9_discover_report",
+      "text": "Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
+      "source": "phase1_step4_idea_card",
       "tested": false,
-      "cheapest_test": "Create a landing page with a one-time purchase link and track how many clicks and sign-ups occur within a week.",
+      "cheapest_test": "Offer a free version of the template pack to a small group of designers and ask them to provide feedback on its usefulness within a week.",
       "impact": "high"
     },
     {
       "id": "A3",
-      "text": "A custom Notion Templates - Upwork is priced at USD 100.",
-      "source": "phase2_step1_competitor_analysis",
+      "text": "Freelance graphic designers in Egypt and the MENA region will prefer a bilingual (Arabic and English) template pack over a single-language one.",
+      "source": "phase1_step4_idea_card",
       "tested": false,
-      "cheapest_test": "Search for pricing information on Upwork and verify the price of a custom Notion Templates.",
+      "cheapest_test": "Create two versions of the template pack—one in Arabic and one in English—and ask a sample of designers to rate their preference for each version.",
       "impact": "medium"
     },
     {
       "id": "A4",
-      "text": "Sync2Sheets offers a 7-day free trial with no credit card required.",
-      "source": "phase2_step1_competitor_analysis",
+      "text": "Freelance graphic designers in Egypt and the MENA region will not collect client data through the template pack.",
+      "source": "phase1_step4_idea_card",
       "tested": false,
-      "cheapest_test": "Visit the Sync2Sheets website and check the pricing and trial options.",
+      "cheapest_test": "Include a privacy policy in the template pack and ask a sample of designers to confirm they understand and agree with the privacy policy.",
       "impact": "medium"
     },
     {
       "id": "A5",
-      "text": "Freelance graphic designers in Egypt and the MENA region will prefer a bilingual (Arabic and English) template pack over one that is only in English.",
-      "source": "phase1_step4_idea_card",
+      "text": "The founder has the skills to build a bilingual template pack using Notion and Google Sheets.",
+      "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Create two versions of the template pack—one in Arabic and one in English—and ask 10 freelance designers in Egypt and the MENA region to choose their preferred version.",
-      "impact": "medium"
+      "cheapest_test": "Ask a sample of designers to review the template pack and provide feedback on its usability and functionality.",
+      "impact": "high"
     },
     {
       "id": "A6",
-      "text": "Freelance graphic designers in Egypt and the MENA region will not collect client data when using the template pack.",
-      "source": "phase1_step4_idea_card",
+      "text": "The budget of USD 100 is sufficient for initial development and testing.",
+      "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their data privacy concerns and whether they would use a template pack that does not collect client data.",
-      "impact": "medium"
+      "cheapest_test": "Track the actual costs of development and testing and compare them to the budget.",
+      "impact": "high"
+    },
+    {
+      "id": "A7",
+      "text": "Competitors offer free or low-cost alternatives that may undermine the value proposition of the paid template pack.",
+      "source": "phase1_step9_discover_report",
+      "tested": false,
+      "cheapest_test": "Compare the features and pricing of free or low-cost alternatives to the paid template pack.",
+      "impact": "high"
     }
   ],
-  "untested_high_impact_count": 2,
+  "untested_high_impact_count": 5,
   "_meta": {
     "agent": "assumption_auditor",
     "sources": []

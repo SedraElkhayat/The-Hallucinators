@@ -2,11 +2,11 @@
 
 ## title
 
-Track Projects, Invoices, and Revisions with Ease
+Freelance Designer Template Pack
 
 ## description
 
-A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no client data collection.
+A bilingual digital template pack for freelance graphic designers in Egypt and the MENA region, designed to help manage client projects, invoices, and revisions efficiently.
 
 ## price_usd
 
@@ -16,11 +16,10 @@ None
 
 ```json
 [
-  "Track client projects, invoices, and revision rounds using Notion and Google Sheets",
-  "Bilingual support for Arabic and English to work with local and international clients",
-  "No subscriptions, no client data collection, and no user accounts",
-  "Simple templates for easy use without complex setup",
-  "Helps manage multiple clients without stress"
+  "Digital template pack for project tracking, invoice management, and revision rounds in Notion and Google Sheets",
+  "Built for local freelancing habits in Arabic and English",
+  "No subscriptions, no client data collected",
+  "Simple and easy to use for multiple clients"
 ]
 ```
 
@@ -33,7 +32,6 @@ None
   "files": [
     "index.html",
     "policies/privacy-policy.html",
-    "policies/refund-policy.html",
     "policies/terms-of-service.html"
   ],
   "site_checks": {

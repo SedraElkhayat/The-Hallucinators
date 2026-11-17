@@ -1,38 +1,31 @@
 {
   "issues": [
     {
+      "severity": "should_fix",
+      "text": "The demand results are MOCKED, but the report presents them as real behavior evidence.",
+      "downgraded_by_code": "rule applied in code: the report states that the demand data is MOCKED in its summary and limitations"
+    },
+    {
       "severity": "must_fix",
-      "text": "The demand test ratio of 1.4 is labeled as MOCKED, but the report presents it as potential interest without real visitor data, which is misleading."
+      "text": "The kill criterion for no clear demand is triggered, but the evidence is not specific."
     },
     {
       "severity": "should_fix",
-      "text": "The scorecard rates demand as adequate, but the provenance is MOCKED, making it invalid evidence.",
+      "text": "The founder's assumption about pricing lacks evidence, as no interviewees committed to purchasing.",
+      "downgraded_by_code": "rule applied in code: a finding without a cited claim is flagged assumption=true by code, so an assumption is not presented as a claim"
+    },
+    {
+      "severity": "must_fix",
+      "text": "The market demand for a paid bilingual template pack is unclear, as no clear demand signals were found in the interviews."
+    },
+    {
+      "severity": "should_fix",
+      "text": "The report claims the scorecard rates demand as adequate, but the evidence is MOCKED.",
       "downgraded_by_code": "rule applied in code: a demand result that is not REAL caps demand_evidence at adequate"
     },
     {
       "severity": "should_fix",
-      "text": "The report claims the founder's assumption about pricing is unsupported, but it does not cite the relevant phase2_step7_risks or phase2_step5_demand_results.",
-      "downgraded_by_code": "rule applied in code: the artifact named in the issue is cited in the report"
-    },
-    {
-      "severity": "should_fix",
-      "text": "The market size for freelance designers in Egypt and the MENA region is stated as unknown, but this is an assumption without any cited evidence.",
-      "downgraded_by_code": "rule applied in code: a finding without a cited claim is flagged assumption=true by code, so an assumption is not presented as a claim"
-    },
-    {
-      "severity": "should_fix",
-      "text": "The report claims competitors like Notion Freelance Templates and Sync2Sheets exist, but it does not cite the relevant phase2_step1_competitor_analysis.",
-      "downgraded_by_code": "rule applied in code: the artifact named in the issue is cited in the report"
-    },
-    {
-      "severity": "should_fix",
-      "text": "The report states the assumption about bilingual preference is untested, but it does not cite the relevant phase2_step7_risks or phase2_step5_demand_results.",
-      "downgraded_by_code": "rule applied in code: the artifact named in the issue is cited in the report"
-    },
-    {
-      "severity": "should_fix",
-      "text": "The report mentions the founder's assumption about pricing is not supported, but it does not cite the relevant phase2_step7_risks or phase2_step5_demand_results.",
-      "downgraded_by_code": "rule applied in code: the artifact named in the issue is cited in the report"
+      "text": "The report mentions MOCKED demand results but does not clearly state that they are not real visitors."
     }
   ],
   "verdict": "revise",

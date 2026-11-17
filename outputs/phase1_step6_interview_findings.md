@@ -6,13 +6,13 @@ These notes are SAMPLE input for a demo run, not real interviews.
 
 ## Findings
 
-The interview notes show that freelance graphic designers in Egypt and the MENA region struggle with tracking client projects, invoices, and revisions. They have tried tools like WhatsApp, notebooks, and Trello but are not satisfied with their current solutions. There is no clear indication of willingness to pay for a template pack, but some interviewees have expressed interest in bilingual options. No commitment signals were observed.
+The interview notes show that freelance graphic designers in Egypt and the MENA region struggle with tracking client projects, invoices, and revisions. They have tried tools like WhatsApp chats, notebooks, and Trello, but these are not effective. There is no clear demand for a paid solution yet, but some interviewees have expressed interest in using a bilingual tool. No commitment signals were observed.
 
 ## pain_points
 
 - {"text": "Lost one unpaid invoice last month.", "interviewee": "A"}
 - {"text": "Stopped updating it after two weeks.", "interviewee": "B"}
-- {"text": "Have never paid for a template.", "interviewee": "C"}
+- {"text": "Struggle to track client projects, invoices sent, and revision rounds.", "interviewee": "C"}
 
 ## current_solutions
 

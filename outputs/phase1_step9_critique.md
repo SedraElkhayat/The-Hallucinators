@@ -6,33 +6,21 @@
 [
   {
     "severity": "must_fix",
-    "text": "The finding '90% of graphic designers choose the freelance path.' cites claim_id C2, which is verified. However, the report mentions '90% of graphic designers choose the freelance path' without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The finding 'The global graphic design market reached $55.1 billion in 2025.' cites claim_id C3, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The finding '49% of graphic designers work as freelancers.' cites claim_id C4, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The finding 'Freelance graphic designers in the U.S. have a median annual wage of $61,300.' cites claim_id C6, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The report states 'There is insufficient evidence to confirm demand for a bilingual template pack priced at USD 100.' However, the skeptic risk explicitly mentions that 'The founder's assumption that freelance designers will pay USD 100 for a template pack is not supported by evidence, as no interviewees have shown willingness to pay.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue."
+    "text": "The finding 'Freelancer estimate templates in Google Sheets are free, customizable, and printable for a polished, professional look.' cites claim C9, which is verified. However, the report does not clarify how this supports the market demand for a paid solution, which is a key point."
   },
   {
     "severity": "should_fix",
-    "text": "The report states 'The market size for freelance designers in the region is unknown.' However, the skeptic risk explicitly mentions that 'The market size for freelance designers in Egypt and the MENA region is unknown, which limits the ability to validate the opportunity.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue.",
-    "downgraded_in_code": "kill criterion was not triggered"
+    "text": "The report states that 'the founder's ability to build the product is not supported by verified claims.' This is a high-severity risk from phase1_step8_skeptic, but it is not explicitly addressed in the report, which needs to revise this point.",
+    "downgraded_in_code": "the risk it names is in the report"
   },
   {
     "severity": "should_fix",
-    "text": "The report states 'Competitors like Notion Freelance Templates and Sync2Sheets already offer similar tools.' However, the skeptic risk explicitly mentions that 'Competitors offer similar tools with better positioning or pricing.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue.",
-    "downgraded_in_code": "kill criterion was not triggered"
+    "text": "The report mentions that 'the market demand for a paid solution remains unclear,' but it does not cite any verified claims to support this. This is a high-severity risk that needs to be addressed.",
+    "downgraded_in_code": "the risk it names is in the report"
+  },
+  {
+    "severity": "should_fix",
+    "text": "The report could improve clarity by explicitly linking the findings to the verified claims and addressing the skeptic risks more directly."
   }
 ]
 ```

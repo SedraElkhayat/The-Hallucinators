@@ -13,17 +13,17 @@ None
 ```json
 [
   {
-    "claim": "Notion Freelance Templates are designed for independent professionals, including freelancers, with tools for project proposals, client management, invoice tracking, and time management.",
-    "source_url": "https://www.notion.com/templates/category/freelance",
+    "claim": "Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
     "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page"
   },
   {
-    "claim": "Notion Project Management Templates include options for solo users, freelancers with clients, and Agile teams.",
-    "source_url": "https://sync2sheets.com/blog/notion-project-management-templates/",
-    "quote": "Solo users do well with Project Tracker or Minimalist Project Manager, freelancers with clients suit Projects Manager, and Agile teams should...",
+    "claim": "Sync2Sheets offers a 7-day free trial for real-time 2-way sync between Notion databases and Google Sheets.",
+    "source_url": "https://www.notion.com/connections/sync2sheets",
+    "quote": "install Sync2Sheets in Google Sheets (7-day free trial, no credit card), connect your Notion workspace, and pick the databases you want to sync.",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page"
@@ -37,7 +37,7 @@ True
 
 ## rationale
 
-ASSUMPTION: No verified comparable claims state a price. The pricing gap claims are assumptions, and there is no basis for a price.
+ASSUMPTION: No verified comparable claims state a price, and the market demand for a paid bilingual template pack remains unclear.
 
 ## note
 
