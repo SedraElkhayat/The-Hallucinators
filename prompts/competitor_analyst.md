@@ -22,24 +22,47 @@ JSON object with exactly these keys:
 - `claim_refs`: list of `{"claim": str, "source_url": str}` copied exactly from Phase 1 claims you used.
 - `insufficient_evidence`: true when fewer than two verified Phase 1 claims support the analysis.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "positioning": [{"competitor": "Example Kit A", "position": "Sells a general onboarding template bundle for agencies (claim: Example Kit A sells templates for agencies)"}],
-  "pricing_gaps": ["No rival in the evidence offers a low-cost kit aimed at solo designers (from claim: Example Kit A costs $49) ASSUMPTION"],
+  "positioning": [
+    {
+      "competitor": "<competitor name from a Phase 1 claim>",
+      "position": "<how it positions itself> (claim: <claim text>)"
+    }
+  ],
+  "pricing_gaps": [
+    "<gap in what rivals charge or offer> (claim: <claim text>) or ... ASSUMPTION"
+  ],
   "five_forces": {
-    "rivalry": {"level": "medium", "reason": "Two rivals found in the verified claims"},
-    "new_entrants": {"level": "high", "reason": "Templates are easy to copy ASSUMPTION"},
-    "substitutes": {"level": "high", "reason": "Free blog checklists exist (claim: free checklists are common)"},
-    "buyer_power": {"level": "medium", "reason": "unknown ASSUMPTION"},
-    "supplier_power": {"level": "low", "reason": "No suppliers needed ASSUMPTION"}
+    "rivalry": {
+      "level": "<low|medium|high|unknown>",
+      "reason": "<reason citing a claim, or ... ASSUMPTION>"
+    },
+    "new_entrants": {
+      "level": "<low|medium|high|unknown>",
+      "reason": "<reason citing a claim, or ... ASSUMPTION>"
+    },
+    "substitutes": {
+      "level": "<low|medium|high|unknown>",
+      "reason": "<reason citing a claim, or ... ASSUMPTION>"
+    },
+    "buyer_power": {
+      "level": "<low|medium|high|unknown>",
+      "reason": "<reason citing a claim, or ... ASSUMPTION>"
+    },
+    "supplier_power": {
+      "level": "<low|medium|high|unknown>",
+      "reason": "<reason citing a claim, or ... ASSUMPTION>"
+    }
   },
-  "differentiation_possible": "unknown",
-  "differentiation_reason": "The evidence shows rivals for agencies but says nothing about solo designers ASSUMPTION",
+  "differentiation_possible": "<yes|no|unknown>",
+  "differentiation_reason": "<reason citing a claim, or ... ASSUMPTION>",
   "claim_refs": [
-    {"claim": "Example Kit A sells templates for agencies", "source_url": "https://example.com/mock/1"},
-    {"claim": "Example Kit A costs $49", "source_url": "https://example.com/mock/1"},
-    {"claim": "free checklists are common", "source_url": "https://example.com/mock/2"}
+    {
+      "claim": "<exact claim text from Phase 1>",
+      "source_url": "<its exact source_url>"
+    }
   ],
   "insufficient_evidence": false
 }

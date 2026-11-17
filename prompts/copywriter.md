@@ -18,16 +18,20 @@ JSON object with exactly these keys:
 - `faq`: list of `{"q": str, "a": str}`.
 - `cta`: string.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "headline": "Client onboarding templates for solo designers",
-  "features": ["Step-by-step onboarding checklist (Markdown)", "Intake questionnaire to send before the first call"],
-  "faq": [
-    {"q": "What file formats are included?", "a": "Markdown and HTML files you can open in any text editor or browser."},
-    {"q": "Does the kit send emails for me?", "a": "No. You copy the templates and send them yourself."}
+  "headline": "<tested landing headline>",
+  "features": [
+    "<feature that exists in the MVP scope>"
   ],
-  "cta": "Join the waitlist"
+  "faq": [
+    {
+      "q": "<practical question>",
+      "a": "<honest answer>"
+    }
+  ],
+  "cta": "<join-the-waitlist wording>"
 }
 ```
 

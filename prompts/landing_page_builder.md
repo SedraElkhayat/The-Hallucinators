@@ -18,13 +18,17 @@ JSON object with exactly these keys:
 - `bullets`: list of 3 to 5 strings, each describing what the product does.
 - `call_to_action`: string, at most 6 words, about joining the waitlist.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "headline": "Client onboarding templates for solo designers",
-  "subheadline": "A checklist, an intake questionnaire and a welcome message you can adapt for each new client.",
-  "bullets": ["A step-by-step onboarding checklist", "An intake questionnaire to send before the first call", "A welcome message template you can edit"],
-  "call_to_action": "Join the waitlist"
+  "headline": "<what the product is, for whom>",
+  "subheadline": "<what it contains or does>",
+  "bullets": [
+    "<what the product does 1>",
+    "<what the product does 2>",
+    "<what the product does 3>"
+  ],
+  "call_to_action": "<join-the-waitlist wording>"
 }
 ```
 

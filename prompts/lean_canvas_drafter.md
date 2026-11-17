@@ -17,19 +17,19 @@ Write one short statement (at most 3 sentences) for each of the nine boxes. Each
 ## Output
 JSON object with one key `boxes`, holding exactly these nine string keys: `customer_segments`, `problem`, `unique_value_proposition`, `solution`, `channels`, `revenue_streams`, `cost_structure`, `key_metrics`, `unfair_advantage`.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "boxes": {
-    "customer_segments": "Solo freelance designers who take on new clients regularly (source: phase1_step4_idea_card)",
-    "problem": "Onboarding new clients is repeated by hand each time (source: phase1_step6_interview_findings)",
-    "unique_value_proposition": "A ready onboarding kit written for one-person studios ASSUMPTION",
-    "solution": "Checklist, intake questionnaire and welcome message templates (source: phase1_step4_idea_card)",
-    "channels": "Design communities and the founder's newsletter ASSUMPTION",
-    "revenue_streams": "Intended model: one-time purchase of the kit; no payment is taken in this phase ASSUMPTION",
-    "cost_structure": "Founder time to write and update templates (source: phase1_step6_feasibility)",
-    "key_metrics": "Waitlist sign-ups during the demand test ASSUMPTION",
-    "unfair_advantage": "unknown ASSUMPTION"
+    "customer_segments": "<customer segments> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "problem": "<problem> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "unique_value_proposition": "<unique value proposition> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "solution": "<solution> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "channels": "<channels> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "revenue_streams": "<revenue streams> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "cost_structure": "<cost structure> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "key_metrics": "<key metrics> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
+    "unfair_advantage": "<unfair advantage> (source: <artifact stem or URL>) or <statement> ASSUMPTION"
   }
 }
 ```

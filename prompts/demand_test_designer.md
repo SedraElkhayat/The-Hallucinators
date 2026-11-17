@@ -20,15 +20,17 @@ JSON object with exactly these keys:
 - `traffic_sources`: list of strings taken from the canvas `channels` box.
 - `reading_rule`: string that states how the result maps to a decision: ratio = sign-ups / target; at least 1.0 go, 0.5 to 1.0 repeat, 0.2 to 0.5 pivot, below 0.2 stop.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "hypothesis": "At least 100 solo designers will join a waitlist for an onboarding kit within 14 days",
+  "hypothesis": "<riskiest canvas assumption as a testable statement>",
   "metric": "waitlist_signups",
   "target": 100,
   "window_days": 14,
-  "traffic_sources": ["Design communities", "Founder's newsletter"],
-  "reading_rule": "ratio = sign-ups / 100. ratio >= 1.0 go; 0.5 to 1.0 repeat; 0.2 to 0.5 pivot; below 0.2 stop."
+  "traffic_sources": [
+    "<channel from the canvas>"
+  ],
+  "reading_rule": "ratio = sign-ups / <target>. ratio >= 1.0 go; 0.5 to 1.0 repeat; 0.2 to 0.5 pivot; below 0.2 stop."
 }
 ```
 

@@ -16,14 +16,16 @@ JSON object with exactly these keys:
 - `files`: list of `{"path": str, "content": str}`; `path` is a plain relative file name such as `index.html` or `templates/checklist.md`.
 - `notes`: string, what was built and anything the founder must still add.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "files": [
-    {"path": "index.html", "content": "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Onboarding kit</title></head><body><h1>Client onboarding templates for solo designers</h1><p>Draft product page.</p></body></html>"},
-    {"path": "onboarding_checklist.md", "content": "# Onboarding checklist\n\n## First call\n- Confirm scope and timeline\n"}
+    {
+      "path": "<relative file name with an allowed extension>",
+      "content": "<full file content>"
+    }
   ],
-  "notes": "Two files built. The founder adds their own contact details before use."
+  "notes": "<what was built; what the founder still adds>"
 }
 ```
 

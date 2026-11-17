@@ -137,3 +137,23 @@ def test_gate3_failures(tmp_path):
     gates.preregister(ctx, 3, phase3.gate_checks(ctx))
     assert gates.evaluate(ctx, 3, {"acceptance_pass_ratio": 0.5, "honesty_must_fix": 0, "deployed": 0}, 0).outcome == "repeat"
     assert gates.evaluate(ctx, 3, {"acceptance_pass_ratio": 1.0, "honesty_must_fix": 0, "deployed": 1}, 0).outcome == "stop"
+
+
+def test_script_or_form_is_honesty_repeat_not_deployed(tmp_path):
+    ctx = make_ctx(tmp_path)
+    root = Path(ctx.out_dir) / "phase3_build"
+    root.mkdir(parents=True)
+    (root / "index.html").write_text("<script>alert(1)</script><form><input></form>", encoding="utf-8")
+    put(ctx, "phase3_step6_content_review", {"issues": [], "verdict": "ok"})
+    put(ctx, "phase3_step3_build", {"files": [{"path": "index.html"}], "notes": ""})
+    m = phase3.measure(ctx)
+    assert m["deployed"] == 0 and m["honesty_must_fix"] >= 2
+    m["acceptance_pass_ratio"] = 1.0
+    gates.preregister(ctx, 3, phase3.gate_checks(ctx))
+    assert gates.evaluate(ctx, 3, m, 0).outcome == "repeat"
+
+
+def test_unsafe_manifest_path_counts_as_deployed(tmp_path):
+    ctx = make_ctx(tmp_path)
+    put(ctx, "phase3_step3_build", {"files": [{"path": "../../public/index.html"}], "notes": ""})
+    assert phase3.measure(ctx)["deployed"] == 1

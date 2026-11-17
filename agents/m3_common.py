@@ -143,53 +143,79 @@ def guardrail_findings(text: str) -> list[str]:
 # Honesty and safety patterns checked in code for pages and built files.
 BLOCK_MARK = "[BLOCKED by guardrails]"  # what agents/base.py writes in place of a blocked string
 
-_BANNED_SUBSTRINGS = {
+# Markup and tracking markers: always a violation, even after "no" (a <script> tag is a script).
+_MARKUP_SUBSTRINGS = {
     BLOCK_MARK.lower(): "blocked by guardrails",
     "<script": "script tag",
     "<form": "form element",
     "<iframe": "iframe",
     "javascript:": "javascript URL",
-    "card number": "payment word: card number",
-    "cvv": "payment word: cvv",
-    "checkout": "payment word: checkout",
-    "stripe": "payment word: stripe",
-    "paypal": "payment word: paypal",
     "googletagmanager": "tracking",
     "google-analytics": "tracking",
     "facebook.com/tr": "tracking pixel",
-    "tracking pixel": "tracking pixel",
-    "testimonial": "testimonial",
-    "5-star": "rating",
-    "five-star": "rating",
-    "★": "star rating",
-    "countdown": "countdown",
-    "customers love": "invented praise",
-    "trusted by": "invented social proof",
+    "\u2605": "star rating",
 }
-_BANNED_REGEXES = [
-    (re.compile(r"\son[a-z]+\s*=", re.I), "inline event handler"),
+_MARKUP_REGEXES = [
+    (re.compile(r"<[^>]*\son[a-z]+\s*=", re.I), "inline event handler"),
     (re.compile(r"<img[^>]+(width|height)\s*=\s*[\"']?[01][\"'\s>]", re.I), "tracking pixel"),
-    (re.compile(r"<(img|link|video|audio|source|embed|object)[^>]+(src|href)\s*=\s*[\"']?(https?:)?//", re.I),
+    (re.compile(r"<(img|link|video|audio|source|embed|object|script)[^>]+(src|href)\s*=\s*[\"']?(https?:)?//", re.I),
      "external resource"),
-    (re.compile(r"\b(only|just)\s+\d+\s+(spots?|seats?|copies|left)\b", re.I), "scarcity"),
-    (re.compile(r"\b(join|joined|used by|loved by)\s+[\d,.]+\+?\s*(k\b)?", re.I), "invented count"),
-    (re.compile(r"\b[\d,.]+\+?\s+(happy\s+)?(customers|users|designers|people|sign-?ups|buyers)\s+(already|have|love|use|joined)",
-                re.I), "invented count"),
 ]
+# Words and phrases: whole-word matches only, and skipped when a negation ("no", "not", "without",
+# "never") appears within the 30 characters before them in the same sentence ("no checkout",
+# "without testimonials").
+_WORD_PATTERNS = [
+    (r"card\s+numbers?", "payment word: card number"),
+    (r"cvv", "payment word: cvv"),
+    (r"checkouts?", "payment word: checkout"),
+    (r"stripe", "payment word: stripe"),
+    (r"paypal", "payment word: paypal"),
+    (r"tracking\s+pixels?", "tracking pixel"),
+    (r"testimonials?", "testimonial"),
+    (r"5-star", "rating"),
+    (r"five-star", "rating"),
+    (r"countdowns?", "countdown"),
+    (r"customers\s+love", "invented praise"),
+    (r"trusted\s+by", "invented social proof"),
+    (r"(only|just)\s+\d+\s+(spots?|seats?|copies|left)", "scarcity"),
+    (r"(join|joined|used\s+by|loved\s+by)\s+\d[\d,.]*\+?(\s*k)?", "invented count"),
+    (r"\d[\d,.]*\+?\s+(happy\s+)?(customers|users|designers|people|sign-?ups|buyers)\s+(already|have|love|use|joined)",
+     "invented count"),
+]
+_WORD_REGEXES = [(re.compile(r"(?<![\w-])(?:" + p + r")(?![\w-])", re.I), label) for p, label in _WORD_PATTERNS]
+_NEGATION = re.compile(r"\b(no|not|without|never)\b", re.I)
+NEGATION_WINDOW = 30
+
+# Real network calls only (scripts and forms are honesty violations, not deployment).
 _NETWORK_PATTERNS = [
     re.compile(p, re.I) for p in (
-        r"<script", r"\bfetch\s*\(", r"XMLHttpRequest", r"new\s+WebSocket", r"navigator\.sendBeacon",
-        r"\bimport\s+(requests|urllib|socket|http\.client)", r"\brequests\.(get|post|put)\(",
-        r"urllib\.request", r"\bsocket\.socket\(", r"<form",
+        r"\bfetch\s*\(", r"XMLHttpRequest", r"new\s+WebSocket", r"navigator\.sendBeacon",
+        r"\bimport\s+(requests|urllib|socket|http\.client)", r"\bfrom\s+(requests|urllib|socket|http\.client)\b",
+        r"\brequests\.(get|post|put|patch|delete)\(", r"urllib\.request", r"\bsocket\.socket\(",
+        r"\bcurl\s+-", r"\bwget\s+https?://",
     )
 ]
 
 
+_SENTENCE_END = re.compile(r"[.!?;\n]")
+
+
+def _negated(text: str, start: int) -> bool:
+    """A negation within the 30 characters before the match, in the same sentence."""
+    window = text[max(0, start - NEGATION_WINDOW):start]
+    window = _SENTENCE_END.split(window)[-1]
+    return bool(_NEGATION.search(window))
+
+
 def content_violations(text: str) -> list[str]:
     """Code-found honesty/safety violations in a piece of page or build content."""
-    low = (text or "").lower()
-    found = [label for needle, label in _BANNED_SUBSTRINGS.items() if needle in low]
-    found += [label for rx, label in _BANNED_REGEXES if rx.search(text or "")]
+    text = text or ""
+    low = text.lower()
+    found = [label for needle, label in _MARKUP_SUBSTRINGS.items() if needle in low]
+    found += [label for rx, label in _MARKUP_REGEXES if rx.search(text)]
+    for rx, label in _WORD_REGEXES:
+        if any(not _negated(text, m.start()) for m in rx.finditer(text)):
+            found.append(label)
     return sorted(set(found))
 
 

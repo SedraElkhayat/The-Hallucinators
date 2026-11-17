@@ -20,16 +20,38 @@ JSON object with exactly these keys:
 - `acceptance_tests`: list of `{"id": "AT1", "description": str, "check": {"type": "file_exists"|"text_contains", "path": str, "text": str}}`. `path` is relative to the build folder (for example `index.html`); `text` is required for `text_contains` and empty for `file_exists`.
 - `out_of_scope`: list of strings.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "mvp_scope": ["index.html: product page describing the kit", "onboarding_checklist.md: step-by-step checklist", "intake_questionnaire.md: questions to send a new client"],
-  "user_stories": ["As a solo designer, I want a checklist for a new client, so that I do not forget a step"],
-  "acceptance_tests": [
-    {"id": "AT1", "description": "The product page exists", "check": {"type": "file_exists", "path": "index.html", "text": ""}},
-    {"id": "AT2", "description": "The checklist has a first-call section", "check": {"type": "text_contains", "path": "onboarding_checklist.md", "text": "First call"}}
+  "mvp_scope": [
+    "<file name>: <what it contains>"
   ],
-  "out_of_scope": ["Payments", "User accounts", "Hosting or deployment"]
+  "user_stories": [
+    "As a <customer>, I want <capability>, so that <outcome>"
+  ],
+  "acceptance_tests": [
+    {
+      "id": "AT1",
+      "description": "<what is checked>",
+      "check": {
+        "type": "file_exists",
+        "path": "<relative file path>",
+        "text": ""
+      }
+    },
+    {
+      "id": "AT2",
+      "description": "<what is checked>",
+      "check": {
+        "type": "text_contains",
+        "path": "<relative file path>",
+        "text": "<short exact text>"
+      }
+    }
+  ],
+  "out_of_scope": [
+    "<excluded feature>"
+  ]
 }
 ```
 

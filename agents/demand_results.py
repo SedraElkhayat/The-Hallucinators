@@ -1,11 +1,14 @@
 """demand_results (founder kind): records the founder's demand-test result with its provenance.
 
 Founder input key: ``demand_results`` = JSON text {"signups": int, "days": int, "provenance": "REAL"|"MOCKED"}.
+Invalid input is asked again once; if it is still invalid, no result is recorded and
+``ctx.extra["halt_phase"]`` is set with the reason.
 """
 import json
 
 from agents.base import Agent
 from agents.m3_common import P2_PLAN, P2_RESULTS, plan_target
+from core.contracts import AgentResult
 
 
 def _int(v):
@@ -55,7 +58,6 @@ class DemandResults(Agent):
                   f'{{"signups": <whole number>, "days": <whole number>, "provenance": "REAL" or "MOCKED"}}. '
                   f"The target set before the test was {target} sign-ups in {window} days. "
                   f"Use MOCKED unless the sign-ups came from real visitors.")
-        note = ""
         parsed, reason = None, None
         for attempt in range(2):  # ask, then ask again once
             ask = prompt if attempt == 0 else f"{prompt} The previous answer was invalid: {reason}."
@@ -68,11 +70,15 @@ class DemandResults(Agent):
             if parsed:
                 break
         if not parsed:
-            parsed = {"signups": 0, "days": 0, "provenance": "MOCKED"}
-            note = f"Founder input was invalid twice ({reason}); recorded as 0 sign-ups labeled MOCKED."
+            # No result is recorded (never a made-up 0): the phase halts and the gate cannot pass.
+            why = f"demand results invalid after asking twice: {reason}"
+            ctx.extra["halt_phase"] = why
+            ctx.log.action(self.name, "demand_results_invalid", reason=reason, outcome="halt_phase")
+            md = f"# Demand test results\n\nNo result recorded: {why}.\n"
+            return AgentResult(data={"error": why}, markdown=md, sources=[], model=None, cost=0.0, mocked=False)
 
         ratio = round(parsed["signups"] / target, 4)
-        data = dict(parsed, ratio=ratio, target=target, window_days=window, note=note)
+        data = dict(parsed, ratio=ratio, target=target, window_days=window)
         prov = parsed["provenance"]
         md = (f"PROVENANCE: {prov}\n\n# Demand test results\n\n"
               f"- Sign-ups: {parsed['signups']} in {parsed['days']} days\n"
@@ -80,7 +86,5 @@ class DemandResults(Agent):
               f"- Ratio (sign-ups / target): {ratio}\n")
         if prov == "MOCKED":
             md += "\nThis result is MOCKED: it did not come from real visitors.\n"
-        if note:
-            md += f"\nNote: {note}\n"
         return self.save(ctx, data, markdown=md, sources=[], model=None, cost=0.0, mocked=(prov == "MOCKED"),
                          action="record_demand_results", provenance=prov, ratio=ratio)

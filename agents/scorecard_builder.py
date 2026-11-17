@@ -41,6 +41,10 @@ def sanitize_scorecard(data: dict, demand_results=None) -> dict:
             if P2_RESULTS not in de["evidence_refs"]:
                 de["evidence_refs"].append(P2_RESULTS)
             de["note"] = (de["note"] + " | " if de["note"] else "") + f"Rubric applied in code: {label}"
+        # A MOCKED result is not real behavior evidence: demand_evidence is at most "adequate".
+        if demand_results.get("provenance") != "REAL" and de["rating"] == "strong":
+            de["rating"] = "adequate"
+            de["note"] += " | Capped at adequate in code: the demand result is MOCKED, not from real visitors"
 
     # No evidence means unknown, whatever the model said.
     for d, v in dims.items():

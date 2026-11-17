@@ -72,10 +72,20 @@ def test_scorecard_sanitizer_sets_unknown_without_evidence(tmp_path):
     low = sanitize_scorecard(fixture("scorecard_builder"), {"ratio": 0.12, "provenance": "MOCKED"})
     assert low["dimensions"]["demand_evidence"]["rating"] == "weak"
     high = sanitize_scorecard({"dimensions": {"demand_evidence": {"rating": "unknown", "evidence_refs": []}}},
-                              {"ratio": 1.4, "provenance": "MOCKED"})
+                              {"ratio": 1.4, "provenance": "REAL"})
     assert high["dimensions"]["demand_evidence"]["rating"] == "strong"
     assert "phase2_step5_demand_results" in high["dimensions"]["demand_evidence"]["evidence_refs"]
     assert high["dimensions"]["problem_severity"]["rating"] == "unknown"
+
+
+def test_scorecard_caps_mocked_demand_at_adequate():
+    from agents.scorecard_builder import sanitize_scorecard
+    strong = {"dimensions": {"demand_evidence": {"rating": "strong", "evidence_refs": ["x"], "note": ""}}}
+    out = sanitize_scorecard(strong, {"ratio": 1.4, "provenance": "MOCKED"})["dimensions"]["demand_evidence"]
+    assert out["rating"] == "adequate" and "MOCKED" in out["note"]
+    weak = sanitize_scorecard({"dimensions": {"demand_evidence": {"rating": "strong", "evidence_refs": ["x"]}}},
+                              {"ratio": 0.12, "provenance": "MOCKED"})
+    assert weak["dimensions"]["demand_evidence"]["rating"] == "weak"  # weak stays weak
 
 
 def test_scorecard_agent_applies_sanitizer(tmp_path):

@@ -15,14 +15,16 @@ JSON object with exactly these keys:
 - `issues`: list of `{"severity": "must_fix"|"should_fix", "text": str}`.
 - `verdict`: `"ok"` or `"revise"`.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "issues": [
-    {"severity": "must_fix", "text": "The summary calls demand 'proven', but the result is MOCKED"},
-    {"severity": "should_fix", "text": "Name the triggered kill criterion in the findings"}
+    {
+      "severity": "<must_fix|should_fix>",
+      "text": "<what is wrong and where>"
+    }
   ],
-  "verdict": "revise"
+  "verdict": "<ok|revise>"
 }
 ```
 

@@ -19,19 +19,39 @@ JSON object with exactly these keys:
 - `confidence`: `"low"`, `"medium"` or `"high"`.
 - `verdict_inputs`: object with `demand_ratio` (number or null), `scorecard` (dimension to rating), `kill_criteria_triggered` (list of strings), `untested_high_impact_assumptions` (integer).
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "summary": "The demand test reached 140 of a pre-set 100 sign-ups in 14 days, but the result is MOCKED. Monetization is unknown.",
+  "summary": "<at most 5 hedged sentences>",
   "findings": [
-    {"text": "Sign-ups reached 1.4 times the target set before the test (MOCKED result)", "claim_ids": ["phase2_step5_demand_results"]},
-    {"text": "Rivals focus on agencies rather than solo designers", "claim_ids": ["phase2_step1_competitor_analysis"]},
-    {"text": "Buyers may prefer free checklists", "assumption": true}
+    {
+      "text": "<finding>",
+      "claim_ids": [
+        "<artifact stem or source_url>"
+      ]
+    },
+    {
+      "text": "<unsupported point>",
+      "assumption": true
+    }
   ],
-  "assumptions": ["Solo designers will pay for templates"],
-  "limitations": ["Demand result is MOCKED, not from real visitors", "Interview notes are SAMPLE input"],
-  "confidence": "low",
-  "verdict_inputs": {"demand_ratio": 1.4, "scorecard": {"demand_evidence": "strong", "monetization": "unknown"}, "kill_criteria_triggered": [], "untested_high_impact_assumptions": 1}
+  "assumptions": [
+    "<assumption>"
+  ],
+  "limitations": [
+    "<limitation, including MOCKED or SAMPLE inputs>"
+  ],
+  "confidence": "<low|medium|high>",
+  "verdict_inputs": {
+    "demand_ratio": "<number or null>",
+    "scorecard": {
+      "<dimension>": "<rating>"
+    },
+    "kill_criteria_triggered": [
+      "<text>"
+    ],
+    "untested_high_impact_assumptions": "<integer>"
+  }
 }
 ```
 

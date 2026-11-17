@@ -7,8 +7,11 @@ files only inside ``<out_dir>/phase3_build/`` and no agent in this phase opens a
 Gate 3 metrics (CONTEXT.md section 6), computed in code by ``measure()``:
 - ``acceptance_pass_ratio``: passed / total from the QA report (checks run in code).
 - ``honesty_must_fix``: must_fix issues from the content review plus violations that code finds in
-  the build files (fake proof, scripts, forms, payment words, tracking, guardrail blocks).
-- ``deployed``: 0 if every manifest file is inside ``phase3_build`` and no network code is present.
+  the build files (fake proof, scripts, forms, payment words, tracking, guardrail blocks, network calls).
+  These fail the gate with ``repeat``.
+- ``deployed``: 1 only for an unsafe path (a manifest file outside ``phase3_build``) or a real network call
+  in a built file (fetch, XMLHttpRequest, WebSocket, sendBeacon, requests/urllib/socket, curl/wget).
+  A ``<script>`` or ``<form>`` without a network call is an honesty violation, not a deployment.
 """
 from pathlib import Path
 
@@ -62,6 +65,7 @@ def build_file_violations(ctx) -> list:
 
 
 def _deployed(ctx, manifest: dict) -> int:
+    """1 if a manifest path leaves the build folder or a built file makes a real network call."""
     from agents.m3_common import network_code_present, safe_rel_path
     root = (Path(ctx.out_dir) / BUILD_DIRNAME).resolve()
     if manifest.get("deployed"):

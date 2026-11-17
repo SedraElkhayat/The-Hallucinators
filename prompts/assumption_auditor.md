@@ -16,14 +16,20 @@ JSON object with exactly these keys:
 - `assumptions`: list of `{"id": "A1", "text": str, "source": str, "tested": bool, "cheapest_test": str, "impact": "high"|"medium"|"low"}`.
 - `untested_high_impact_count`: integer (the code recounts it).
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "assumptions": [
-    {"id": "A1", "text": "Solo designers will pay for onboarding templates", "source": "phase2_step2_lean_canvas.revenue_streams", "tested": false, "cheapest_test": "Ask 10 waitlist sign-ups whether they would pre-order at the planned price", "impact": "high"},
-    {"id": "A2", "text": "Design communities allow posts about the waitlist", "source": "phase2_step2_lean_canvas.channels", "tested": false, "cheapest_test": "Read the posting rules of the three communities", "impact": "medium"}
+    {
+      "id": "A1",
+      "text": "<assumption>",
+      "source": "<artifact stem and field>",
+      "tested": false,
+      "cheapest_test": "<cheapest legal, unpaid test>",
+      "impact": "<high|medium|low>"
+    }
   ],
-  "untested_high_impact_count": 1
+  "untested_high_impact_count": "<counted in code>"
 }
 ```
 

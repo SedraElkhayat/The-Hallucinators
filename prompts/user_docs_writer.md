@@ -16,14 +16,15 @@ JSON object with exactly these keys:
 - `title`: string.
 - `sections`: list of `{"heading": str, "text": str}`.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
-  "title": "Using the client onboarding kit",
+  "title": "<guide title>",
   "sections": [
-    {"heading": "What is included", "text": "index.html (product page) and onboarding_checklist.md (checklist)."},
-    {"heading": "How to use the checklist", "text": "Open onboarding_checklist.md in any text editor and copy it for each new client."},
-    {"heading": "What the kit does not do", "text": "It does not send messages, store client data or take payments."}
+    {
+      "heading": "<heading>",
+      "text": "<instructions about a built file>"
+    }
   ]
 }
 ```

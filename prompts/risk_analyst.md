@@ -18,18 +18,24 @@ JSON object with exactly these keys:
 - `kill_criteria`: list of `{"text": str, "triggered": bool}`.
 - `would_change_mind`: list of strings.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "risks": [
-    {"text": "Free checklists are widely available, so buyers may not pay (phase2_step1_competitor_analysis: substitutes high)", "severity": "high"},
-    {"text": "Only one traffic source is founder-owned ASSUMPTION", "severity": "medium"}
+    {
+      "text": "<risk> (<artifact stem>) or <risk> ASSUMPTION",
+      "severity": "<high|medium|low>"
+    }
   ],
   "kill_criteria": [
-    {"text": "Demand ratio below 0.2 of the pre-set sign-up target", "triggered": false},
-    {"text": "No differentiator is possible against free substitutes", "triggered": false}
+    {
+      "text": "<condition under which to stop>",
+      "triggered": "<true if the evidence already meets it>"
+    }
   ],
-  "would_change_mind": ["At least 10 waitlist sign-ups agree to pre-order at the planned price"]
+  "would_change_mind": [
+    "<evidence that would change the verdict>"
+  ]
 }
 ```
 

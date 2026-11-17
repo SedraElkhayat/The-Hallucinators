@@ -20,9 +20,20 @@ Artifact `phase3_step5_qa_report`:
 - `pass_ratio`: number, passed / total (0.0 when there are no tests).
 - `total`, `passed`: integers.
 
-Example:
+Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{"results": [{"id": "AT1", "passed": true, "detail": "file_exists index.html: found"}, {"id": "AT2", "passed": false, "detail": "text_contains onboarding_checklist.md: text 'First call' not found"}], "pass_ratio": 0.5, "total": 2, "passed": 1}
+{
+  "results": [
+    {
+      "id": "<test id>",
+      "passed": "<true only if the check ran and passed>",
+      "detail": "<check, path, result>"
+    }
+  ],
+  "pass_ratio": "<passed / total>",
+  "total": "<integer>",
+  "passed": "<integer>"
+}
 ```
 
 ## Rules

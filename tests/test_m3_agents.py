@@ -91,16 +91,32 @@ def test_guardrail_violation_is_blocked(name, tmp_path):
             assert "we guarantee 5-star" not in text, f"{name}: violation leaked into {f.name}"
 
 
-def test_demand_results_invalid_input_becomes_mocked_zero(tmp_path):
+def test_demand_results_invalid_input_halts_without_a_result(tmp_path):
+    from phases import phase2
     agent = get_agent("demand_results")
     ctx = make_ctx(tmp_path, founder_answers={"demand_results": "lots of people"},
                    seed=["phase2_step3_demand_test_plan"])
-    result = agent.run(ctx)
-    assert result.data["signups"] == 0 and result.data["provenance"] == "MOCKED"
-    assert result.data["note"]
+    agent.run(ctx)
     assert ctx.founder.calls == ["demand_results", "demand_results"]  # asked again once
-    md = (Path(ctx.out_dir) / "phase2_step5_demand_results.md").read_text(encoding="utf-8")
-    assert md.splitlines()[0] == "PROVENANCE: MOCKED"
+    assert ctx.extra["halt_phase"].startswith("demand results invalid after asking twice")
+    assert not ctx.store.has("phase2_step5_demand_results")  # no made-up 0 sign-ups
+    assert "demand_ratio" not in phase2.measure(ctx)
+    assert any(e["action"] == "demand_results_invalid" for e in log_entries(ctx))
+
+
+def test_demand_results_second_answer_is_used(tmp_path):
+    class TwoAnswers:
+        calls = []
+
+        def provide(self, key, prompt):
+            self.calls.append(prompt)
+            return "forty" if len(self.calls) == 1 else '{"signups": 40, "days": 14, "provenance": "REAL"}'
+    agent = get_agent("demand_results")
+    ctx = make_ctx(tmp_path, seed=["phase2_step3_demand_test_plan"])
+    ctx.founder = TwoAnswers()
+    data = agent.run(ctx).data
+    assert data["signups"] == 40 and data["ratio"] == 0.4 and "halt_phase" not in ctx.extra
+    assert "previous answer was invalid" in ctx.founder.calls[1]
 
 
 def test_demand_results_real_banner_and_ratio(tmp_path):
