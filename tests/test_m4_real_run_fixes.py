@@ -174,6 +174,16 @@ def test_quote_of_json_key_or_placeholder_is_not_must_fix(tmp_path):
     assert out["issues"][1]["quote"].startswith("Licence limits")
 
 
+def test_quote_of_pipeline_note_is_not_must_fix(tmp_path):
+    ctx = make_ctx(tmp_path)
+    put(ctx, "phase4_step1_pricing", {"price_usd": None, "comparable_claims": [], "is_assumption": True,
+                                      "note": "STUBBED: the model returned no price; the founder must set one."})
+    out = get_agent("compliance_reviewer_phase4").post_process(ctx, {"issues": [
+        {"severity": "must_fix", "quote": "the model returned no price; the founder must set one", "text": "no price"}],
+        "verdict": "revise"})
+    assert out["verdict"] == "ok" and out["issues"][0]["severity"] == "should_fix"
+
+
 def test_pricing_rationale_built_on_budget_is_replaced(tmp_path):
     ctx = make_ctx(tmp_path)
     ctx.brief = "**Budget:** USD 100 total."

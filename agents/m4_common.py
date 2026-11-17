@@ -244,12 +244,17 @@ def artifact_text(ctx: Context, *steps: str) -> str:
     return "\n".join(parts)
 
 
+_NOTE_KEYS = {"note", "budget_not_price", "stubbed", "overridden", "model_price_ignored", "model_recommendation",
+              "check", "checkout", "site", "source_url", "status", "guard_findings", "order_amounts_basis"}
+
+
 def draft_strings(ctx: Context, *steps: str) -> str:
     """Only the text values of the drafts (no JSON keys, flags or numbers), for checking a reviewer's quotes."""
     vals: list[str] = []
 
     def walk(v, key=""):
-        if str(key).startswith("_"):
+        # Pipeline notes and labels are not draft text (a real run's reviewer quoted the "no price" note).
+        if str(key).startswith("_") or str(key) in _NOTE_KEYS:
             return
         if isinstance(v, str):
             vals.append(v)
