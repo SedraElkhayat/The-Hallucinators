@@ -70,8 +70,11 @@ class ScriptedInputs:
         raise KeyError(f"SCRIPTED founder inputs have no answer for '{key}' "
                        f"(add the key or a matching 'prefix_defaults' entry to {self.path.name})")
 
-    def approval(self, kind: str) -> str:
+    def approval(self, kind: str, phase: Optional[int] = None) -> str:
+        """``approvals.<kind>_<phase>`` (e.g. ``gate_1``) wins over ``approvals.<kind>``, then ``default``."""
         appr = self.data.get("approvals", {})
+        if phase is not None and f"{kind}_{phase}" in appr:
+            return appr[f"{kind}_{phase}"]
         return appr.get(kind, appr.get("default", "approve"))
 
 
