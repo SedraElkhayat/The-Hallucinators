@@ -1,0 +1,38 @@
+{
+  "candidates": [
+    {
+      "name": "MOCKED idea A: client tracker template",
+      "description": "MOCKED: Notion tracker for client projects",
+      "why_fit": "MOCKED: uses the founder's Notion skills; no coding",
+      "claims": [
+        {
+          "claim": "MOCKED: freelancers discuss project tracking",
+          "source_url": "https://example.com/mock/ig1",
+          "quote": "MOCKED quote: freelancers ask how to track client projects",
+          "verified": null,
+          "assumption": false
+        }
+      ]
+    },
+    {
+      "name": "MOCKED idea B: invoice checklist pack",
+      "description": "MOCKED: Google Sheets invoice checklist",
+      "why_fit": "MOCKED: fits 8 hours per week",
+      "claims": [
+        {
+          "claim": "MOCKED: invoice templates are downloaded",
+          "source_url": "https://example.com/mock/ig2",
+          "quote": "MOCKED quote: invoice templates are among common downloads",
+          "verified": null,
+          "assumption": false
+        }
+      ]
+    },
+    {
+      "name": "MOCKED idea C: revision log kit",
+      "description": "MOCKED: revision round log for designers",
+      "why_fit": "MOCKED: built from the founder's own process",
+      "claims": []
+    }
+  ]
+}

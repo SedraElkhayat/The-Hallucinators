@@ -1,0 +1,27 @@
+{
+  "risks": [
+    {
+      "text": "MOCKED: interviewee C has never paid for a template (interview findings)",
+      "severity": "high"
+    },
+    {
+      "text": "MOCKED: free generic tools are an easy substitute (competitors)",
+      "severity": "medium"
+    }
+  ],
+  "kill_criteria": [
+    {
+      "text": "MOCKED: fewer than 20 percent of the waitlist target signs up in the test window",
+      "triggered": false,
+      "evidence": ""
+    },
+    {
+      "text": "MOCKED: no interviewee has ever paid for a tool or template",
+      "triggered": false,
+      "evidence": ""
+    }
+  ],
+  "would_change_mind": [
+    "MOCKED: three or more interviewees who paid for a template in the last year"
+  ]
+}

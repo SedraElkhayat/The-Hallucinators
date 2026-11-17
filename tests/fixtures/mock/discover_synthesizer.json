@@ -1,0 +1,30 @@
+{
+  "summary": "MOCKED: the evidence suggests designers juggle several clients and lose track of invoices; demand to pay is unknown.",
+  "findings": [
+    {
+      "text": "MOCKED: designers work with several clients at once",
+      "claim_ids": [
+        "C2"
+      ]
+    },
+    {
+      "text": "MOCKED: substitutes are sold for about 19 USD",
+      "claim_ids": [
+        "C4",
+        "C6"
+      ]
+    },
+    {
+      "text": "MOCKED: bilingual support matters to buyers",
+      "assumption": true
+    }
+  ],
+  "assumptions": [
+    "MOCKED: designers prefer a one-time price over a subscription"
+  ],
+  "limitations": [
+    "MOCKED: interview notes are SAMPLE input",
+    "MOCKED: sources are mock placeholders"
+  ],
+  "confidence": "medium"
+}

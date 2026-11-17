@@ -1,0 +1,33 @@
+{
+  "stated": {
+    "target_customer": "MOCKED: freelance graphic designers in Egypt with several clients",
+    "problem": "MOCKED: losing track of project status, revisions and invoices",
+    "product_type": "MOCKED: digital template pack (Notion and Google Sheets)",
+    "budget": "MOCKED: USD 100",
+    "time_per_week": "MOCKED: 8 hours",
+    "founder_skills": null,
+    "monetization_idea": null,
+    "distribution_channel": null,
+    "differentiation": null,
+    "values_and_limits": null
+  },
+  "idea": "MOCKED: a Notion and Google Sheets template pack for freelance designers to track projects",
+  "questions": [
+    {
+      "field": "founder_skills",
+      "question": "MOCKED: Which tools have you built templates in before?"
+    },
+    {
+      "field": "monetization_idea",
+      "question": "MOCKED: How do you plan to charge for the templates?"
+    },
+    {
+      "field": "distribution_channel",
+      "question": "MOCKED: Where do the designers you know look for tools?"
+    },
+    {
+      "field": "differentiation",
+      "question": "MOCKED: What do these designers use today, and what is missing?"
+    }
+  ]
+}

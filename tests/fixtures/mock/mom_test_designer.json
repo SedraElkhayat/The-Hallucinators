@@ -1,0 +1,33 @@
+{
+  "questions": [
+    {
+      "text": "MOCKED: Tell me about the last client project you finished. How did you keep track of it?",
+      "why": "MOCKED: shows the current tracking behaviour"
+    },
+    {
+      "text": "MOCKED: When did you last chase an unpaid invoice? What did you do?",
+      "why": "MOCKED: shows how painful unpaid invoices are"
+    },
+    {
+      "text": "MOCKED: What tools or templates have you tried for this, and why did you stop?",
+      "why": "MOCKED: shows current solutions and their gaps"
+    },
+    {
+      "text": "MOCKED: Have you paid for any template or tool in the last year? Which one?",
+      "why": "MOCKED: shows willingness to pay through past behaviour"
+    },
+    {
+      "text": "MOCKED: Who else do you know who handles several clients at once?",
+      "why": "MOCKED: tests commitment through introductions"
+    }
+  ],
+  "rules": [
+    "MOCKED: ask about past events, not opinions",
+    "MOCKED: do not describe the product",
+    "MOCKED: treat compliments as noise"
+  ],
+  "avoid_list": [
+    "MOCKED: hypothetical questions about future buying",
+    "MOCKED: asking whether they like the idea"
+  ]
+}

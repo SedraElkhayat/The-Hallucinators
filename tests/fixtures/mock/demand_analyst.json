@@ -1,0 +1,25 @@
+{
+  "price_signals": [
+    {
+      "text": "MOCKED: a freelancer template is sold for 19 USD as stated",
+      "claim_index": 0
+    }
+  ],
+  "claims": [
+    {
+      "claim": "MOCKED: a freelancer template is sold for 19 USD",
+      "source_url": "https://example.com/mock/da1",
+      "quote": "MOCKED quote: freelance project template, price 19 USD",
+      "verified": null,
+      "assumption": false
+    },
+    {
+      "claim": "MOCKED: people repeatedly ask for project trackers",
+      "source_url": "https://example.com/mock/da2",
+      "quote": "MOCKED quote: is there a good project tracker for freelance designers",
+      "verified": null,
+      "assumption": false
+    }
+  ],
+  "insufficient_evidence": false
+}

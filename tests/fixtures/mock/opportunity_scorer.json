@@ -1,0 +1,33 @@
+{
+  "ranked": [
+    {
+      "name": "MOCKED: bilingual freelancer template pack",
+      "score": 6.5,
+      "is_founder_idea": true,
+      "reasons": [
+        "MOCKED need: verified claims about missed invoices",
+        "MOCKED market: substitutes sold for 19 USD",
+        "MOCKED fit: strong",
+        "MOCKED effort: adequate"
+      ]
+    },
+    {
+      "name": "MOCKED alternative: client onboarding kit",
+      "score": 5.0,
+      "is_founder_idea": false,
+      "reasons": [
+        "MOCKED need: one verified claim",
+        "MOCKED market: unknown"
+      ]
+    },
+    {
+      "name": "MOCKED alternative: portfolio case-study template",
+      "score": 3.0,
+      "is_founder_idea": false,
+      "reasons": [
+        "MOCKED: no evidence"
+      ]
+    }
+  ],
+  "chosen": "MOCKED: bilingual freelancer template pack"
+}

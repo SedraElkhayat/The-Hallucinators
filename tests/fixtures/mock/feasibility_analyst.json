@@ -1,0 +1,9 @@
+{
+  "rating": "adequate",
+  "reasoning": "MOCKED: rivals offer a project board, an invoice sheet and a revision log; about 40 hours to build in Notion and Sheets, 5 weeks at 8 hours per week.",
+  "evidence_refs": [
+    "phase1_step5_competitors",
+    "phase1_step2_clarification.time_per_week"
+  ],
+  "effort_hours_estimate": 40
+}

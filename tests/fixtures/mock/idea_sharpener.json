@@ -1,0 +1,23 @@
+{
+  "customer": "MOCKED: freelance graphic designers in Egypt who manage three or more clients at once",
+  "problem": "MOCKED: they lose track of project status, revision rounds and unpaid invoices",
+  "solution": "MOCKED: a bilingual Notion and Google Sheets template pack for projects, revisions and invoices",
+  "value_proposition": "MOCKED: one place for client work in Arabic and English, without a subscription",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "text": "MOCKED: designers currently track projects in chats or notebooks",
+      "test": "MOCKED: ask 5 designers how they tracked their last project"
+    },
+    {
+      "id": "H2",
+      "text": "MOCKED: designers have paid for a template or tool before",
+      "test": "MOCKED: ask what they paid for in the last year"
+    },
+    {
+      "id": "H3",
+      "text": "MOCKED: designers will join a waitlist for a bilingual pack",
+      "test": "MOCKED: landing page with a pre-set sign-up target"
+    }
+  ]
+}

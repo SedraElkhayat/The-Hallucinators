@@ -1,0 +1,9 @@
+{
+  "issues": [
+    {
+      "severity": "should_fix",
+      "text": "MOCKED: state that the size of the market is unknown"
+    }
+  ],
+  "verdict": "ok"
+}
