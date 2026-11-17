@@ -10,7 +10,7 @@ docker compose up
 
 Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox.
 
-Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `make test`.
+Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`).
 
 ## What works and what is mocked
 
