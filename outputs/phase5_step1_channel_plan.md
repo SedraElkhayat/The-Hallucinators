@@ -6,26 +6,26 @@
 [
   {
     "name": "Notion Community",
-    "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in communities like Notion.",
+    "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.",
     "first_actions": [
-      "Join the Notion Community for freelance designers and post a request for feedback on the template pack.",
-      "Engage with users by commenting on their posts and offering to help them with project tracking."
+      "Join the Notion Community and engage with designers to understand their pain points.",
+      "Post a question about project management tools and ask for recommendations."
     ]
   },
   {
-    "name": "Facebook Groups for Freelance Designers",
-    "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in Facebook groups.",
+    "name": "Facebook Groups for Freelancers",
+    "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
     "first_actions": [
       "Join relevant Facebook groups for freelance designers in Egypt and the MENA region.",
-      "Post a message introducing the template pack and ask for feedback or suggestions."
+      "Share a post about the challenges of managing multiple clients and ask for feedback."
     ]
   },
   {
     "name": "LinkedIn Groups for Freelance Designers",
-    "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in LinkedIn groups.",
+    "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
     "first_actions": [
       "Join LinkedIn groups for freelance designers in Egypt and the MENA region.",
-      "Post a message introducing the template pack and ask for feedback or suggestions."
+      "Post about the need for a project management tool and ask for suggestions."
     ]
   }
 ]

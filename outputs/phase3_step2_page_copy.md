@@ -2,17 +2,17 @@
 
 ## headline
 
-Track projects, invoices, and revisions with ease
+Track projects, invoices, and revisions effortlessly
 
 ## features
 
 ```json
 [
-  "Track client projects, invoices, and revision rounds using Notion and Google Sheets",
-  "Bilingual support for Arabic and English to work with local and international clients",
-  "No subscriptions, no client data collection, and no user accounts",
-  "Simple templates for easy use without complex setup",
-  "Helps manage multiple clients without stress"
+  "Track client projects with organized templates",
+  "Manage invoices sent and revision rounds in one place",
+  "Built for local freelancing habits in Arabic and English",
+  "No subscriptions, no client data collected",
+  "Simple and easy to use for multiple clients"
 ]
 ```
 
@@ -22,23 +22,23 @@ Track projects, invoices, and revisions with ease
 [
   {
     "q": "What is included in the template pack?",
-    "a": "The template pack includes Notion and Google Sheets templates for tracking client projects, invoices sent, and revision rounds."
+    "a": "The template pack includes Notion and Google Sheets templates to help you track client projects, invoices sent, and revision rounds."
   },
   {
-    "q": "Can I use the templates in Arabic and English?",
-    "a": "Yes, the templates are bilingual and support both Arabic and English for seamless use with local and international clients."
+    "q": "What file formats are available?",
+    "a": "The templates are available in Notion and Google Sheets formats for easy use and customization."
+  },
+  {
+    "q": "Can I use the templates in both Arabic and English?",
+    "a": "Yes, the templates are bilingual and support both Arabic and English for local freelancing needs."
   },
   {
     "q": "Does the product collect client data?",
-    "a": "No, the product does not collect any client data. It is designed to help you manage your projects without storing sensitive information."
+    "a": "No, the product does not collect client data, ensuring your privacy and security."
   },
   {
-    "q": "Are there any subscriptions involved?",
-    "a": "No, there are no subscriptions. The template pack is a one-time purchase with no recurring fees."
-  },
-  {
-    "q": "What file formats are the templates available in?",
-    "a": "The templates are available in Notion and Google Sheets formats for easy access and use."
+    "q": "What does the product not do?",
+    "a": "The product does not include payment integration, user accounts, or dynamic content. It is a static template pack for tracking and organizing client information."
   }
 ]
 ```

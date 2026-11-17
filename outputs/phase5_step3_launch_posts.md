@@ -6,21 +6,21 @@
 [
   {
     "channel": "Notion Community",
-    "text": "DRAFT: prepared for founder review\nI'm developing a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd love to hear your thoughts and suggestions on how to improve this tool.",
+    "text": "DRAFT: prepared for founder review\n\nWe're developing a digital template pack (Notion and Google Sheets) designed to help freelance graphic designers in Egypt and the MENA region track client projects, invoices sent, and revision rounds. The pack is intended for designers who work with multiple clients at once and need an efficient way to manage their workflow. We're looking for feedback on this idea. Please share your thoughts or suggestions.",
     "status": "approved",
     "guard_findings": [],
     "posted": false
   },
   {
-    "channel": "Facebook Groups for Freelance Designers",
-    "text": "DRAFT: prepared for founder review\nI'm working on a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd appreciate your feedback and suggestions on how to make this tool more useful.",
+    "channel": "Facebook Groups for Freelancers",
+    "text": "DRAFT: prepared for founder review\n\nWe're creating a digital template pack (Notion and Google Sheets) to help freelance graphic designers in Egypt and the MENA region track client projects, invoices sent, and revision rounds. This pack is aimed at designers who manage multiple clients and need an efficient way to organize their work. We're seeking feedback on this idea. Please share your thoughts or suggestions.",
     "status": "approved",
     "guard_findings": [],
     "posted": false
   },
   {
     "channel": "LinkedIn Groups for Freelance Designers",
-    "text": "DRAFT: prepared for founder review\nI'm developing a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd love to hear your thoughts and suggestions on how to improve this tool.",
+    "text": "DRAFT: prepared for founder review\n\nWe're working on a digital template pack (Notion and Google Sheets) to help freelance graphic designers in Egypt and the MENA region track client projects, invoices sent, and revision rounds. The pack is designed for designers who work with multiple clients and need an efficient way to manage their workflow. We're looking for feedback on this idea. Please share your thoughts or suggestions.",
     "status": "approved",
     "guard_findings": [],
     "posted": false

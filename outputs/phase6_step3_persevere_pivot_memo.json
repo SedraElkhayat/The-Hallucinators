@@ -1,14 +1,14 @@
 {
   "recommendation": "stop",
   "reasons": [
-    "MOCKED data in phase6_step2_metrics: The metrics are simulated and do not reflect real customer behavior or results.",
-    "MOCKED provenance in phase2_step9_validation_report: The demand test results are not based on real visitor data, which weakens the evidence.",
-    "[MOCKED data] Unverified assumptions in phase2_step9_validation_report: The founder's assumptions about pricing, bilingual preference, and data privacy are untested and unsupported by evidence."
+    "MOCKED data in phase6_step2_metrics: The waitlist_signups and mock_sales are based on simulated data, not real customer behavior.",
+    "MOCKED demand results in phase2_step9_validation_report: The demand test ratio of 1.4 is not based on real visitors, and the kill criterion for no clear demand is triggered.",
+    "[MOCKED data] Unverified pricing assumption in phase2_step9_validation_report: The founder's assumption about pricing lacks evidence, as no interviewees committed to purchasing."
   ],
   "experiments": [
-    "Conduct a real demand test with actual visitors to measure interest in the template pack.",
-    "Interview freelance designers in Egypt and the MENA region to assess their willingness to pay for a bilingual template pack.",
-    "Analyze the market size for freelance designers in the target region to validate the opportunity."
+    "Conduct real-world demand testing with actual users in the target market to gather authentic feedback.",
+    "Run a pricing experiment with a small group of freelance designers in Egypt and the MENA region to test willingness to pay.",
+    "Perform a competitive analysis with real users to understand how the template pack compares to existing tools."
   ],
   "supported_by_metrics": [
     "stop",

@@ -3,7 +3,7 @@
 System recommendation: GO: move on to the next phase.
 The founder approves or overrides this recommendation; an override is logged.
 
-Attempt: 1 (max repeats 1)
+Attempt: 0 (max repeats 1)
 Criteria hash (sha256, pre-registered before the phase ran): `1fc3e4f1eda189e319e7d186dbe58e3c5f4c7a35ebc951860d79523edc5b2507`
 
 ## Checks

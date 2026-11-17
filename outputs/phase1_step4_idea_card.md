@@ -6,7 +6,7 @@ Freelance graphic designers in Egypt and the wider MENA region who work with sev
 
 ## problem
 
-Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds.
+Freelance graphic designers in Egypt struggle to track client projects, invoices sent, and revision rounds.
 
 ## solution
 
@@ -14,7 +14,7 @@ A digital template pack (Notion and Google Sheets) that helps freelance graphic 
 
 ## value_proposition
 
-A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no client data collection.
+Bilingual Arabic and English, built for local freelancing habits, with no subscriptions that lock users in and no collection of client data.
 
 ## hypotheses
 
@@ -23,22 +23,22 @@ A bilingual (Arabic and English) digital template pack built for local freelanci
   {
     "id": "H1",
     "text": "Freelance graphic designers in Egypt and the MENA region will pay USD 100 for a digital template pack that helps them track client projects, invoices sent, and revision rounds.",
-    "test": "Create a landing page with a one-time purchase link and track how many clicks and sign-ups occur within a week."
+    "test": "Create a landing page with a call-to-action to purchase the template pack and track the number of sign-ups or pre-orders within a week."
   },
   {
     "id": "H2",
-    "text": "Freelance graphic designers in Egypt and the MENA region will use a Notion and Google Sheets template pack to track client projects, invoices sent, and revision rounds.",
-    "test": "Survey 10 freelance designers in Egypt and the MENA region to understand their current workflow and whether they would use a template pack for tracking."
+    "text": "Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
+    "test": "Offer a free version of the template pack to a small group of designers and ask them to provide feedback on its usefulness within a week."
   },
   {
     "id": "H3",
-    "text": "Freelance graphic designers in Egypt and the MENA region will prefer a bilingual (Arabic and English) template pack over one that is only in English.",
-    "test": "Create two versions of the template pack—one in Arabic and one in English—and ask 10 freelance designers in Egypt and the MENA region to choose their preferred version."
+    "text": "Freelance graphic designers in Egypt and the MENA region will prefer a bilingual (Arabic and English) template pack over a single-language one.",
+    "test": "Create two versions of the template pack—one in Arabic and one in English—and ask a sample of designers to rate their preference for each version."
   },
   {
     "id": "H4",
-    "text": "Freelance graphic designers in Egypt and the MENA region will not collect client data when using the template pack.",
-    "test": "Survey 10 freelance designers in Egypt and the MENA region to understand their data privacy concerns and whether they would use a template pack that does not collect client data."
+    "text": "Freelance graphic designers in Egypt and the MENA region will not collect client data through the template pack.",
+    "test": "Include a privacy policy in the template pack and ask a sample of designers to confirm they understand and agree with the privacy policy."
   }
 ]
 ```

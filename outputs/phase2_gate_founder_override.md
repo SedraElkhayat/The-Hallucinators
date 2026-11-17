@@ -5,5 +5,5 @@ The system recommended **STOP**. The founder rejected that verdict and chose **G
 The system's verdict and its checks are unchanged in `phase2_gate_decision.md`.
 
 Reasons the system gave:
-- no_open_must_fix: open_must_fix=1 fails == 0 -> repeat
-- repeat budget exhausted (attempt 1, max repeats 1) -> stop
+- no_kill_criterion: kill_triggered=1 fails == 0 -> stop
+- no_open_must_fix: open_must_fix=2 fails == 0 -> repeat

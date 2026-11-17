@@ -20,15 +20,10 @@ waitlist_signups
 
 ```json
 [
-  "Landing page with a one-time purchase link",
-  "Surveys"
+  "Landing page with a call-to-action to purchase the template pack"
 ]
 ```
 
 ## reading_rule
 
 ratio = sign-ups / 100. ratio >= 1.0 go; 0.5 to 1.0 repeat; 0.2 to 0.5 pivot; below 0.2 stop.
-
-## target_locked
-
-True

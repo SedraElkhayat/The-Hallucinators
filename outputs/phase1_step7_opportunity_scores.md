@@ -5,46 +5,46 @@
 ```json
 [
   {
-    "name": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
+    "name": "A bilingual template pack for creating b ...[truncated]",
+    "score": 7.0,
+    "reasons": [
+      "need: Freelance designers struggle with tracking projects and invoices",
+      "market: No clear demand for paid solutions yet",
+      "fit: Founder has skills in Notion and Google Sheets",
+      "effort: 40 hours needed, budget covers it"
+    ],
+    "is_founder_idea": true
+  },
+  {
+    "name": "A bilingual project management tool for freelance designers",
+    "score": 6.0,
+    "reasons": [
+      "need: Freelance designers struggle with tracking projects and invoices",
+      "market: No clear demand for paid solutions yet",
+      "fit: Founder has skills in Notion and Google Sheets",
+      "effort: 40 hours needed, budget covers it"
+    ],
+    "is_founder_idea": false
+  },
+  {
+    "name": "A digital invoicing and client tracking tool for freelance designers",
+    "score": 5.0,
+    "reasons": [
+      "need: Freelance designers track invoices and revisions",
+      "market: No clear demand for paid solutions yet",
+      "fit: Founder has skills in Notion and Google Sheets",
+      "effort: 40 hours needed, budget covers it"
+    ],
+    "is_founder_idea": false
+  },
+  {
+    "name": "A template pack for creating social media content for clients",
     "score": 4.0,
     "reasons": [
-      "need: Freelance designers need to track projects, invoices, and revisions",
-      "market: 90% of designers are freelancers",
-      "fit: Founder has skills for Notion/Google Sheets",
-      "effort: 100 hours estimated"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A digital invoicing and revision tracking tool for freelance designers in Egypt and the MENA region",
-    "score": 3.0,
-    "reasons": [
-      "need: Freelance designers need to track invoices and revisions",
-      "market: 49% of designers are freelancers",
-      "fit: Founder has skills for Notion/Google Sheets",
-      "effort: 100 hours estimated"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A bilingual template pack for managing multiple client projects and invoices",
-    "score": 3.0,
-    "reasons": [
-      "need: Freelance designers need to track projects, invoices, and revisions",
-      "market: 90% of designers are freelancers",
-      "fit: Founder has skills for Notion/Google Sheets",
-      "effort: 100 hours estimated"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
-    "score": 3.0,
-    "reasons": [
-      "need: Freelance designers need to track projects, invoices, and revisions",
-      "market: 90% of designers are freelancers",
-      "fit: Founder has skills for Notion/Google Sheets",
-      "effort: 100 hours estimated"
+      "need: Freelance designers create social media posts",
+      "market: No clear demand for paid solutions yet",
+      "fit: Founder has skills in Notion and Google Sheets",
+      "effort: 40 hours needed, budget covers it"
     ],
     "is_founder_idea": false
   }
@@ -53,11 +53,11 @@
 
 ## chosen
 
-A bilingual project management tool for freelance designers in Egypt and the MENA region
+A bilingual template pack for creating b ...[truncated]
 
 ## top_scored
 
-A bilingual project management tool for freelance designers in Egypt and the MENA region
+A bilingual template pack for creating b ...[truncated]
 
 ## switch_suggested
 

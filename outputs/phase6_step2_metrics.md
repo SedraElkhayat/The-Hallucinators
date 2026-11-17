@@ -25,7 +25,7 @@ MOCKED
 ```json
 [
   "The data is labeled as MOCKED, indicating it is not based on real customer behavior or results.",
-  "There is no evidence of real sign-ups or sales, as the data is simulated.",
-  "No information is provided about the actual customer engagement or retention beyond the mock data."
+  "There is no evidence of real customer engagement or conversion rates beyond the mock data.",
+  "No real-world metrics such as customer retention, satisfaction, or usage patterns are provided."
 ]
 ```
