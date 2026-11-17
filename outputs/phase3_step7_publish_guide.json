@@ -1,0 +1,37 @@
+{
+  "site_folder": "phase3_step3_site",
+  "entry_file": "index.html",
+  "published_by": "founder",
+  "system_publishes": false,
+  "statement": "The founder publishes the website. This system never publishes, uploads or deploys anything.",
+  "before_publishing": [
+    "Read every page section; edit or remove anything marked ASSUMPTION that you cannot support.",
+    "Replace the demo sign-up box with your own sign-up provider; the demo form sends and stores nothing.",
+    "Keep the price and policy placeholders until Phase 4 sets them."
+  ],
+  "options": [
+    {
+      "name": "GitHub Pages",
+      "link": "https://pages.github.com/",
+      "steps": [
+        "Create a public repository on your own GitHub account.",
+        "Upload the contents of the phase3_step3_site folder (index.html at the top level).",
+        "Open Settings > Pages, choose Deploy from a branch, select the main branch and the root folder, Save.",
+        "Open the address GitHub shows after a minute and check the page."
+      ]
+    },
+    {
+      "name": "Netlify",
+      "link": "https://app.netlify.com/drop",
+      "steps": [
+        "Sign in to your own Netlify account.",
+        "Open Netlify Drop and drag the whole site folder onto the page.",
+        "Open the address Netlify shows and check the page; rename the site in Site settings if you want."
+      ]
+    }
+  ],
+  "_meta": {
+    "agent": "builder",
+    "sources": []
+  }
+}

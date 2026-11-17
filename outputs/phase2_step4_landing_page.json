@@ -1,0 +1,20 @@
+{
+  "headline": "Track projects, invoices, and revisions with ease",
+  "subheadline": "A bilingual template pack for freelance designers in Egypt and the MENA region",
+  "bullets": [
+    "Track client projects, invoices, and revision rounds in one place",
+    "Built for local freelancing habits with Arabic and English support",
+    "No subscriptions, no client data collection",
+    "Simple Notion and Google Sheets templates for easy use",
+    "Helps manage multiple clients without stress"
+  ],
+  "call_to_action": "Join the waitlist",
+  "html_file": "phase2_step4_landing_page.html",
+  "founder_approved": true,
+  "status": "approved draft (the founder publishes it)",
+  "removed_by_code": [],
+  "_meta": {
+    "agent": "landing_page_builder",
+    "sources": []
+  }
+}

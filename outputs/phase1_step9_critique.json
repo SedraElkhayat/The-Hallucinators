@@ -1,0 +1,39 @@
+{
+  "issues": [
+    {
+      "severity": "must_fix",
+      "text": "The finding '90% of graphic designers choose the freelance path.' cites claim_id C2, which is verified. However, the report mentions '90% of graphic designers choose the freelance path' without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
+    },
+    {
+      "severity": "must_fix",
+      "text": "The finding 'The global graphic design market reached $55.1 billion in 2025.' cites claim_id C3, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
+    },
+    {
+      "severity": "must_fix",
+      "text": "The finding '49% of graphic designers work as freelancers.' cites claim_id C4, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
+    },
+    {
+      "severity": "must_fix",
+      "text": "The finding 'Freelance graphic designers in the U.S. have a median annual wage of $61,300.' cites claim_id C6, which is verified. However, the report mentions this claim without providing a source, which is inconsistent with the claim's source URL. This is a factual statement that cites a verified claim but lacks proper attribution in the report."
+    },
+    {
+      "severity": "must_fix",
+      "text": "The report states 'There is insufficient evidence to confirm demand for a bilingual template pack priced at USD 100.' However, the skeptic risk explicitly mentions that 'The founder's assumption that freelance designers will pay USD 100 for a template pack is not supported by evidence, as no interviewees have shown willingness to pay.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue."
+    },
+    {
+      "severity": "should_fix",
+      "text": "The report states 'The market size for freelance designers in the region is unknown.' However, the skeptic risk explicitly mentions that 'The market size for freelance designers in Egypt and the MENA region is unknown, which limits the ability to validate the opportunity.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue.",
+      "downgraded_in_code": "kill criterion was not triggered"
+    },
+    {
+      "severity": "should_fix",
+      "text": "The report states 'Competitors like Notion Freelance Templates and Sync2Sheets already offer similar tools.' However, the skeptic risk explicitly mentions that 'Competitors offer similar tools with better positioning or pricing.' This is a high-severity risk that is not addressed in the report, which is a must-fix issue.",
+      "downgraded_in_code": "kill criterion was not triggered"
+    }
+  ],
+  "verdict": "revise",
+  "_meta": {
+    "agent": "critic_phase1",
+    "sources": []
+  }
+}

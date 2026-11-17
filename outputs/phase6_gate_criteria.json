@@ -1,0 +1,28 @@
+{
+  "phase": 6,
+  "checks": [
+    {
+      "id": "chk_p6_inputs_labeled",
+      "metric": "inputs_labeled",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p6_memo_written",
+      "metric": "memo_written",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p6_memo_backed",
+      "metric": "memo_backed_by_metrics",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    }
+  ],
+  "sha256": "2fd510c1bafb3b00b29c84df31230efcba449ad24b5dfee5bb5a2cccfa501660",
+  "note": "Written before the phase ran. The gate applies exactly these checks."
+}

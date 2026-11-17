@@ -65,8 +65,15 @@ class PricingAnalyst(M4Agent):
             data["range"] = [round(data["price_usd"] * 0.7, 2), round(data["price_usd"] * 1.3, 2)]
 
         data["comparable_claims"] = self.keep_verified_comparables(ctx, data.get("comparable_claims"))
-        # No verified comparable -> the price is an assumption, whatever the model said.
-        data["is_assumption"] = not data["comparable_claims"]
+        # The price is sourced only when a verified comparable quote states a price (a real run marked USD 25
+        # sourced on two verified quotes that named no amount). Otherwise it is an assumption, whatever the model said.
+        data["is_assumption"] = not any(quote_has_price(c.get("quote", "")) for c in data["comparable_claims"])
+        if data["is_assumption"]:
+            data["price_label"] = (f"ASSUMPTION: USD {data['price_usd']:g} is not taken from a verified competitor "
+                                   "price; no verified comparable quote states a price. The founder sets the price.")
+            rationale = str(data.get("rationale") or "").strip()
+            if not rationale.upper().startswith("ASSUMPTION"):
+                data["rationale"] = ("ASSUMPTION: no verified comparable quote states a price. " + rationale).strip()
         return data
 
     def keep_verified_comparables(self, ctx: Context, claims) -> list:
@@ -94,6 +101,18 @@ class PricingAnalyst(M4Agent):
         verified = [c for c in kept if c.get("verified") is True]
         self._dropped = dropped + [c for c in kept if c.get("verified") is not True]
         return verified
+
+
+# A price in a quote: a currency symbol or code next to an amount, or a decimal amount such as 19.99.
+_PRICE_RX = re.compile(
+    r"[$€£¥]\s?\d|\d\s?[$€£]|"
+    r"\b(?:usd|egp|eur|gbp|cad|aud|inr|us\$)\s?\d|"
+    r"\d[\d,]*(?:\.\d+)?\s?(?:usd|egp|eur|gbp|cad|aud|inr|dollars?|euros?|pounds?)\b|"
+    r"(?<![\d.])\d{1,6}\.\d{2}(?![\d.])", re.I)
+
+
+def quote_has_price(quote) -> bool:
+    return bool(_PRICE_RX.search(str(quote or "")))
 
 
 _BUDGET_RX = re.compile(r"budget\W{0,6}(?:is\s+|of\s+)?(?:usd|us\$|\$)\s?(\d[\d,]*(?:\.\d+)?)|"

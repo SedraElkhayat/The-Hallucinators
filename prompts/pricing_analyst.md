@@ -18,7 +18,7 @@ JSON object with exactly these keys:
 - `price_usd`: number, or `null` if there is no basis for a price.
 - `range`: `[low_usd, high_usd]`, or `null`.
 - `comparable_claims`: list of `{"claim": str, "source_url": str, "quote": str}`, each copied unchanged from an upstream claim whose `verified` is true. Empty list if there is none.
-- `is_assumption`: `true` when `comparable_claims` is empty.
+- `is_assumption`: `false` only when at least one comparable `quote` states a price (a currency symbol or code with an amount, such as `$19`, `USD 12`, `300 EGP`, `19.99`); otherwise `true`.
 - `rationale`: one or two sentences naming the artifact stems used, or `ASSUMPTION` and why.
 
 Example (placeholders in angle brackets; replace them, never copy them):
@@ -42,4 +42,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - Only copy claims from `phase1_step5_competitors` or `phase2_step1_competitor_analysis` whose `verified` is true. Never write a new URL, quote or price.
 - Code re-checks every comparable and drops any that is not a verified upstream claim; then `is_assumption` is recomputed.
 - No verified comparable: `comparable_claims` is `[]` and `is_assumption` is `true`.
+- A verified comparable whose quote names no price does not source a price. If no kept quote states a price, `is_assumption` is `true` and the `rationale` starts with `ASSUMPTION`. Code enforces this and labels the price ASSUMPTION.
 - No income, ROI or sales promises to buyers.
