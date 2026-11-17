@@ -1,25 +1,62 @@
-# Deliverables index
+# The Hallucinators: open-source agentic venture builder
 
-Everything here was written for the Open-Source Agentic Venture Builders hackathon, checked against the organizers' `TEAM_CLAUDE.md` and the Case Brief.
+An open-source team of AI agents that takes a founder's brief toward a validated, sellable **digital** product across six phases (Discover, Validate, Build, Commercial setup, Launch, Operate and learn). Every phase ends with a gate whose criteria are fixed in code before the phase runs, and the system can recommend **STOP**. The founder approves every outward-facing step; payments are **MOCKED**.
 
-| File | What it is | Who needs it |
-|---|---|---|
-| `TEAM_PLAN.md` / `pdf/TEAM_PLAN.pdf` | Timeline to 23:59, roles, how this replaces a scrum master, sleep checklist, cut list, final checklist | All four members, read once |
-| `MEMBER_1_PLATFORM.md` / `.pdf` | M1: step-by-step plus Prompts A, B1, W, C | M1 |
-| `MEMBER_2_DISCOVERY.md` / `.pdf` | M2 (senior data scientist): step-by-step plus Prompts A, B1, B2, B3, C | M2 |
-| `MEMBER_3_VALIDATE_BUILD.md` / `.pdf` | M3: step-by-step plus Prompts A, B1, B2, B3, C | M3 |
-| `MEMBER_4_COMMERCE_SAFETY.md` / `.pdf` | M4: step-by-step plus Prompts A, B1, B2, B3, C | M4 |
-| `CONTEXT.md` / `pdf/CONTEXT.pdf` | Shared contracts, ownership map, artifact names, gate metrics, testing and merge protocols | Copy the **`.md`** into each member's repo folder (untracked); Claude reads it |
-| `ARCHITECTURE.md` / `pdf/ARCHITECTURE.pdf` | The repo-ready architecture in the organizers' required sections, with Mermaid diagrams | Copy the **`.md`** into the repo root |
+## Quickstart
 
-**Copy prompts from the `.md` files, not from the PDFs.** The PDFs are for reading and for giving to Claude as context; copying from a PDF can break line breaks.
+```bash
+docker compose up
+```
 
-## Where each file goes
-- Repo root (committed): `ARCHITECTURE.md`, and the organizers' `TEAM_CLAUDE.md` renamed to `CLAUDE.md`.
-- Repo root (never committed, listed in `.git/info/exclude` and `.gitignore`): `CONTEXT.md`, `PROGRESS_M<N>.md`.
-- Not in the repo: everything else in this folder.
+Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox.
 
-## Start order
-1. M1 sets up the repo (`MEMBER_1_PLATFORM.md`, steps 1 to 7) and runs Prompt A.
-2. M2, M3, M4 clone the empty repo, branch, place `CONTEXT.md`, and run their Prompt A immediately (it begins with work that needs no code, then waits for the skeleton).
-3. Everybody sleeps after confirming their session is running.
+Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `make test`.
+
+## What works and what is mocked
+
+| Step | Status |
+|---|---|
+| Orchestrator, gates (pre-registered), founder approval, decision log | Working |
+| Founder UI (web) and CLI | Working |
+| Search and fetch (free public sources, cached) | Working |
+| Phase 1 to 6 agents | In progress (STUBBED phases are labeled in the run) |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED |
+| Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
+| Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
+| Real payment provider | STUBBED (roadmap) |
+
+## Architecture
+
+Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` evaluates criteria registered before the phase, and `approval.py` is the only door to anything outward-facing. AI agents (`agents/<role>.py`, prompts in `prompts/<role>.md`) only produce typed artifacts in `outputs/`, and every action is appended to `decision_log.json`. Market claims carry a source URL and an exact quote that code re-checks, or are labeled `ASSUMPTION`. See [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Models and free resources
+
+- Default model: `qwen3:8b` (open weights) served locally by Ollama, pulled and started by `docker compose up`.
+- Optional: `gpt-oss:20b` (set `LLM_MODEL=gpt-oss:20b` in `.env`), or any free OpenAI-compatible endpoint via `LLM_BASE_URL`.
+- Web evidence comes from free public search and pages, cached on disk.
+- No paid API, key or account is needed.
+
+## Cost per run
+
+About $0.00 per run (local model); token count measured in the final run and recorded in `decision_log.json`.
+
+## Demo video
+
+Link added after recording.
+
+## What our system will NOT do
+
+- Promise income or success.
+- Write fake reviews, testimonials, sign-ups, counters or countdown timers.
+- Pose as the founder, a customer or another brand.
+- Publish, send, spend or sign anything without the founder's explicit approval.
+- Hold, move or refund money, create accounts, or store passwords or card numbers. Payments are MOCKED only.
+- Hide core features behind a paywall.
+- Work on physical goods, financial, investment or crypto products, or health or legal advice products.
+
+## How the project stays alive after the hackathon
+
+- Maintainers: the four team members, under the MIT licence.
+- Roadmap: see [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
+- Community: issues and pull requests welcome; new agents are one file plus one prompt.
+- Funding: none needed to run; it uses free local models.
