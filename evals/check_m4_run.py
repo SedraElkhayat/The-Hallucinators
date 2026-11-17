@@ -221,9 +221,10 @@ def run(run_dir: Path) -> Report:
     if memo is not None:
         rec, status = memo.get("recommendation"), memo.get("evidence_status")
         r.add(f"Memo: recommendation **{rec}**, evidence_status {status}, inputs {memo.get('inputs_provenance')}")
-        ok = (rec == "persevere" and status == "met") or (rec in ("pivot", "stop") and status in ("not_met", "missed", "unknown")) \
-            or (rec == "repeat" and status in ("unknown", "partial", "not_met"))
-        r.check("memo recommendation backed by the metrics", ok, f"{rec} vs {status}")
+        from agents.m4_common import supported_recommendations
+        supported = supported_recommendations(status, (met or {}).get("provenance", ""))
+        r.check("memo recommendation backed by the metrics", rec in supported,
+                f"{rec}; target {status}, {(met or {}).get('provenance')} data back {supported}")
         guard(r, "memo", memo)
     sup = load(out, "phase6_step1_support_replies")
     if sup is not None:

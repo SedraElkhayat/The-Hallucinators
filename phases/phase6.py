@@ -8,6 +8,7 @@ Founder keys used in this phase:
 from __future__ import annotations
 
 from core.contracts import Context
+from agents.m4_common import supported_recommendations
 from gates import Check
 
 PHASE = 6
@@ -24,6 +25,7 @@ def gate_checks(ctx: Context) -> list[Check]:
     return [
         Check("chk_p6_inputs_labeled", "inputs_labeled", ">=", 1.0, "repeat"),
         Check("chk_p6_memo_written", "memo_written", ">=", 1.0, "repeat"),
+        Check("chk_p6_memo_backed", "memo_backed_by_metrics", ">=", 1.0, "repeat"),
     ]
 
 
@@ -37,13 +39,19 @@ def measure(ctx: Context) -> dict:
             inputs_labeled = 1
 
     memo_written = 0
+    memo_backed = 0
     if ctx.store.has("phase6_step3_persevere_pivot_memo"):
         memo_data = ctx.store.get("phase6_step3_persevere_pivot_memo")
         rec = str(memo_data.get("recommendation", "")).lower()
         if rec in ("persevere", "pivot", "stop"):
             memo_written = 1
+        m = ctx.store.get("phase6_step2_metrics") if ctx.store.has("phase6_step2_metrics") else {}
+        status = (m.get("comparison") or {}).get("target_status", "unknown")
+        if rec in supported_recommendations(status, m.get("provenance", "")):
+            memo_backed = 1
 
     return {
         "inputs_labeled": inputs_labeled,
         "memo_written": memo_written,
+        "memo_backed_by_metrics": memo_backed,
     }

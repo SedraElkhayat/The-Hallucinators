@@ -29,7 +29,8 @@ class PolicyDrafter(M4Agent):
         clean_docs = []
         if isinstance(docs, list):
             for d in docs:
-                if isinstance(d, dict):
+                if isinstance(d, dict) and str(d.get("text", "")).strip():
+                    # An empty document (a real run produced one named "Policy Document") is dropped.
                     clean_docs.append({
                         "name": str(d.get("name", "Policy Document")),
                         "text": str(d.get("text", "")),
@@ -65,13 +66,19 @@ _PAYMENT_WORDS = [
 ]
 
 
+_SENTENCE_RX = re.compile(r"[^.!?\n]+[.!?]?")
+COMPLIANCE_PLACEHOLDER = " [needs legal review: whether this meets the applicable laws is for a lawyer to confirm.]"
+
+
 def enforce_policy_rules(doc: dict) -> dict:
     """Terms are the founder's decision: time windows become placeholders; no compliance claims."""
     text = str(doc.get("text", ""))
     is_refund = "refund" in str(doc.get("name", "")).lower()
     placeholder = "[FOUNDER TO SET: refund window]" if is_refund else "[FOUNDER TO SET: time period]"
     text = _WINDOW_RX.sub(placeholder, text)
-    text = _COMPLIANCE_CLAIM_RX.sub("[needs legal review]", text)
+    # A sentence that claims legal compliance is replaced whole (replacing only the phrase left broken text).
+    text = _SENTENCE_RX.sub(lambda m: COMPLIANCE_PLACEHOLDER if _COMPLIANCE_CLAIM_RX.search(m.group(0)) else m.group(0),
+                            text)
     # Policy pages go on the store website, whose checks (M3) reject payment words; same meaning, other words.
     for rx, plain in _PAYMENT_WORDS:
         text = rx.sub(plain, text)

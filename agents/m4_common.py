@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from agents.base import Agent
 from core.contracts import Context
 
@@ -82,6 +83,69 @@ def normalize_critique(data: dict, code_issues: list[str]) -> dict:
     data["issues"] = issues
     data["verdict"] = verdict if verdict in ("ok", "revise") else "ok"
     return data
+
+
+# Labels the pipeline is required to show; a reviewer may never treat them as a problem.
+_REQUIRED_LABEL_RX = re.compile(
+    r"\[?FOUNDER TO SET[^\]]*\]?|\[?needs[_ ]legal[_ ]review[^\]]*\]?|"
+    r"\bMOCKED\b|\bSTUBBED\b|\bASSUMPTION\b|\bSAMPLE\b|"
+    r"DRAFT: prepared for founder review|no real payment|\bposted\b|\breleased\b", re.I)
+UNVERIFIED_PREFIX = "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): "
+
+
+def verify_model_issues(data: dict, reviewed_text: str) -> dict:
+    """A model's must_fix counts only when its `quote` appears verbatim in the reviewed drafts and the quote is
+    real content, not a label the rules require (MOCKED, FOUNDER TO SET, DRAFT marker...). Anything else is
+    downgraded to should_fix and marked UNVERIFIED, so it stays visible to the founder but cannot hold a gate.
+    Run before normalize_critique adds the code issues (code findings are always must_fix)."""
+    hay = " ".join((reviewed_text or "").split()).lower()
+    out, downgraded = [], 0
+    for i in data.get("issues") or []:
+        if isinstance(i, str):
+            i = {"severity": "should_fix", "text": i}
+        if not isinstance(i, dict):
+            continue
+        sev = str(i.get("severity", "should_fix")).lower().replace("-", "_").replace(" ", "_")
+        quote = " ".join(str(i.get("quote") or "").split())
+        text = str(i.get("text", ""))
+        if sev == "must_fix":
+            stripped = _REQUIRED_LABEL_RX.sub("", quote).strip(" .,:;-[]()\"'")
+            if len(quote) < 4 or quote.lower() not in hay or len(stripped) < 4:
+                sev = "should_fix"
+                text = UNVERIFIED_PREFIX + text
+                downgraded += 1
+        issue = {"severity": "must_fix" if sev == "must_fix" else "should_fix", "text": text}
+        if quote:
+            issue["quote"] = quote
+        out.append(issue)
+    data["issues"] = out
+    if downgraded and not any(i["severity"] == "must_fix" for i in out):
+        data["verdict"] = "ok"  # the model's "revise" rested only on unverified findings
+    return data
+
+
+# ---------------------------------------------------------------- Phase 6: recommendation backed by metrics
+
+REAL_PROVENANCE = "FOUNDER-PROVIDED"
+
+
+def supported_recommendations(target_status: str, provenance: str) -> list[str]:
+    """Which persevere/pivot/stop recommendations the Phase 6 metrics can back. First item = code default.
+
+    - target not met                      -> pivot or stop (never persevere)
+    - no comparable result (unknown)      -> stop (weak evidence means STOP, CLAUDE.md)
+    - met, but data is SAMPLE or MOCKED   -> stop or pivot: simulated numbers are not evidence to persevere
+    - met with founder-provided data      -> persevere or pivot
+    """
+    status = str(target_status or "unknown").lower()
+    prov = str(provenance or "").upper()
+    if status == "not met":
+        return ["pivot", "stop"]
+    if status == "met":
+        if prov.startswith(REAL_PROVENANCE):
+            return ["persevere", "pivot"]
+        return ["stop", "pivot"]
+    return ["stop"]
 
 
 def count_must_fix(data: dict) -> int:

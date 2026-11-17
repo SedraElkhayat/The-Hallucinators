@@ -5,6 +5,8 @@ Analyzes competitor pricing and demand validation to recommend price and price r
 """
 from __future__ import annotations
 
+import re
+
 from agents.m4_common import M4Agent, to_float
 from core.claims import normalize, verify_claims
 from core.contracts import Context
@@ -34,6 +36,15 @@ class PricingAnalyst(M4Agent):
 
     def post_process(self, ctx: Context, data: dict) -> dict:
         data["price_usd"] = to_float(data.get("price_usd"))
+        budget = brief_budget(ctx.brief)
+        if budget is not None:
+            # The brief's budget is what the founder can spend, not what a customer pays (a real run mixed them up).
+            if data["price_usd"] == budget:
+                data["price_usd"] = None
+                data["budget_not_price"] = f"The model used the brief's budget (USD {budget:g}) as the price; removed."
+            elif _mentions_amount(str(data.get("rationale", "")), budget):
+                data["budget_not_price"] = (f"Note: USD {budget:g} in the brief is the founder's budget, "
+                                            "not a price customers have said they will pay.")
         if data["price_usd"] is None:
             # No invented number: the founder sets the price; labeled as an open assumption.
             data["is_assumption"] = True
@@ -81,3 +92,19 @@ class PricingAnalyst(M4Agent):
         verified = [c for c in kept if c.get("verified") is True]
         self._dropped = dropped + [c for c in kept if c.get("verified") is not True]
         return verified
+
+
+_BUDGET_RX = re.compile(r"budget\W{0,6}(?:is\s+|of\s+)?(?:usd|us\$|\$)\s?(\d[\d,]*(?:\.\d+)?)|"
+                        r"budget\W{0,6}(\d[\d,]*(?:\.\d+)?)\s*(?:usd|dollars)", re.I)
+
+
+def brief_budget(brief: str):
+    m = _BUDGET_RX.search(brief or "")
+    if not m:
+        return None
+    return to_float((m.group(1) or m.group(2)).replace(",", ""))
+
+
+def _mentions_amount(text: str, amount: float) -> bool:
+    n = re.escape(f"{amount:g}")
+    return bool(re.search(rf"(?:usd|\$)\s?{n}(?![\d.])|(?<![\d.]){n}\s*(?:usd|dollars)", text, re.I))

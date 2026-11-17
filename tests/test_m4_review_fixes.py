@@ -87,8 +87,9 @@ def test_compliance4_clean_is_ok(tmp_path):
 
 def test_compliance_bad_severity_normalized(tmp_path):
     ctx = make_ctx(tmp_path)
+    put(ctx, "phase5_step3_launch_posts", {"posts": [{"channel": "Reddit", "text": "Hurry, only today", "status": "approved"}]})
     out = get_agent("compliance_reviewer_phase5").post_process(
-        ctx, {"issues": [{"severity": "MUST FIX", "text": "x"}], "verdict": "fine"})
+        ctx, {"issues": [{"severity": "MUST FIX", "quote": "Hurry, only today", "text": "x"}], "verdict": "fine"})
     _critique_ok(out)
     assert out["verdict"] == "revise"
 
