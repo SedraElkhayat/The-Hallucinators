@@ -25,7 +25,7 @@ flowchart LR
 
 All agents are files in `agents/<role>.py` with a matching prompt in `prompts/<role>.md`. Each writes one artifact named `outputs/phase<N>_step<M>_<name>` (`.json` for code, `.md` for people). Agents inside one **parallel stage** run together; stages run in order. `kind` is `llm` (model call), `code` (no model) or `founder` (waits for the founder).
 
-### Phase 1: Discover
+### Phase 1: Discover (Core step: Find opportunities)
 
 Goal: sharpen the founder's starting idea, score it against alternatives, define the market, interview customers (Mom Test).
 
@@ -76,7 +76,7 @@ flowchart TD
 
 Gate 1 output: `outputs/phase1_gate_decision.md`.
 
-### Phase 2: Validate
+### Phase 2: Validate (Core step: Design the business)
 
 Goal: Lean Canvas, then test demand with a landing page against a target set in advance.
 
@@ -104,7 +104,7 @@ flowchart TD
 
 Gate 2 output: `outputs/phase2_gate_decision.md`.
 
-### Phase 3: Build
+### Phase 3: Build (Core step: Build the product)
 
 Goal: ship a tested MVP: **one website for the founder's product**, plus user docs. The system builds and tests the site; it never publishes it.
 
@@ -136,7 +136,7 @@ flowchart LR
 
 Gate 3 output: `outputs/phase3_gate_decision.md`.
 
-### Phase 4: Commercial setup
+### Phase 4: Commercial setup (Core step: Set the price and policies)
 
 Goal: set the price and draft the policies. No payments of any kind.
 
@@ -149,7 +149,7 @@ Goal: set the price and draft the policies. No payments of any kind.
 
 Gate 4 output: `outputs/phase4_gate_decision.md`.
 
-### Phase 5: Launch (store page, launch posts, mocked delivery)
+### Phase 5: Launch (Core step: Open the store; deliver automatically, MOCKED)
 
 Goal: open the store and deliver the product to buyers automatically (mocked).
 
@@ -168,7 +168,7 @@ flowchart LR
 
 Gate 5 output: `outputs/phase5_gate_decision.md`.
 
-### Phase 6: Operate and learn
+### Phase 6: Operate and learn (no Core step: support, metrics, persevere-or-pivot memo)
 
 Goal: support, metrics, persevere-or-pivot memo. Inputs are labeled `SAMPLE` or `MOCKED` because no real customers exist during the hackathon.
 

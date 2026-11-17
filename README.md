@@ -2,6 +2,10 @@
 
 An open-source team of AI agents that takes a founder's brief toward a validated, sellable **digital** product across six phases (Discover, Validate, Build, Commercial setup, Launch, Operate and learn). Every phase ends with a gate whose criteria are fixed in code before the phase runs, and the system can recommend **STOP**. The founder approves every outward-facing step; payments are **MOCKED**.
 
+**Committed demo run** (`outputs/`, `decision_log.json`; real `qwen3:8b` on Ollama, live web search through SearXNG):
+- Strong brief (`demo/brief_strong.md`): all six phases ran. The system's own verdict was **STOP** at Gates 1 and 2; the founder overrode both (scripted demo inputs, labeled `SCRIPTED` and logged with `approved_by: founder` and `system_outcome: stop`), and Gates 3 to 6 were **GO**. The Phase 6 memo still recommends stopping because the demand and sales numbers are `MOCKED`. Summary: `outputs/phase6_gate_final_report.md`.
+- Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 2 kill criteria triggered). See `outputs/phase1_gate_weak_decision.md`.
+
 ## Quickstart
 
 ```bash
@@ -18,7 +22,8 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 |---|---|
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
-| Phase 1 to 6 agents (one file and one prompt each) | Working offline with MockLLM (outputs labeled MOCKED). Real-model runs: Phases 2 and 3 checked; the full real run is the committed demo run |
+| Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run is a real `qwen3:8b` run of all six phases. Tests use the offline MockLLM (outputs labeled MOCKED) |
+| Pricing (Phase 4) | Working, but the demo run set no price: no verified source stated a comparable price, so `price_usd` is empty and labeled STUBBED until the founder sets it |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
 | Founder website (Phase 3 build from a template, Phase 5 store version with price and policies, website checks in Gates 3 and 5) | Working (never published by the system; the founder publishes it) |
@@ -41,7 +46,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Cost per run
 
-About $0.00 per run (local model); token count measured in the final run and recorded in `decision_log.json`.
+About $0.00 per run (local `qwen3:8b`, no paid API). The committed strong-brief run used 92 model calls and about 256k tokens (222k in, 33k out) and took about 5.5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 24 calls and about 53k tokens. Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`.
 
 ## Demo video
 
