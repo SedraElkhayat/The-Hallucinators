@@ -1,0 +1,13 @@
+# Optional: run the local model on an NVIDIA GPU (about 30x faster than CPU for qwen3:8b).
+# Needs the NVIDIA driver plus the NVIDIA Container Toolkit (Linux) or Docker Desktop with WSL 2 (Windows).
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up
+# Plain `docker compose up` stays CPU-only and works on any machine.
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
