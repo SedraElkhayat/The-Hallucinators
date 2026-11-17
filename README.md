@@ -77,7 +77,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Demo video
 
-Link added after recording.
+[Demo video, 1 min 29 s (Google Drive)](https://drive.google.com/file/d/1ZRJ6DPlPK0YaDh7kkNTIuMUyTnZc_Eiu/view?usp=sharing): a weak idea run live on `qwen3:8b` that ends in **STOP** at Gate 1, then the committed demo run's store website, sourced and `ASSUMPTION` claims, the founder's logged gate override, the `MOCKED` sale to cash, and the red-team results. Founder answers in the live run are `SCRIPTED` demo inputs.
 
 ## What our system will NOT do
 
