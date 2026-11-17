@@ -97,3 +97,38 @@ def test_founder_to_set_placeholder_stays_should_fix(tmp_path):
         {"severity": "should_fix", "quote": "[FOUNDER TO SET: refund window]", "text": "founder must set refund window"}],
         "verdict": "ok"})
     assert out["verdict"] == "ok" and out["issues"][0]["severity"] == "should_fix"
+
+
+# ---------------------------------------------------------------- rerun: "a policy without needs_legal_review: true"
+
+MISSING_FLAG = ["A policy without needs_legal_review: true",
+                "Refund Policy is missing the needs_legal_review flag",
+                "Terms of Service: needs_legal_review is false"]
+
+
+def test_missing_flag_must_fix_downgraded_when_every_policy_is_flagged(tmp_path):
+    ctx = make_ctx(tmp_path)
+    _policies(ctx)
+    issues = [{"severity": "must_fix", "quote": "Privacy Policy", "text": t} for t in MISSING_FLAG]
+    out = get_agent("compliance_reviewer_phase4").post_process(ctx, {"issues": issues, "verdict": "revise"})
+    assert out["verdict"] == "ok"
+    assert all(i["severity"] == "should_fix" for i in out["issues"])
+    assert len(out["downgraded"]) == 3
+
+
+def test_missing_flag_must_fix_kept_when_a_policy_is_not_flagged(tmp_path):
+    ctx = make_ctx(tmp_path)
+    _policies(ctx, flag=False)
+    out = get_agent("compliance_reviewer_phase4").post_process(ctx, {"issues": [
+        {"severity": "must_fix", "quote": "Privacy Policy", "text": MISSING_FLAG[0]}], "verdict": "revise"})
+    assert out["verdict"] == "revise"
+    assert any(i["severity"] == "must_fix" and i["text"] == MISSING_FLAG[0] for i in out["issues"])
+
+
+def test_missing_flag_with_unset_window_stays_must_fix(tmp_path):
+    ctx = make_ctx(tmp_path)
+    _policies(ctx)
+    text = "A policy without needs_legal_review: true and a 14 days refund window the founder did not set"
+    out = get_agent("compliance_reviewer_phase4").post_process(ctx, {"issues": [
+        {"severity": "must_fix", "quote": "Privacy Policy", "text": text}], "verdict": "revise"})
+    assert out["verdict"] == "revise" and out["issues"][0]["severity"] == "must_fix"

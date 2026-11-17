@@ -34,6 +34,6 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - `must_fix`: income or success promises, fake proof, a price not backed by a verified claim and not labeled an assumption, a policy without `needs_legal_review: true`, any compliance claim, a concrete term (a time window, a fee) the founder did not set. A `[FOUNDER TO SET: ...]` placeholder is the correct way to leave a term open.
 - A `must_fix` needs a `quote` copied word for word from the drafts; code downgrades a must_fix whose quote is not in the drafts.
 - Required labels are correct, never issues: MOCKED, STUBBED, SAMPLE, ASSUMPTION, `[FOUNDER TO SET: ...]` placeholders, `needs_legal_review`, the DRAFT marker, `posted: false`, and a page `released` after founder approval.
-- A document with `needs_legal_review: true` is already marked for a lawyer. "Needs legal review" alone is not a `must_fix`; code downgrades it to `should_fix`. Report the actual legal or honesty problem in the text instead.
+- A document with `needs_legal_review: true` is already marked for a lawyer. "Needs legal review" alone is not a `must_fix`; code downgrades it to `should_fix`. Report a policy without `needs_legal_review: true` only after checking the flag in `phase4_step3_policies`; code downgrades that finding when every document has the flag. Report the actual legal or honesty problem in the text instead.
 - Any `must_fix` means `verdict` is `revise`. With no issues, return `[]` and `ok`.
 - Only list issues; do not rewrite the artifacts.
