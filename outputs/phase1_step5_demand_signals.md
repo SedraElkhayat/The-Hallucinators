@@ -11,12 +11,12 @@
 ```json
 [
   {
-    "claim": "Freelance templates in Notion and Google Sheets are available for free and paid versions.",
+    "claim": "Freelance templates in Notion include project proposals, client management tools, invoice trackers, and time management sheets.",
     "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
     "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
-    "verified": false,
-    "assumption": true,
-    "check": "quote does not state the claim (model support check)",
+    "verified": true,
+    "assumption": false,
+    "check": "quote found on the source page",
     "topic_terms": [
       "clien",
       "desig",
@@ -26,15 +26,16 @@
       "proje",
       "sheet",
       "templ"
-    ]
+    ],
+    "support_checked": true
   },
   {
-    "claim": "Freelance templates in Notion and Google Sheets are available for free and paid versions.",
+    "claim": "Freelance templates in Notion include project proposals, client management tools, invoice trackers, and time management sheets.",
     "source_url": "https://www.notion.com/templates/category/freelance",
     "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
-    "verified": false,
-    "assumption": true,
-    "check": "quote does not state the claim (model support check)",
+    "verified": true,
+    "assumption": false,
+    "check": "quote found on the source page",
     "topic_terms": [
       "clien",
       "desig",
@@ -44,12 +45,13 @@
       "proje",
       "sheet",
       "templ"
-    ]
+    ],
+    "support_checked": true
   },
   {
-    "claim": "Freelancer estimate templates in Google Sheets are free, customizable, and printable for a polished, professional look.",
-    "source_url": "https://www.template.net/estimate/freelancer/google-sheets",
-    "quote": "Explore professionally designed freelancer estimate templates in Google Sheets. Free, customizable, and printable for a polished, professional look. Download now!",
+    "claim": "Freelancer templates in Google Sheets are customizable and professional-quality.",
+    "source_url": "https://www.template.net/freelancer/google-sheets",
+    "quote": "Get creative (and organized) with customizable freelancer templates in Google Sheets. Download professional-quality designs today!",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page",
@@ -71,4 +73,4 @@ False
 
 ## verified_claim_count
 
-1
+3

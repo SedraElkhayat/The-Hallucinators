@@ -1,0 +1,47 @@
+{
+  "phase": 1,
+  "what_would_change_the_verdict": [
+    "min_verified_claims: verified_claims=0 fails >= 3 -> repeat",
+    "no_kill_criterion: kill_triggered=2 fails == 0 -> stop"
+  ],
+  "alternatives": [
+    {
+      "name": "Weekly Tech Digest",
+      "score": 2.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: weak",
+        "effort: weak"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "Tech Highlights Newsletter",
+      "score": 2.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: weak",
+        "effort: weak"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "Tech Weekly Summary",
+      "score": 2.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: weak",
+        "effort: weak"
+      ],
+      "is_founder_idea": false
+    }
+  ],
+  "founder_choice": "stop here",
+  "_meta": {
+    "agent": "orchestrator",
+    "sources": []
+  }
+}

@@ -2,12 +2,12 @@
   "replies": [
     {
       "question": "Can I use the template in Arabic?",
-      "reply": "Yes, the templates are bilingual and support Arabic and English.",
+      "reply": "Yes, the templates are bilingual and support Arabic.",
       "escalate": false
     },
     {
       "question": "I bought it twice by mistake, can I get my money back?",
-      "reply": "Please contact the founder to discuss refund options.",
+      "reply": "The founder will review your request and decide on a refund.",
       "escalate": true
     },
     {

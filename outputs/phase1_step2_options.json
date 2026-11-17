@@ -6,7 +6,7 @@
       "source": "brief"
     },
     "problem": {
-      "value": "Freelance graphic designers in Egypt struggle to track client projects, invoices sent, and revision rounds.",
+      "value": "Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds.",
       "status": "answered",
       "source": "brief"
     },
@@ -36,7 +36,7 @@
       "source": "founder"
     },
     "distribution_channel": {
-      "value": "Sell through a local Arabic marketplace like Jumia or Namshi",
+      "value": "Sell through a website with a one-time purchase link",
       "status": "suggested_approved",
       "source": "founder_approved_suggestion"
     },
@@ -55,12 +55,12 @@
     {
       "field": "distribution_channel",
       "options": [
-        "Sell through a local Arabic marketplace like Jumia or Namshi",
-        "Offer on a freelance platform like Upwork or Fiverr",
-        "Promote via social media groups in Arabic and English"
+        "Sell through a website with a one-time purchase link",
+        "Offer via social media groups in Arabic and English",
+        "Partner with local design communities for direct sales"
       ],
       "status": "suggested_approved",
-      "value": "Sell through a local Arabic marketplace like Jumia or Namshi"
+      "value": "Sell through a website with a one-time purchase link"
     }
   ],
   "scope_after_options": {

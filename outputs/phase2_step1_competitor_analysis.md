@@ -6,11 +6,11 @@
 [
   {
     "competitor": "Notion Freelance Templates",
-    "position": "Designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets. (claim: Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.)"
+    "position": "Designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets (claim: Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.)"
   },
   {
-    "competitor": "Sync2Sheets",
-    "position": "Real-time 2-way sync between Notion databases and Google Sheets for managing data and creating dashboards. (claim: Sync2Sheets offers a 7-day free trial for real-time 2-way sync between Notion databases and Google Sheets.)"
+    "competitor": "Fontiverse Google Sheets Templates",
+    "position": "A collection of Google Sheets templates tailored for freelance designers, covering client management, project scheduling, invoicing, and financial tracking (claim: Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.)"
   }
 ]
 ```
@@ -19,8 +19,8 @@
 
 ```json
 [
-  "Free templates are available for basic tools, but no verified claim about paid versions for advanced features. (claim: Freelance templates in Notion and Google Sheets are available for free and paid versions.) ASSUMPTION",
-  "No verified claim about pricing for niche operational blueprints. (claim: OpsBlueprints offers niche-specific operational blueprints for freelancers, agencies, and small teams in Notion or Google Sheets.) ASSUMPTION"
+  "Notion Freelance Templates are free, but they do not include revision tracking (claim: Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.)",
+  "Fontiverse Google Sheets Templates are free, but they do not include revision tracking (claim: Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.)"
 ]
 ```
 
@@ -30,23 +30,23 @@
 {
   "rivalry": {
     "level": "medium",
-    "reason": "Notion Freelance Templates and Sync2Sheets are already offering similar tools, creating competition for the same customer base. (claim: Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.)"
+    "reason": "Notion Freelance Templates and Fontiverse Google Sheets Templates are both free and offer similar features, creating competition for the target market (claim: Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.)"
   },
   "new_entrants": {
     "level": "unknown",
-    "reason": "There is no verified claim about the barriers to entry for new competitors in this market. (claim: Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.)"
+    "reason": "There is insufficient evidence to determine the ease of entry for new competitors in this market (claim: Graphic design services are a $57 billion global industry, growing 2.7% a year since 2021.)"
   },
   "substitutes": {
     "level": "high",
-    "reason": "Freelance designers can use free templates or other tools like Google Sheets for similar functions. (claim: Freelance templates in Notion and Google Sheets are available for free and paid versions.)"
+    "reason": "There are multiple free and paid tools available for freelance designers, such as Notion Sheets and OpsBlueprints, which offer similar functionalities (claim: Notion Sheets offers a free plan with paid plans starting at $9/month.)"
   },
   "buyer_power": {
     "level": "medium",
-    "reason": "Freelance designers may have limited budgets and may prefer free or low-cost solutions. (claim: Freelance templates in Notion and Google Sheets are available for free and paid versions.)"
+    "reason": "Freelance designers in Egypt and the MENA region may have limited options and may be willing to pay for a bilingual template pack that meets their specific needs (claim: Freelance graphic designers in Egypt and the wider MENA region who work with several clients at once.)"
   },
   "supplier_power": {
     "level": "unknown",
-    "reason": "There is no verified claim about the power of suppliers in this market. (claim: Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.)"
+    "reason": "There is insufficient evidence to determine the power of suppliers in this market (claim: Graphic design services are a $57 billion global industry, growing 2.7% a year since 2021.)"
   }
 }
 ```
@@ -57,27 +57,27 @@ yes
 
 ## differentiation_reason
 
-The idea offers a bilingual solution with no subscriptions and no collection of client data, which is a unique value proposition. (claim: Bilingual Arabic and English, built for local freelancing habits, with no subscriptions that lock users in and no collection of client data.)
+The founder's idea offers a bilingual (Arabic and English) digital template pack with no subscriptions and no collection of client data, which is a unique value proposition (claim: A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no collection of client data.)
 
 ## claim_refs
 
 ```json
 [
   {
-    "claim": "Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
     "source_url": "https://www.notion.com/templates/category/free-freelance-templates"
   },
   {
-    "claim": "Sync2Sheets offers a 7-day free trial for real-time 2-way sync between Notion databases and Google Sheets.",
-    "source_url": "https://www.notion.com/connections/sync2sheets"
+    "claim": "Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.",
+    "source_url": "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/"
   },
   {
-    "claim": "Freelance templates in Notion and Google Sheets are available for free and paid versions.",
-    "source_url": "https://www.notion.com/templates/category/freelance"
+    "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "source_url": "https://www.notion.com/templates/category/free-freelance-templates"
   },
   {
-    "claim": "Google Sheets Freelance templates help organize inquiries, estimate workloads, and manage deadlines.",
-    "source_url": "https://www.template.net/freelancer/google-sheets"
+    "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "source_url": "https://www.notion.com/templates/category/free-freelance-templates"
   }
 ]
 ```
@@ -91,7 +91,7 @@ False
 ```json
 [
   {
-    "claim": "Notion's Freelance templates are designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
     "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
     "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
     "verified": true,
@@ -110,44 +110,22 @@ False
     "support_checked": true
   },
   {
-    "claim": "Sync2Sheets offers a 7-day free trial for real-time 2-way sync between Notion databases and Google Sheets.",
-    "source_url": "https://www.notion.com/connections/sync2sheets",
-    "quote": "install Sync2Sheets in Google Sheets (7-day free trial, no credit card), connect your Notion workspace, and pick the databases you want to sync.",
+    "claim": "Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.",
+    "source_url": "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/",
+    "quote": "The best Google Sheets templates for freelance designers help manage clients, deadlines, deliverables, invoices, and business finances in one familiar platform.",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page",
     "topic_terms": [
-      "googl",
-      "notio",
-      "sheet"
-    ],
-    "support_checked": true
-  },
-  {
-    "claim": "Freelance templates in Notion and Google Sheets are available for free and paid versions.",
-    "source_url": "https://www.notion.com/templates/category/freelance",
-    "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
-    "verified": false,
-    "assumption": true,
-    "check": "quote does not state the claim (model support check)",
-    "topic_terms": [
       "clien",
       "desig",
       "freel",
+      "googl",
       "invoi",
-      "notio",
-      "proje",
       "sheet",
       "templ"
-    ]
-  },
-  {
-    "claim": "Google Sheets Freelance templates help organize inquiries, estimate workloads, and manage deadlines.",
-    "source_url": "https://www.template.net/freelancer/google-sheets",
-    "quote": "The right spreadsheet can bring those scattered responsibilities into one manageable workspace without adding another monthly software subscription.",
-    "verified": false,
-    "assumption": true,
-    "check": "quote not found on the source page"
+    ],
+    "support_checked": true
   }
 ]
 ```

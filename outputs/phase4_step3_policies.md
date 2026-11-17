@@ -6,12 +6,17 @@
 [
   {
     "name": "Terms of Service",
-    "text": "By using our digital template pack, you agree to these terms. Our templates are for personal use only. You may not share, sell, or distribute the templates without our permission. You are responsible for any use of the templates. We reserve the right to change these terms at any time. Contact us at [FOUNDER TO SET: contact address]. These terms are governed by [FOUNDER TO SET: governing law].",
+    "text": "By using our product, you agree to these terms. The product is provided \"as is\" without any warranties. You may use the product for personal or commercial purposes, but you must not modify, distribute, or sublicense the product. The founder reserves the right to change these terms at any time. Licence limits: [FOUNDER TO SET: licence limits]. Contact address: [FOUNDER TO SET: contact address]. Governing law: [FOUNDER TO SET: governing law].",
     "needs_legal_review": true
   },
   {
     "name": "Privacy Policy",
-    "text": "We do not collect any personal information from users. We never ask for passwords or payment card details. We do not store any data related to your use of the templates. Your use of the templates is entirely private. We do not share, sell, or transfer any data. If you have questions about our privacy practices, please contact us at [FOUNDER TO SET: contact address].",
+    "text": "We do not collect any personal data from users. The product does not store passwords, payment card details, or any other sensitive information. We never ask for payment card details or personal details. The product is designed to protect user privacy and ensure that no data is stored or shared without explicit consent. We do not sell, rent, or share user data with third parties. We only use the data that is necessary to provide the product and to improve the user experience. We will not collect client data as per the founder's values and limits.",
+    "needs_legal_review": true
+  },
+  {
+    "name": "Refund Policy",
+    "text": "<how a buyer asks for a refund and that the founder reviews each request>. Refund window: [FOUNDER TO SET: refund window]. The founder will manually review each refund request and decide whether to approve it. The system does not automatically refund money. The refund process is entirely at the discretion of the founder.",
     "needs_legal_review": true
   }
 ]

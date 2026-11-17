@@ -6,4 +6,4 @@ The system's verdict and its checks are unchanged in `phase1_gate_decision.md`.
 
 Reasons the system gave:
 - no_kill_criterion: kill_triggered=1 fails == 0 -> stop
-- no_open_must_fix: open_must_fix=1 fails == 0 -> repeat
+- no_open_must_fix: open_must_fix=3 fails == 0 -> repeat

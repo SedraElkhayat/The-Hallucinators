@@ -1,27 +1,27 @@
 {
   "channels": [
     {
-      "name": "Notion Community",
-      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.",
+      "name": "Facebook Groups",
+      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the wider MENA region who work with several clients at once",
       "first_actions": [
-        "Join the Notion Community and engage with designers to understand their pain points.",
-        "Post a question about project management tools and ask for recommendations."
+        "Join and engage with relevant Facebook groups for freelance designers in Egypt and the MENA region to understand their pain points and needs.",
+        "Post a simple question or poll to gauge interest in a tool for managing client projects, invoices, and revisions."
       ]
     },
     {
-      "name": "Facebook Groups for Freelancers",
-      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
+      "name": "LinkedIn Groups",
+      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the wider MENA region who work with several clients at once",
       "first_actions": [
-        "Join relevant Facebook groups for freelance designers in Egypt and the MENA region.",
-        "Share a post about the challenges of managing multiple clients and ask for feedback."
+        "Join and participate in LinkedIn groups focused on freelance graphic design in Egypt and the MENA region.",
+        "Share insights or ask questions about managing multiple clients to build trust and gather feedback."
       ]
     },
     {
-      "name": "LinkedIn Groups for Freelance Designers",
-      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the MENA region will use the template pack to track client projects, invoices sent, and revision rounds.",
+      "name": "Reddit",
+      "evidence": "phase1_step5_market>: Freelance graphic designers in Egypt and the wider MENA region who work with several clients at once",
       "first_actions": [
-        "Join LinkedIn groups for freelance designers in Egypt and the MENA region.",
-        "Post about the need for a project management tool and ask for suggestions."
+        "Search for subreddits related to freelance design in the MENA region and engage in discussions.",
+        "Post a question or idea about managing client projects and invoicing to see if there is interest in a tool."
       ]
     }
   ],

@@ -6,7 +6,7 @@
       "source": "brief"
     },
     "problem": {
-      "value": "Freelance graphic designers in Egypt struggle to track client projects, invoices sent, and revision rounds.",
+      "value": "Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds.",
       "status": "answered",
       "source": "brief"
     },
@@ -55,19 +55,19 @@
     {
       "round": 1,
       "field": "monetization_idea",
-      "question": "How do you plan to monetize the product?",
+      "question": "How do you plan to monetize the product? Not sure? Type “I don't know” and I will suggest some options for you to choose from.",
       "answer_status": "answered"
     },
     {
       "round": 1,
       "field": "distribution_channel",
-      "question": "Which platforms or channels will you use to distribute the product?",
+      "question": "Which distribution channels will you use to reach your target customers? Not sure? Type “I don't know” and I will suggest some options for you to choose from.",
       "answer_status": "unknown"
     },
     {
       "round": 1,
       "field": "differentiation",
-      "question": "What makes your product different from existing solutions in the market?",
+      "question": "What makes your product different from existing solutions in the market? Not sure? Type “I don't know” and I will suggest some options for you to choose from.",
       "answer_status": "answered"
     }
   ],

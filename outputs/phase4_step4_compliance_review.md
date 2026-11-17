@@ -6,28 +6,48 @@
 [
   {
     "severity": "should_fix",
-    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step1_pricing: The claim is labeled as an assumption without any supporting evidence or market data.",
-    "quote": "ASSUMPTION: No verified comparable claims state a price, and the market demand for a paid bilingual template pack remains unclear."
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step1_pricing: The price is neither verified nor labeled an assumption.",
+    "quote": "The model treated the brief's budget (USD 100) as a price; removed."
   },
   {
     "severity": "should_fix",
-    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step1_pricing: The price is not set and is labeled as stubbed, which is not allowed.",
-    "quote": "STUBBED: the model returned no price; the founder must set one."
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step1_pricing: The price is not set.",
+    "quote": "price_usd: null"
   },
   {
     "severity": "should_fix",
-    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: The contact address is not set and is left as a placeholder, which is not allowed.",
-    "quote": "FOUNDER TO SET: contact address"
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step1_pricing: The price is not set.",
+    "quote": "The model returned no price; the founder must set one."
   },
   {
     "severity": "should_fix",
-    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: The governing law is not set and is left as a placeholder, which is not allowed.",
-    "quote": "FOUNDER TO SET: governing law"
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step2_offer: A concrete term (price) the founder did not set.",
+    "quote": "price_usd: null"
   },
   {
     "severity": "should_fix",
-    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: The contact address is not set and is left as a placeholder, which is not allowed.",
-    "quote": "FOUNDER TO SET: contact address"
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step2_offer: A concrete term (features) the founder did not set.",
+    "quote": "includes: [\"Digital Notion templates for project tracking\", \"Google Sheets templates for invoicing and client management\"]"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: A concrete term (refund window) the founder did not set.",
+    "quote": "Refund window: [FOUNDER TO SET: refund window]"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: A concrete term (licence limits) the founder did not set.",
+    "quote": "Licence limits: [FOUNDER TO SET: licence limits]"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: A concrete term (contact address) the founder did not set.",
+    "quote": "Contact address: [FOUNDER TO SET: contact address]"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): phase4_step3_policies: A concrete term (governing law) the founder did not set.",
+    "quote": "Governing law: [FOUNDER TO SET: governing law]"
   }
 ]
 ```

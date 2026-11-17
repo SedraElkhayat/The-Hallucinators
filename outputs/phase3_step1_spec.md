@@ -4,13 +4,13 @@
 
 ```json
 [
-  "index.html: Value proposition showing the bilingual Arabic and English template pack for freelance designers in Egypt and the MENA region, with no subscriptions and no client data collection",
-  "index.html: Features section listing the ability to track client projects, invoices sent, and revision rounds using Notion and Google Sheets",
-  "index.html: Evidence section highlighting the founder's skills in design and tools, and the bilingual support",
-  "index.html: Price section with USD 100 for the template pack (to be set in Phase 4)",
-  "index.html: FAQ section with common questions about the template pack and its features",
-  "index.html: Policy links to privacy and terms (to be drafted in Phase 4)",
-  "index.html: Demo sign-up box with a label showing the founder's call-to-action"
+  "index.html: Value proposition showing a bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no collection of client data",
+  "index.html: Features section listing tracking of client projects, invoices sent, and revision rounds",
+  "index.html: Evidence section with findings from the demand test (ratio of 1.4, MOCKED) and alignment with the lean canvas",
+  "index.html: Price section with one-time purchase of USD 100 (set in Phase 4)",
+  "index.html: FAQ section with common questions about the template pack and its usage",
+  "index.html: Policy links (drafted in Phase 4) for privacy and terms",
+  "index.html: Demo sign-up box with a label showing the founder's intent to collect sign-ups"
 ]
 ```
 
@@ -18,13 +18,13 @@
 
 ```json
 [
-  "As a freelance graphic designer in Egypt, I want to track client projects, invoices sent, and revision rounds using a bilingual template pack, so that I can manage my workload efficiently.",
-  "As a freelance designer in the MENA region, I want to use a template pack that supports both Arabic and English, so that I can work with clients who prefer either language.",
-  "As a founder, I want to provide a clear value proposition for the template pack, so that potential customers understand its benefits.",
-  "As a customer, I want to know the price of the template pack, so that I can decide whether to purchase it.",
-  "As a user, I want to find answers to common questions about the template pack, so that I can make an informed decision.",
-  "As a customer, I want to know where to find the privacy and terms policies, so that I can understand how my data is handled.",
-  "As a founder, I want a demo sign-up box on the landing page, so that I can collect potential customer interest."
+  "As a freelance graphic designer in Egypt, I want to see a bilingual (Arabic and English) digital template pack, so that I can track client projects, invoices sent, and revision rounds efficiently",
+  "As a freelance designer in the MENA region, I want to know how the template pack helps with tracking client projects, so that I can understand its value",
+  "As a potential buyer, I want to see the evidence of demand for the template pack, so that I can assess its potential",
+  "As a customer, I want to know the price of the template pack, so that I can decide if it fits my budget",
+  "As a user, I want to find answers to common questions about the template pack, so that I can understand its features and usage",
+  "As a user, I want to see the privacy and terms policies, so that I can understand how my data is handled",
+  "As a user, I want to sign up for a demo, so that I can get more information about the template pack"
 ]
 ```
 
@@ -120,14 +120,11 @@
 
 ```json
 [
-  "Payment integration",
-  "User accounts or sign-ups",
-  "Dynamic content or scripts",
-  "Deployment or hosting",
-  "Price or policy details (to be set in Phase 4)",
-  "Marketing or advertising",
-  "User data collection",
-  "Subscription models"
+  "No scripts or payment integration",
+  "No user accounts or network calls",
+  "No sign-up, waitlist, or user numbers",
+  "No marketing sentences or fake reviews",
+  "No subscription models or data collection"
 ]
 ```
 

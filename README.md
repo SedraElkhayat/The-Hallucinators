@@ -25,7 +25,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run in `outputs/` ran all six phases with the real local model (`qwen3:8b`), 0 agent errors. Offline tests use MockLLM (outputs labeled MOCKED) |
 | Pricing (Phase 4) | Working. In the demo run no verified source stated a competitor's price, so no price is proposed: `price_usd` is empty and labeled `ASSUMPTION` until the founder sets it |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
-| Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
+| Guardrails and red-team evals (`python evals/run_redteam.py`: 83 trick prompts; live trick briefs with the real model in `evals/live_trick_briefs/`: fake reviews, crypto returns, income promise, each stopped at Gate 1 with the content blocked) | Working |
 | Founder website (Phase 3 build from a template, Phase 5 store version with price and policies, website checks in Gates 3 and 5) | Working (never published by the system; the founder publishes it) |
 | Preview website and Download site folder buttons (local only; the system never publishes) | Working |
 | Founder answers and approvals in the committed demo run (`demo/founder_inputs*.json`) | MOCKED: scripted answers, labeled `SCRIPTED` in the log; the system's own gate verdicts are kept unchanged. In the web UI a real founder answers and approves: Working |
@@ -73,7 +73,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Cost per run
 
-**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 55 model calls and about 145k tokens (126,473 in, 18,153 out) and took about 3.5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 24 calls and about 60k tokens (52,531 in, 7,348 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
+**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 71 model calls and about 208k tokens (181,236 in, 26,620 out) and took about 5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 23 calls and about 59k tokens (52,602 in, 6,844 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
 
 ## Demo video
 

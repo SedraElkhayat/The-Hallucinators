@@ -15,8 +15,8 @@ A bilingual template pack for freelance designers in Egypt and the MENA region
   "Track client projects with organized templates",
   "Manage invoices sent and revision rounds in one place",
   "Built for local freelancing habits in Arabic and English",
-  "No subscriptions, no client data collected",
-  "Simple and easy to use for multiple clients"
+  "No subscriptions or client data collection",
+  "Simple and ready to use with Notion and Google Sheets"
 ]
 ```
 

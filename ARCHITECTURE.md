@@ -265,7 +265,7 @@ This table states the current state of the code and is updated as components are
 | Founder website preview and download in the UI (local only, never published) | Working |
 | Guardrails (input, output and release checks) and red-team evals in `evals/` | Working |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
-| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED) and on a real local model: the committed demo run (all six phases, `qwen3:8b` through Ollama, SearXNG search) took about 3.5 minutes and 55 model calls |
+| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED) and on a real local model: the committed demo run (all six phases, `qwen3:8b` through Ollama, SearXNG search) took about 5 minutes and 71 model calls |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results in the demo run | MOCKED input (labeled) |
 | Amounts in the sale-to-cash test | Sample amounts, not the Phase 4 price (labeled MOCKED) |

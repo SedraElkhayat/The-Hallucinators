@@ -2,44 +2,44 @@
   "title": "Founder's Guide to the Built Website",
   "sections": [
     {
-      "heading": "Open the Website Folder",
+      "heading": "Open the website folder",
       "text": "Navigate to the 'phase3_step3_site' folder to access the built website files."
     },
     {
-      "heading": "Value Proposition Section",
-      "text": "The page shows the bilingual Arabic and English template pack for freelance designers in Egypt and the MENA region, with no subscriptions and no client data collection."
+      "heading": "Value proposition section",
+      "text": "Displays the bilingual (Arabic and English) digital template pack with no subscriptions and no collection of client data."
     },
     {
-      "heading": "Features Section",
-      "text": "The page lists the ability to track client projects, invoices sent, and revision rounds using Notion and Google Sheets."
+      "heading": "Features section",
+      "text": "Lists the main features: tracking client projects, managing invoices and revisions, and being built for local freelancing habits."
     },
     {
-      "heading": "Evidence Section",
-      "text": "The page highlights the founder's skills in design and tools, and the bilingual support."
+      "heading": "Evidence section",
+      "text": "Includes findings from the demand test (ratio of 1.4, MOCKED) and alignment with the lean canvas."
     },
     {
-      "heading": "Price Section",
-      "text": "The page includes a placeholder for USD 100 for the template pack (to be set in Phase 4)."
+      "heading": "Price section",
+      "text": "Shows the one-time purchase price of USD 100, set for Phase 4."
     },
     {
-      "heading": "FAQ Section",
-      "text": "The page has a FAQ section with common questions about the template pack and its features."
+      "heading": "FAQ section",
+      "text": "Answers common questions about the template pack, its usage, and features."
     },
     {
-      "heading": "Policy Links Section",
-      "text": "The page includes policy links to privacy and terms (to be drafted in Phase 4)."
+      "heading": "Policy links section",
+      "text": "Includes draft links for privacy and terms policies, to be finalized in Phase 4."
     },
     {
-      "heading": "Demo Sign-Up Box",
-      "text": "The page has a demo sign-up box with a label showing the founder's call-to-action."
+      "heading": "Demo sign-up box",
+      "text": "A placeholder sign-up box that sends nothing, showing the founder's intent to collect sign-ups."
     },
     {
       "heading": "Placeholders",
-      "text": "Placeholders include price details and policies until Phase 4, and the demo sign-up box that sends nothing."
+      "text": "Price and policies are placeholders until Phase 4. The demo sign-up box does not send any data."
     },
     {
-      "heading": "What the Page Does Not Do",
-      "text": "The page does not include payment integration, user accounts, or dynamic content. It is a static template pack for tracking and organizing client information."
+      "heading": "What the page does not do",
+      "text": "The page does not include scripts, payment integration, user accounts, or subscription models."
     }
   ],
   "documented_files": [

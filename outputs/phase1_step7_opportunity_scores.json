@@ -1,52 +1,52 @@
 {
   "ranked": [
     {
-      "name": "A bilingual template pack for creating b ...[truncated]",
-      "score": 7.0,
+      "name": "A bilingual (Arabic and English) project management tool for freelance designers",
+      "score": 3.0,
       "reasons": [
-        "need: Freelance designers struggle with tracking projects and invoices",
-        "market: No clear demand for paid solutions yet",
-        "fit: Founder has skills in Notion and Google Sheets",
-        "effort: 40 hours needed, budget covers it"
+        "need: unknown",
+        "market: unknown",
+        "fit: adequate",
+        "effort: 40"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A digital invoicing and tracking tool for freelance designers",
+      "score": 3.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: adequate",
+        "effort: 40"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A bilingual (Arabic and English) template pack for freelance designers",
+      "score": 3.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: adequate",
+        "effort: 40"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A bilingual (Arabic and English) digital template pack for freelance graphic designers in Egypt and the MENA region",
+      "score": 3.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: adequate",
+        "effort: 40"
       ],
       "is_founder_idea": true
-    },
-    {
-      "name": "A bilingual project management tool for freelance designers",
-      "score": 6.0,
-      "reasons": [
-        "need: Freelance designers struggle with tracking projects and invoices",
-        "market: No clear demand for paid solutions yet",
-        "fit: Founder has skills in Notion and Google Sheets",
-        "effort: 40 hours needed, budget covers it"
-      ],
-      "is_founder_idea": false
-    },
-    {
-      "name": "A digital invoicing and client tracking tool for freelance designers",
-      "score": 5.0,
-      "reasons": [
-        "need: Freelance designers track invoices and revisions",
-        "market: No clear demand for paid solutions yet",
-        "fit: Founder has skills in Notion and Google Sheets",
-        "effort: 40 hours needed, budget covers it"
-      ],
-      "is_founder_idea": false
-    },
-    {
-      "name": "A template pack for creating social media content for clients",
-      "score": 4.0,
-      "reasons": [
-        "need: Freelance designers create social media posts",
-        "market: No clear demand for paid solutions yet",
-        "fit: Founder has skills in Notion and Google Sheets",
-        "effort: 40 hours needed, budget covers it"
-      ],
-      "is_founder_idea": false
     }
   ],
-  "chosen": "A bilingual template pack for creating b ...[truncated]",
-  "top_scored": "A bilingual template pack for creating b ...[truncated]",
+  "chosen": "A bilingual (Arabic and English) digital template pack for freelance graphic designers in Egypt and the MENA region",
+  "top_scored": "A bilingual (Arabic and English) project management tool for freelance designers",
   "switch_suggested": false,
   "_meta": {
     "agent": "opportunity_scorer",
