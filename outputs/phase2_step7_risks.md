@@ -5,24 +5,24 @@
 ```json
 [
   {
-    "text": "Unknown demand for the bilingual template pack in the MENA region, as no evidence shows freelancers are willing to pay USD 100 for it.",
+    "text": "The founder's lack of coding skills may limit the ability to scale or customize the template pack effectively.",
     "severity": "high"
   },
   {
-    "text": "Lack of commitment signals from interviewees, such as no interest in paying for a template or using a bilingual tool.",
-    "severity": "high"
-  },
-  {
-    "text": "Competitors like Notion Freelance Templates and Fontiverse offer free or low-cost alternatives, which may limit the product's marketability.",
+    "text": "There is no clear evidence that freelance designers in the MENA region are willing to pay USD 100 for the template pack.",
     "severity": "medium"
   },
   {
-    "text": "The founder's idea is not clearly differentiated from existing free tools, which could reduce the perceived value of the product.",
+    "text": "The founder's idea may face competition from free templates and existing Notion tools, which could reduce the product's appeal.",
     "severity": "medium"
   },
   {
-    "text": "ASSUMPTION: Freelance designers in Egypt and the MENA region will pay USD 100 for a digital template pack that helps them track client projects, invoices sent, and revision rounds.",
-    "severity": "high"
+    "text": "The founder's idea may not address the specific needs of freelance designers in the MENA region.",
+    "severity": "medium"
+  },
+  {
+    "text": "The founder's idea may not be distributed effectively due to unknown channels.",
+    "severity": "medium"
   }
 ]
 ```
@@ -32,29 +32,29 @@
 ```json
 [
   {
-    "text": "No evidence that freelancers in the MENA region are willing to pay USD 100 for a bilingual template pack.",
-    "triggered": false,
-    "evidence": "Interviewees stated they have never paid for a template, and no commitment signals were observed.",
-    "triggered_on_missing_evidence": true
-  },
-  {
-    "text": "Competitors offer free or low-cost alternatives that fulfill the same need.",
+    "text": "If the founder cannot confirm that freelance designers in the MENA region are willing to pay for the template pack.",
     "triggered": false,
     "evidence": ""
   },
   {
-    "text": "Sign-ups below 0.2 of the target set before the test.",
+    "text": "If the founder's lack of coding skills makes it impossible to build or maintain the template pack.",
+    "triggered": false,
+    "evidence": ""
+  },
+  {
+    "text": "If the founder cannot find a way to distribute the template pack effectively.",
+    "triggered": false,
+    "evidence": ""
+  },
+  {
+    "text": "If the sign-ups ratio is below 0.2 of the target set before the test.",
     "triggered": false,
     "evidence": "",
+    "triggered_without_evidence": true,
     "checked_in_code": true
   },
   {
-    "text": "The founder lacks the necessary skills to create a digital template pack using Notion and Google Sheets.",
-    "triggered": false,
-    "evidence": ""
-  },
-  {
-    "text": "The product is not clearly differentiated from existing free tools.",
+    "text": "If the founder cannot confirm that freelance designers in the MENA region need a tool to manage projects and communicate with clients effectively.",
     "triggered": false,
     "evidence": ""
   }
@@ -65,10 +65,10 @@
 
 ```json
 [
-  "Evidence that freelancers in the MENA region are willing to pay USD 100 for a bilingual template pack.",
-  "Evidence that the product is uniquely positioned and offers value not found in free alternatives.",
-  "Evidence that the founder has the necessary skills to create a digital template pack using Notion and Google Sheets.",
-  "Evidence that the product is clearly differentiated from existing free tools.",
-  "Evidence that the founder has tested the assumptions with real data."
+  "If the founder can provide clear evidence that freelance designers in the MENA region are willing to pay for the template pack.",
+  "If the founder can demonstrate that the template pack is significantly better than existing free templates.",
+  "If the founder can show that the template pack can be built and maintained without coding skills.",
+  "If the founder can confirm that freelance designers in the MENA region need a tool to manage projects and communicate with clients effectively.",
+  "If the founder can identify and validate effective distribution channels."
 ]
 ```

@@ -4,7 +4,7 @@
     "mock_ord_002",
     "mock_ord_003"
   ],
-  "order_amounts_basis": "MOCKED test amounts (no Phase 4 price is set; these are not prices)",
+  "order_amounts_basis": "the Phase 4 price (9.00 USD)",
   "payment_triggers_delivery": true,
   "duplicate_ignored": true,
   "refund_revokes_access": true,
@@ -12,12 +12,12 @@
   "access_after_refund": false,
   "reconcile_balanced": true,
   "reconcile_summary": {
-    "total_orders_usd": 107.0,
-    "total_payments_usd": 107.0,
-    "total_refunds_usd": 29.0,
-    "total_fees_usd": 4.0,
-    "total_payouts_usd": 74.0,
-    "expected_payout_usd": 74.0
+    "total_orders_usd": 27.0,
+    "total_payments_usd": 27.0,
+    "total_refunds_usd": 9.0,
+    "total_fees_usd": 1.68,
+    "total_payouts_usd": 16.32,
+    "expected_payout_usd": 16.32
   },
   "mocked": true,
   "_meta": {

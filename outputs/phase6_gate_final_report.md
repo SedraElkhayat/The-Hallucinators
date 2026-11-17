@@ -15,7 +15,6 @@ Mode: real model
 
 Founder overrides (the founder rejected the system's gate verdict):
 
-- Gate 1: system STOP, founder chose GO
 - Gate 2: system STOP, founder chose GO
 
-Model calls: 71, tokens in 181236, out 26620, cost per run $0.0000
+Model calls: 73, tokens in 176394, out 23928, cost per run $0.0000

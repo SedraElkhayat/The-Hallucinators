@@ -6,31 +6,31 @@
 [
   {
     "name": "Notion Freelance Templates",
-    "url": "https://www.notion.com/templates/category/free-freelance-templates",
-    "pricing": "Free",
-    "positioning": "Designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
+    "url": "https://www.notion.com/templates/category/freelance",
+    "pricing": "unknown",
+    "positioning": "Designed for independent professionals, including freelancers, to streamline workflow and enhance client relationships.",
     "pricing_sourced": true
+  },
+  {
+    "name": "Notion Freelancer Kit",
+    "url": "https://gridfiti.com/notion-freelance-templates/",
+    "pricing": "unknown",
+    "positioning": "An all-in-one Notion template for freelancers to manage clients, projects, finances, and more.",
+    "pricing_sourced": false
   },
   {
     "name": "Notion Sheets",
     "url": "https://www.notionsheets.com/pricing",
-    "pricing": "ASSUMPTION: Free (with paid plans starting at $9/month)",
-    "positioning": "A tool for syncing Notion databases with Google Sheets, offering different pricing tiers for various needs.",
+    "pricing": "ASSUMPTION: Starter: $9/month, Pro: $19/month, Business: $39/month",
+    "positioning": "A tool for syncing Notion databases to Google Sheets, with plans based on the number of databases and features.",
     "pricing_sourced": false
   },
   {
-    "name": "Fontiverse Google Sheets Templates",
-    "url": "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/",
-    "pricing": "Free",
-    "positioning": "A collection of Google Sheets templates tailored for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.",
+    "name": "Free Freelance Templates",
+    "url": "https://www.notion.com/templates/category/free-freelance-templates",
+    "pricing": "free",
+    "positioning": "A collection of free templates for freelancers to streamline their workflow and boost productivity.",
     "pricing_sourced": true
-  },
-  {
-    "name": "OpsBlueprints",
-    "url": "https://opsblueprints.com/",
-    "pricing": "ASSUMPTION: Free",
-    "positioning": "Niche-specific operational blueprints for freelancers, agencies, and small teams, available in Notion or Google Sheets.",
-    "pricing_sourced": false
   }
 ]
 ```
@@ -40,9 +40,9 @@
 ```json
 [
   {
-    "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
-    "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
-    "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
+    "claim": "Notion Freelance templates are designed for independent professionals, including freelancers, to streamline workflow and enhance client relationships.",
+    "source_url": "https://www.notion.com/templates/category/freelance",
+    "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets. Perfect for freelancers seeking to streamline their workflow and enhance client relationships.",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page",
@@ -59,17 +59,25 @@
     "support_checked": true
   },
   {
-    "claim": "Notion Sheets offers a free plan with paid plans starting at $9/month.",
+    "claim": "Notion Sheets offers a Starter plan for $9/month, a Pro plan for $19/month, and a Business plan for $39/month.",
     "source_url": "https://www.notionsheets.com/pricing",
-    "quote": "Start free and upgrade when you need more databases or faster updates.",
+    "quote": "Starter: $9/month, Pro: $19/month, Business: $39/month",
     "verified": false,
     "assumption": true,
-    "check": "off-topic: the quote is on the page but does not mention this idea's customer, problem or product"
+    "check": "quote not found on the source page"
   },
   {
-    "claim": "Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.",
-    "source_url": "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/",
-    "quote": "The best Google Sheets templates for freelance designers help manage clients, deadlines, deliverables, invoices, and business finances in one familiar platform.",
+    "claim": "Notion Sheets allows syncing of unlimited rows and offers different update frequencies based on the plan.",
+    "source_url": "https://www.notionsheets.com/pricing",
+    "quote": "Every plan syncs unlimited rows. Rows synced this month Your bill 1,284 9,807 23,516 48,912 $9 Starter, 3 databases. The row count never changes the price.",
+    "verified": false,
+    "assumption": true,
+    "check": "quote not found on the source page"
+  },
+  {
+    "claim": "Free Freelance Templates are available for freelancers to streamline their workflow and boost productivity.",
+    "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
+    "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets. Perfect for freelancers seeking to streamline their workflow and enhance client relationships.",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page",
@@ -77,21 +85,13 @@
       "clien",
       "desig",
       "freel",
-      "googl",
       "invoi",
+      "notio",
+      "proje",
       "sheet",
       "templ"
     ],
     "support_checked": true
-  },
-  {
-    "claim": "OpsBlueprints offers free niche-specific operational blueprints for freelancers, agencies, and small teams, available in Notion or Google Sheets.",
-    "source_url": "https://opsblueprints.com/",
-    "quote": "30 niche-specific operational blueprints for freelancers, agencies, and small teams. Copy instantly for Notion or Google Sheets.",
-    "verified": false,
-    "assumption": true,
-    "fetch_error": "ConnectTimeout",
-    "check": "source could not be fetched"
   }
 ]
 ```

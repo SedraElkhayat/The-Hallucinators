@@ -2,54 +2,54 @@
   "assumptions": [
     {
       "id": "A1",
-      "text": "Freelance graphic designers in Egypt and the MENA region will pay USD 100 for a digital template pack that helps them track client projects, invoices sent, and revision rounds.",
-      "source": "phase2_step3_demand_test_plan",
+      "text": "Freelance graphic designers in Egypt and the MENA region struggle to track client projects, invoices sent, and revision rounds.",
+      "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Create a landing page with a one-time purchase link and track the number of clicks and sign-ups within one week.",
+      "cheapest_test": "Survey 10 freelance graphic designers in Egypt and the MENA region to ask if they struggle with tracking client projects, invoices sent, and revision rounds.",
       "impact": "high"
     },
     {
       "id": "A2",
-      "text": "Freelance designers in Egypt and the MENA region will find the bilingual (Arabic and English) template pack useful for their workflow.",
-      "source": "phase1_step4_idea_card",
+      "text": "The founder's idea includes a bilingual (Arabic and English) template pack, which caters to local freelancing habits in the MENA region.",
+      "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their needs and whether they would find the bilingual template pack useful.",
+      "cheapest_test": "Survey 10 freelance graphic designers in Egypt and the MENA region to ask if they prefer a bilingual (Arabic and English) template pack.",
       "impact": "high"
     },
     {
       "id": "A3",
-      "text": "Freelance designers in Egypt and the MENA region will prefer a one-time purchase model over subscriptions.",
-      "source": "phase1_step4_idea_card",
+      "text": "There is no clear evidence that freelance designers in the MENA region are willing to pay USD 100 for the template pack.",
+      "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their preference for payment models.",
+      "cheapest_test": "Create a landing page with a one-time purchase link and track how many visitors click on the 'Buy Now' button.",
       "impact": "high"
     },
     {
       "id": "A4",
-      "text": "The founder has the necessary skills to create a digital template pack using Notion and Google Sheets.",
+      "text": "The founder's lack of coding skills may limit the ability to scale or customize the template pack effectively.",
       "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Create a sample template pack and distribute it to 10 freelance designers in Egypt and the MENA region, then ask them to use it for a week and provide feedback.",
+      "cheapest_test": "Survey 10 freelance graphic designers in Egypt and the MENA region to ask if they would be comfortable with the founder's lack of coding skills.",
       "impact": "medium"
     },
     {
       "id": "A5",
-      "text": "There is insufficient evidence to confirm a demand for a bilingual digital template pack at USD 100.",
+      "text": "Freelance graphic designers in Egypt and the MENA region need a tool to manage projects and communicate with clients effectively.",
       "source": "phase1_step9_discover_report",
       "tested": false,
-      "cheapest_test": "Create a landing page with a one-time purchase link and track the number of clicks and sign-ups within one week.",
-      "impact": "high"
+      "cheapest_test": "Survey 10 freelance graphic designers in Egypt and the MENA region to ask if they need a tool to manage projects and communicate with clients effectively.",
+      "impact": "medium"
     },
     {
       "id": "A6",
-      "text": "No commitment signals were observed from interviewees, such as interest in paying for a template or using a bilingual tool.",
-      "source": "phase1_step9_discover_report",
+      "text": "Channels are unknown.",
+      "source": "phase2_step2_lean_canvas",
       "tested": false,
-      "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their needs and whether they would find the bilingual template pack useful.",
-      "impact": "high"
+      "cheapest_test": "Survey 10 freelance graphic designers in Egypt and the MENA region to ask which channels they use to find tools like the template pack.",
+      "impact": "medium"
     }
   ],
-  "untested_high_impact_count": 5,
+  "untested_high_impact_count": 3,
   "_meta": {
     "agent": "assumption_auditor",
     "sources": []

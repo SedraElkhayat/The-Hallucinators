@@ -2,12 +2,12 @@
   "issues": [
     {
       "severity": "should_fix",
-      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): DRAFT marker: The draft should not be marked as DRAFT if it is intended for release.",
+      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): DRAFT marker: The draft should not include the DRAFT marker in the text.",
       "quote": "DRAFT: prepared for founder review"
     },
     {
       "severity": "should_fix",
-      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Posted status: All launch posts are marked as posted: false, which is correct as they are not yet published.",
+      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Posted status: The launch posts are marked as posted: false, which is correct as they are not yet posted.",
       "quote": "posted: false"
     },
     {
@@ -17,12 +17,7 @@
     },
     {
       "severity": "should_fix",
-      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Price: The price is not set, which is acceptable as it is a draft.",
-      "quote": "price_usd: null"
-    },
-    {
-      "severity": "should_fix",
-      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Released status: The store page is marked as released, which should only happen after founder approval.",
+      "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Page release: The store page is marked as released, which is correct after founder approval.",
       "quote": "released: true"
     }
   ],

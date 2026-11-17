@@ -8,8 +8,8 @@ Cost: $0.00. This page says what was run, what happened at each gate, what is mo
 
 | Run | Brief | Phases | Result |
 |---|---|---|---|
-| strong | `demo/brief_strong.md` (bilingual Notion and Google Sheets template pack for freelance designers in Egypt and the MENA region) | 1 to 6 | all six phases; 198 log entries; about 5 minutes; 71 model calls; 181,236 input and 26,620 output tokens; 20 founder approvals; 69 distinct source URLs |
-| weak | `demo/brief_weak.md` (paid newsletter) | 1 | **the system recommends STOP at Gate 1** and the run ends; 86 log entries; about 1.3 minutes; 24 model calls; 52,739 input and 7,373 output tokens; no override; after the STOP the system lists three other directions from the same evidence (`outputs/phase1_gate_weak_alternatives.md`); the scripted demo file has no answer for that question, so the run stops, labeled `SCRIPTED_DEFAULT` in the log |
+| strong | `demo/brief_strong.md` (bilingual Notion and Google Sheets template pack for freelance designers in Egypt and the MENA region) | 1 to 6 | all six phases; 195 log entries; about 4.5 minutes; 73 model calls; 176,394 input and 23,928 output tokens; 20 founder approvals; 65 distinct source URLs |
+| weak | `demo/brief_weak.md` (paid newsletter) | 1 | **the system recommends STOP at Gate 1** and the run ends; 85 log entries; about 1.5 minutes; 23 model calls; 55,141 input and 8,437 output tokens; no override (0 verified claims, 2 kill criteria); after the STOP the system lists three other directions from the same evidence (`outputs/phase1_gate_weak_alternatives.md`); the scripted demo file has no answer for that question, so the run stops, labeled `SCRIPTED_DEFAULT` in the log |
 
 Both runs have 0 agent errors. In `decision_log.json` every entry has `run` set to `strong` or `weak`.
 
@@ -17,10 +17,10 @@ Both runs have 0 agent errors. In `decision_log.json` every entry has `run` set 
 
 | Gate | System's own verdict | What happened | Where to read it |
 |---|---|---|---|
-| 1 Discover | **STOP** (a triggered kill criterion; 3 open must-fix issues; 4 verified claims, 4 competitors) | the scripted founder rejected the STOP and chose GO (`SCRIPTED`) | `outputs/phase1_gate_decision.md`, `outputs/phase1_gate_founder_override.md` |
-| 2 Validate | repeat, then **STOP** (3 open must-fix issues after the repeat) | the scripted founder overrode it to GO (`SCRIPTED`) | `outputs/phase2_gate_decision.md`, `outputs/phase2_gate_founder_override.md` |
+| 1 Discover | **GO** (7 verified claims, 4 competitors, no triggered kill criterion, no open must-fix issue) | none needed | `outputs/phase1_gate_decision.md` |
+| 2 Validate | repeat, then **STOP** (1 open must-fix issue after the repeat) | the scripted founder overrode it to GO (`SCRIPTED`) | `outputs/phase2_gate_decision.md`, `outputs/phase2_gate_founder_override.md` |
 | 3 Build | GO (acceptance 1.0, website checks pass, no honesty must-fix, nothing deployed) | none needed | `outputs/phase3_gate_decision.md`, `outputs/phase3_step5_qa_report.md` |
-| 4 Commercial setup | repeat, then GO (no compliance must-fix after the repeat; price not set, labeled `ASSUMPTION`; policies marked for legal review) | none needed | `outputs/phase4_gate_decision.md` |
+| 4 Commercial setup | repeat, then GO (no compliance must-fix after the repeat; price USD 9 set by the founder, labeled `ASSUMPTION`; policies marked for legal review) | none needed | `outputs/phase4_gate_decision.md` |
 | 5 Launch | GO (no double delivery, refund revokes access, reconciliation balanced) | none needed | `outputs/phase5_gate_decision.md` |
 | 6 Operate | GO | none needed | `outputs/phase6_gate_decision.md` |
 
@@ -40,7 +40,7 @@ founder override never edits the decision file; it is written to its own file an
 | Real publishing | `STUBBED`: the system drafts, the founder publishes |
 
 Consequences visible in the outputs: the scorecard caps demand evidence at `adequate` because the demand result is `MOCKED`;
-Phase 4 found no verified price comparable, so it proposes no price (an `ASSUMPTION`) and the store page says purchasing opens
+Phase 4 found no verified price comparable, so the founder sets the price (USD 9, an `ASSUMPTION`) and the store page says purchasing opens
 when the founder is ready to sell; the Phase 6 memo recommends STOP because its demand and sales inputs are `MOCKED`.
 
 ## Where to look, by topic

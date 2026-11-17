@@ -6,4 +6,4 @@ Mode: real model
 |---|---|---|
 | 1 | 0 | stop |
 
-Model calls: 24, tokens in 52739, out 7373, cost per run $0.0000
+Model calls: 23, tokens in 55141, out 8437, cost per run $0.0000

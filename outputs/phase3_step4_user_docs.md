@@ -9,44 +9,40 @@ Founder's Guide to the Built Website
 ```json
 [
   {
-    "heading": "Open the website folder",
-    "text": "Navigate to the 'phase3_step3_site' folder to access the built website files."
+    "heading": "Open the Website Folder",
+    "text": "Open the 'phase3_step3_site' folder to access the built website files."
   },
   {
-    "heading": "Value proposition section",
-    "text": "Displays the bilingual (Arabic and English) digital template pack with no subscriptions and no collection of client data."
+    "heading": "Homepage Overview",
+    "text": "The homepage displays the headline, value proposition, and a call-to-action to join the waitlist."
   },
   {
-    "heading": "Features section",
-    "text": "Lists the main features: tracking client projects, managing invoices and revisions, and being built for local freelancing habits."
+    "heading": "Features Section",
+    "text": "The features section lists the main functions of the template pack, including tracking projects, invoices, and revisions using Notion and Google Sheets."
   },
   {
-    "heading": "Evidence section",
-    "text": "Includes findings from the demand test (ratio of 1.4, MOCKED) and alignment with the lean canvas."
+    "heading": "FAQ Section",
+    "text": "The FAQ section answers common questions about the template pack, such as file formats and language support."
   },
   {
-    "heading": "Price section",
-    "text": "Shows the one-time purchase price of USD 100, set for Phase 4."
+    "heading": "Price Section",
+    "text": "The price section shows a one-time purchase of USD 100 for the template pack."
   },
   {
-    "heading": "FAQ section",
-    "text": "Answers common questions about the template pack, its usage, and features."
+    "heading": "Policy Links",
+    "text": "The page includes links to draft terms and conditions and a privacy policy."
   },
   {
-    "heading": "Policy links section",
-    "text": "Includes draft links for privacy and terms policies, to be finalized in Phase 4."
+    "heading": "Demo Sign-Up Box",
+    "text": "The demo sign-up box is labeled as a demo and does not send any data."
   },
   {
-    "heading": "Demo sign-up box",
-    "text": "A placeholder sign-up box that sends nothing, showing the founder's intent to collect sign-ups."
+    "heading": "Placeholder Information",
+    "text": "Placeholders include price details and policies until Phase 4, which are not yet finalized."
   },
   {
-    "heading": "Placeholders",
-    "text": "Price and policies are placeholders until Phase 4. The demo sign-up box does not send any data."
-  },
-  {
-    "heading": "What the page does not do",
-    "text": "The page does not include scripts, payment integration, user accounts, or subscription models."
+    "heading": "What the Page Does Not Do",
+    "text": "The page does not include sign-up, waitlist, or user numbers. It also does not process payments or create accounts."
   }
 ]
 ```

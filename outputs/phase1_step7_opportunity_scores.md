@@ -5,59 +5,59 @@
 ```json
 [
   {
-    "name": "A bilingual (Arabic and English) project management tool for freelance designers",
-    "score": 3.0,
+    "name": "Bilingual Template Pack for Freelance Designers",
+    "score": 8.0,
     "reasons": [
-      "need: unknown",
-      "market: unknown",
-      "fit: adequate",
-      "effort: 40"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A digital invoicing and tracking tool for freelance designers",
-    "score": 3.0,
-    "reasons": [
-      "need: unknown",
-      "market: unknown",
-      "fit: adequate",
-      "effort: 40"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A bilingual (Arabic and English) template pack for freelance designers",
-    "score": 3.0,
-    "reasons": [
-      "need: unknown",
-      "market: unknown",
-      "fit: adequate",
-      "effort: 40"
-    ],
-    "is_founder_idea": false
-  },
-  {
-    "name": "A bilingual (Arabic and English) digital template pack for freelance graphic designers in Egypt and the MENA region",
-    "score": 3.0,
-    "reasons": [
-      "need: unknown",
-      "market: unknown",
-      "fit: adequate",
-      "effort: 40"
+      "need: Freelance designers struggle with tracking projects and invoices",
+      "market: Bilingual templates align with local habits",
+      "fit: Founder has design skills",
+      "effort: Template creation is feasible"
     ],
     "is_founder_idea": true
+  },
+  {
+    "name": "Freelance Graphic Designer Project Management Tool",
+    "score": 6.0,
+    "reasons": [
+      "need: Freelance designers struggle with project management",
+      "market: No clear pricing evidence",
+      "fit: Founder has skills",
+      "effort: Tool development is complex"
+    ],
+    "is_founder_idea": false
+  },
+  {
+    "name": "Survey System for Client Feedback",
+    "score": 5.0,
+    "reasons": [
+      "need: Clients value communication skills",
+      "market: No pricing evidence",
+      "fit: Founder has skills",
+      "effort: System development is complex"
+    ],
+    "is_founder_idea": false
+  },
+  {
+    "name": "Notion Freelance Templates",
+    "score": 4.0,
+    "reasons": [
+      "need: Freelance designers need project management tools",
+      "market: Free templates exist",
+      "fit: Founder lacks coding skills",
+      "effort: Tool development is complex"
+    ],
+    "is_founder_idea": false
   }
 ]
 ```
 
 ## chosen
 
-A bilingual (Arabic and English) digital template pack for freelance graphic designers in Egypt and the MENA region
+Bilingual Template Pack for Freelance Designers
 
 ## top_scored
 
-A bilingual (Arabic and English) project management tool for freelance designers
+Bilingual Template Pack for Freelance Designers
 
 ## switch_suggested
 

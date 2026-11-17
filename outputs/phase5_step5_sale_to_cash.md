@@ -2,7 +2,7 @@
 
 > **MOCKED**: All transactions simulated offline without network.
 
-- Orders Processed: 3 (MOCKED test amounts (no Phase 4 price is set; these are not prices))
+- Orders Processed: 3 (the Phase 4 price (9.00 USD))
 - Payment Triggers Delivery: True
 - Duplicate Webhook Ignored: True
 - Refund Revokes Access: True

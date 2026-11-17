@@ -1,13 +1,13 @@
 {
-  "headline": "Track projects, invoices, and revisions effortlessly",
-  "value_proposition": "A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no collection of client data",
+  "headline": "Track projects, invoices, and revisions with ease",
+  "value_proposition": "Bilingual Arabic and English, built for local freelancing habits, with no subscriptions that lock users in and no collection of client data.",
   "cta": "Join the waitlist",
   "features": [
-    "Track client projects with organized templates",
-    "Manage invoices sent and revision rounds in one place",
-    "Built for local freelancing habits in Arabic and English",
-    "No subscriptions or client data collection",
-    "Simple and ready to use with Notion and Google Sheets"
+    "Track client projects, invoices sent, and revision rounds using Notion and Google Sheets",
+    "Bilingual Arabic and English support for local freelancing habits",
+    "No subscriptions, no client data collected",
+    "Simple templates for Notion and Google Sheets",
+    "Helps manage multiple clients without stress"
   ],
   "faq": [
     {
@@ -15,26 +15,26 @@
       "a": "The template pack includes Notion and Google Sheets templates for tracking client projects, invoices sent, and revision rounds."
     },
     {
-      "q": "Can I use the templates in Arabic and English?",
-      "a": "Yes, the templates are bilingual and support both Arabic and English."
-    },
-    {
-      "q": "What file formats are the templates available in?",
-      "a": "The templates are available in Notion and Google Sheets formats for easy use."
-    },
-    {
-      "q": "Does the product help with invoicing?",
-      "a": "The templates help manage invoices sent and track revision rounds, but they do not generate invoices automatically."
+      "q": "What file formats are available?",
+      "a": "The templates are available in Notion and Google Sheets formats."
     },
     {
       "q": "Can I use the templates for multiple clients?",
       "a": "Yes, the templates are designed to help manage multiple clients efficiently."
+    },
+    {
+      "q": "Does the product collect client data?",
+      "a": "No, the product does not collect any client data."
+    },
+    {
+      "q": "What languages are supported?",
+      "a": "The templates are available in Arabic and English to support local freelancing habits."
     }
   ],
   "claims": [
     {
-      "claim": "Notion Freelance Templates are free and designed for independent professionals, offering project proposals, client management tools, invoice trackers, and time management sheets.",
-      "source_url": "https://www.notion.com/templates/category/free-freelance-templates",
+      "claim": "Freelance templates in Notion include project proposals, client management tools, invoice trackers, and time management sheets.",
+      "source_url": "https://www.notion.com/templates/category/freelance",
       "quote": "Empower your freelance journey with Notion's Freelance templates. Designed for independent professionals, our collection includes project proposals, client management tools, invoice trackers, and time management sheets.",
       "verified": true,
       "supported_by_quote": true,
@@ -42,9 +42,18 @@
       "shown_as": "fact"
     },
     {
-      "claim": "Fontiverse provides free Google Sheets templates for freelance designers, covering client management, project scheduling, invoicing, and financial tracking.",
-      "source_url": "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/",
-      "quote": "The best Google Sheets templates for freelance designers help manage clients, deadlines, deliverables, invoices, and business finances in one familiar platform.",
+      "claim": "Freelancer estimate templates in Google Sheets are free, customizable, and printable for a polished, professional look.",
+      "source_url": "https://www.template.net/estimate/freelancer/google-sheets",
+      "quote": "Explore professionally designed freelancer estimate templates in Google Sheets. Free, customizable, and printable for a polished, professional look. Download now!",
+      "verified": true,
+      "supported_by_quote": true,
+      "assumption": false,
+      "shown_as": "fact"
+    },
+    {
+      "claim": "Freelance graphic designers in Egypt and the MENA region need a tool to manage projects and communicate with clients effectively.",
+      "source_url": "https://news.ycombinator.com/item?id=33077397",
+      "quote": "It would help many freelance designers if I built a project management tool specifically for them! Freelance designers usually spend at least five meetings to confirm a design direction; we automate the process through survey templates.",
       "verified": true,
       "supported_by_quote": false,
       "assumption": true,
@@ -56,19 +65,20 @@
   "files": [
     {
       "path": "index.html",
-      "chars": 5571
+      "chars": 5682
     }
   ],
   "dropped": [],
-  "claims_shown_as_fact": 1,
+  "claims_shown_as_fact": 2,
   "claims_shown_as_assumption": 1,
   "publish_guide": "phase3_step7_publish_guide",
   "deployed": false,
   "_meta": {
     "agent": "builder",
     "sources": [
-      "https://www.notion.com/templates/category/free-freelance-templates",
-      "https://fontiverse.com/10-google-sheets-templates-for-freelance-designers/"
+      "https://www.notion.com/templates/category/freelance",
+      "https://www.template.net/estimate/freelancer/google-sheets",
+      "https://news.ycombinator.com/item?id=33077397"
     ]
   }
 }

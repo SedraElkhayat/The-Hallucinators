@@ -47,7 +47,7 @@ without a label) stay "must fix". The downgrade rules and their negative tests a
   support it is shown as `ASSUMPTION`, so the websites show more assumptions than facts.
 - **Demo inputs.** The demand-test result is `MOCKED`; interview notes and Phase 6 inputs are `SAMPLE`. The reports say so.
 - **Founder overrides in the demo.** The strong demo brief is run with a scripted founder who overrides the system's STOP at
-  Gates 1 and 2 (the evidence is thin and the small model's reviewer is noisy). The system's own verdict stays in the
+  Gate 2 (the evidence is thin and the small model's reviewer is noisy); Gate 1 was GO on the evidence. The system's own verdict stays in the
   decision file and the log (`system_outcome`, `provenance: SCRIPTED`). The weak demo brief ends in a STOP at Gate 1 without
   any override. The strong demo's final memo also recommends STOP, because its demand and sales inputs are `MOCKED`.
 - **Acceptance tests of the website are structural** (the page exists, every section exists, the demo label is shown). The

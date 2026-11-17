@@ -1,43 +1,41 @@
 {
   "questions": [
     {
-      "text": "Tell me about the last time you had multiple clients and needed to track projects, invoices, and revisions. How did you manage it?",
-      "why": "Reveals how they currently handle project tracking and whether they find existing methods inadequate."
+      "text": "Tell me about the last time you had multiple clients and struggled to track project timelines and invoices. What happened?",
+      "why": "This reveals how often the problem occurs and the impact it has on their workflow."
     },
     {
-      "text": "Have you ever used any tools or templates to track client projects, invoices, or revisions? If so, what did you like or dislike about them?",
-      "why": "Reveals their past experiences with similar tools and identifies potential pain points."
+      "text": "Have you tried any tools or methods to track client projects, invoices, and revision rounds in the past?",
+      "why": "This reveals what solutions they have already tried and whether they found them effective."
     },
     {
-      "text": "What have you paid for in the past to manage client projects, invoices, or revisions? How much did it cost?",
-      "why": "Reveals their willingness to pay for solutions and the cost they are currently willing to accept."
+      "text": "What tools or methods do you currently use to manage client projects, invoices, and revisions?",
+      "why": "This reveals their current habits and whether they are satisfied with their current approach."
     },
     {
-      "text": "How do you currently handle invoicing clients for your work? Have you ever used any tools or templates for this?",
-      "why": "Reveals their current invoicing practices and whether they are open to using a digital template pack."
+      "text": "Have you ever paid for a tool or service that helps you track client projects, invoices, and revisions?",
+      "why": "This reveals how much they are willing to invest in solving the problem."
     },
     {
-      "text": "Have you ever used a bilingual tool or template for your work? If so, how did it help or hinder your workflow?",
-      "why": "Reveals their familiarity with bilingual tools and whether they value such a feature."
+      "text": "How do you currently handle invoice tracking and revision rounds for multiple clients?",
+      "why": "This reveals their current workflow and potential pain points."
     },
     {
-      "text": "What do you do when you need to track revisions for a client project? Have you ever used a system or tool for this?",
-      "why": "Reveals their current revision tracking methods and whether they find them effective."
+      "text": "Have you ever used a bilingual tool or template for managing client projects and invoices?",
+      "why": "This reveals their preference for bilingual solutions and whether they have tried similar tools."
     }
   ],
   "rules": [
-    "Ask about specific past events and current behaviors, not opinions or future plans.",
-    "Avoid pitching the solution or describing the idea in any question.",
-    "Focus on what the customer has already tried and what they have paid for.",
-    "Look for commitment in terms of time, money, or introductions.",
-    "Treat compliments as noise and focus on actionable behaviors."
+    "Ask about specific past events and current behavior, not opinions or the future.",
+    "Avoid pitching the idea or describing the solution in any question.",
+    "Focus on what they have already tried and what they have paid for.",
+    "Look for commitment in terms of time, money, or introductions."
   ],
   "avoid_list": [
     "Would you buy the template pack?",
-    "Do you like the idea of a bilingual template pack?",
-    "Would you prefer a subscription model?",
-    "Do you think the template pack is useful?",
-    "Would you use the template pack for tracking projects?"
+    "Do you like the idea of using a bilingual template?",
+    "Would you prefer a tool that collects client data?",
+    "Do you think the solution is useful?"
   ],
   "dropped_questions": [],
   "_meta": {

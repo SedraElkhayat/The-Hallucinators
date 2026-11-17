@@ -20,8 +20,9 @@ waitlist_signups
 
 ```json
 [
-  "Landing page with a one-time purchase link",
-  "Surveys"
+  "Social media (Facebook, Instagram, LinkedIn)",
+  "Freelance communities (Reddit, Facebook groups)",
+  "Email list (from founder's network)"
 ]
 ```
 

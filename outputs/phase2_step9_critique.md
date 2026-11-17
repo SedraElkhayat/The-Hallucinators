@@ -6,30 +6,30 @@
 [
   {
     "severity": "should_fix",
-    "text": "The report presents an assumption about freelancers paying USD 100 for the template pack as a factual claim without proper evidence or citation.",
-    "downgraded_by_code": "rule applied in code: a finding without a cited claim is flagged assumption=true by code, so an assumption is not presented as a claim"
+    "text": "The report presents MOCKED demand test results as real behavior without citing the provenance.",
+    "downgraded_by_code": "rule applied in code: the report states that the demand data is MOCKED in its summary and limitations"
   },
   {
     "severity": "should_fix",
-    "text": "The report presents an assumption about the utility of a bilingual template pack as a factual claim without proper evidence or citation.",
-    "downgraded_by_code": "rule applied in code: a finding without a cited claim is flagged assumption=true by code, so an assumption is not presented as a claim"
+    "text": "The scorecard rates monetization as unknown due to lack of evidence, but the report does not cite any artifact for this claim.",
+    "downgraded_by_code": "rule applied in code: a scorecard rating without evidence_refs counts as unknown in the gate, so it cannot overstate the evidence"
   },
   {
     "severity": "should_fix",
-    "text": "The report presents an assumption about the one-time purchase model as a factual claim without proper evidence or citation.",
-    "downgraded_by_code": "rule applied in code: a finding without a cited claim is flagged assumption=true by code, so an assumption is not presented as a claim"
+    "text": "The report claims the scorecard rates problem severity as adequate, but the evidence is not fully supported by cited artifacts.",
+    "downgraded_by_code": "rule applied in code: a scorecard rating without evidence_refs counts as unknown in the gate, so it cannot overstate the evidence"
   },
   {
     "severity": "must_fix",
-    "text": "The report includes a high-severity risk about unknown demand for the bilingual template pack in the MENA region, but the claim is not supported by real evidence."
+    "text": "The report mentions competition from free templates but does not cite any artifact for this claim."
   },
   {
-    "severity": "must_fix",
-    "text": "The report includes a high-severity risk about lack of commitment signals from interviewees, but the claim is not supported by real evidence."
+    "severity": "should_fix",
+    "text": "The report states that the demand test results are MOCKED but does not clearly mention this in the limitations section."
   },
   {
-    "severity": "must_fix",
-    "text": "The report includes a high-severity risk presented as an assumption, which is not supported by real evidence."
+    "severity": "should_fix",
+    "text": "The report claims the founder's lack of coding skills is a high-severity risk but does not cite any artifact for this claim."
   }
 ]
 ```

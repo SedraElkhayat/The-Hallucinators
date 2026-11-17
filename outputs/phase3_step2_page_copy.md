@@ -2,17 +2,17 @@
 
 ## headline
 
-Track projects, invoices, and revisions effortlessly
+Track projects, invoices, and revisions with ease
 
 ## features
 
 ```json
 [
-  "Track client projects with organized templates",
-  "Manage invoices sent and revision rounds in one place",
-  "Built for local freelancing habits in Arabic and English",
-  "No subscriptions or client data collection",
-  "Simple and ready to use with Notion and Google Sheets"
+  "Track client projects, invoices sent, and revision rounds using Notion and Google Sheets",
+  "Bilingual Arabic and English support for local freelancing habits",
+  "No subscriptions, no client data collected",
+  "Simple templates for Notion and Google Sheets",
+  "Helps manage multiple clients without stress"
 ]
 ```
 
@@ -25,20 +25,20 @@ Track projects, invoices, and revisions effortlessly
     "a": "The template pack includes Notion and Google Sheets templates for tracking client projects, invoices sent, and revision rounds."
   },
   {
-    "q": "Can I use the templates in Arabic and English?",
-    "a": "Yes, the templates are bilingual and support both Arabic and English."
-  },
-  {
-    "q": "What file formats are the templates available in?",
-    "a": "The templates are available in Notion and Google Sheets formats for easy use."
-  },
-  {
-    "q": "Does the product help with invoicing?",
-    "a": "The templates help manage invoices sent and track revision rounds, but they do not generate invoices automatically."
+    "q": "What file formats are available?",
+    "a": "The templates are available in Notion and Google Sheets formats."
   },
   {
     "q": "Can I use the templates for multiple clients?",
     "a": "Yes, the templates are designed to help manage multiple clients efficiently."
+  },
+  {
+    "q": "Does the product collect client data?",
+    "a": "No, the product does not collect any client data."
+  },
+  {
+    "q": "What languages are supported?",
+    "a": "The templates are available in Arabic and English to support local freelancing habits."
   }
 ]
 ```

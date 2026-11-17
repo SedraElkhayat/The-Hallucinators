@@ -6,10 +6,10 @@
 [
   {
     "name": "Basic Template Pack",
-    "price_usd": null,
+    "price_usd": 9.0,
     "includes": [
-      "Digital Notion templates for project tracking",
-      "Google Sheets templates for invoicing and client management"
+      "Notion templates for project tracking, invoice management, and revision logs",
+      "Google Sheets templates for client communication and time tracking"
     ]
   }
 ]
@@ -17,4 +17,4 @@
 
 ## positioning
 
-A simple, bilingual tool for freelance designers in Egypt and the MENA region to manage client projects, invoices, and revisions without collecting client data.
+For freelance graphic designers in Egypt and the MENA region, this pack helps manage client projects, invoices, and revisions efficiently.

@@ -18,19 +18,19 @@ Criteria hash (sha256, pre-registered before the phase ran): `165f57378decdfe98e
 | `demand_ratio_above_0_5` | `demand_ratio` | >= 0.5 | 1.4 | PASS | pivot |
 | `demand_ratio_reaches_target` | `demand_ratio` | >= 1 | 1.4 | PASS | repeat |
 | `no_kill_criterion` | `kill_triggered` | == 0 | 0 | PASS | stop |
-| `no_open_must_fix` | `open_must_fix` | == 0 | 3 | FAIL | repeat |
+| `no_open_must_fix` | `open_must_fix` | == 0 | 1 | FAIL | repeat |
 
 ## Reasons
 
-- no_open_must_fix: open_must_fix=3 fails == 0 -> repeat
+- no_open_must_fix: open_must_fix=1 fails == 0 -> repeat
 - repeat budget exhausted (attempt 1, max repeats 1) -> stop
 
 ## What would change this verdict
 
-- `open_must_fix` would need to be == 0 (it is 3) to clear `no_open_must_fix`.
-- Evidence that freelancers in the MENA region are willing to pay USD 100 for a bilingual template pack. (from `phase2_step7_risks`)
-- Evidence that the product is uniquely positioned and offers value not found in free alternatives. (from `phase2_step7_risks`)
-- Evidence that the founder has the necessary skills to create a digital template pack using Notion and Google Sheets. (from `phase2_step7_risks`)
+- `open_must_fix` would need to be == 0 (it is 1) to clear `no_open_must_fix`.
+- If the founder can provide clear evidence that freelance designers in the MENA region are willing to pay for the template pack. (from `phase2_step7_risks`)
+- If the founder can demonstrate that the template pack is significantly better than existing free templates. (from `phase2_step7_risks`)
+- If the founder can show that the template pack can be built and maintained without coding skills. (from `phase2_step7_risks`)
 
 ## Metrics (computed in code from the artifacts)
 
@@ -42,6 +42,6 @@ Criteria hash (sha256, pre-registered before the phase ran): `165f57378decdfe98e
   "unknown_count": 1,
   "demand_ratio": 1.4,
   "kill_triggered": 0,
-  "open_must_fix": 3
+  "open_must_fix": 1
 }
 ```

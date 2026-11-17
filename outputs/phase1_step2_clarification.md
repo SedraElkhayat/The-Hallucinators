@@ -6,7 +6,7 @@ Founder's starting idea: A digital template pack (Notion and Google Sheets) that
 | Field | Value | Status | Source |
 |---|---|---|---|
 | target_customer | Freelance designers in Egypt and the wider MENA region who work with several clients at once | answered | brief |
-| problem | Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds. | answered | brief |
+| problem | Freelance graphic designers in Egypt struggle to track client projects, invoices sent, and revision rounds. | answered | brief |
 | product_type | A digital template pack (Notion and Google Sheets) | answered | brief |
 | budget | USD 100 total | answered | brief |
 | time_per_week | 8 hours per week for 3 months | answered | brief |

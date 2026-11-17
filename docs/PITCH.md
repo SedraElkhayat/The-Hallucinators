@@ -34,10 +34,10 @@ Six phases, each with agents that do one job and a gate whose criteria are fixed
   `ASSUMPTION`, and every downgrade is logged.
 - **Criteria are fixed before the evidence arrives.** Each gate's criteria are written and hashed before its phase
   runs (`phase<N>_gate_criteria.json`), so a weak result cannot be argued away afterwards.
-- **It says stop.** In the committed run the weak brief stops at Gate 1 (0 verified claims, 1 kill criterion), and the
+- **It says stop.** In the committed run the weak brief stops at Gate 1 (0 verified claims, 2 kill criteria), and the
   system then lists other directions from the same evidence (in the web app the founder can pick one and start again;
-  the scripted demo simply stops). Even the strong brief gets a STOP
-  recommendation at Gates 1 and 2 because the evidence is thin, and the final memo recommends stopping because the
+  the scripted demo simply stops). Even the strong brief, GO at Gate 1 with 7 verified claims,
+  gets a STOP recommendation at Gate 2 because the demand evidence is thin, and the final memo recommends stopping because the
   demand and sales inputs are `MOCKED`.
 
 ## How the founder stays in control

@@ -6,35 +6,13 @@
 [
   {
     "severity": "should_fix",
-    "text": "The finding 'ASSUMPTION: Freelance graphic designers in Egypt and the MENA region need a way to track client projects, invoices sent, and revision rounds.' is marked as an assumption but cites unverified claim C1. This should be flagged as an unverified claim, not an assumption.",
-    "downgraded_in_code": "finding already labelled ASSUMPTION"
+    "text": "The finding 'Freelance graphic designers in Egypt and the MENA region need a tool to manage projects and communicate with clients effectively.' cites claim C5, which is verified. However, the report mentions 'insufficient evidence to confirm willingness to pay USD 100 for the template pack,' which is not directly addressed in the findings or claims. This is a high-severity risk that should be included in the report.",
+    "downgraded_in_code": "the risk it names is in the report"
   },
   {
     "severity": "should_fix",
-    "text": "The finding 'ASSUMPTION: Freelance designers in Egypt and the MENA region will pay USD 100 for a digital template pack that helps them track client projects, invoices sent, and revision rounds.' is marked as an assumption but cites unverified claim C2. This should be flagged as an unverified claim, not an assumption.",
-    "downgraded_in_code": "finding already labelled ASSUMPTION"
-  },
-  {
-    "severity": "should_fix",
-    "text": "The finding 'ASSUMPTION: Freelance designers in Egypt and the MENA region will find the bilingual (Arabic and English) template pack useful for their workflow.' is marked as an assumption but cites unverified claim C3. This should be flagged as an unverified claim, not an assumption.",
-    "downgraded_in_code": "finding already labelled ASSUMPTION"
-  },
-  {
-    "severity": "should_fix",
-    "text": "The finding 'ASSUMPTION: Freelance designers in Egypt and the MENA region will prefer a one-time purchase model over subscriptions.' is marked as an assumption but cites unverified claim C4. This should be flagged as an unverified claim, not an assumption.",
-    "downgraded_in_code": "finding already labelled ASSUMPTION"
-  },
-  {
-    "severity": "must_fix",
-    "text": "The report mentions 'Competitors like Notion Freelance Templates and Fontiverse offer free or low-cost alternatives that fulfill the same need.' but does not cite any verified claims. This is a factual statement that lacks a verified source."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The report states 'there is insufficient evidence to confirm a demand for a bilingual digital template pack at USD 100.' but does not cite any verified claims. This is a factual statement that lacks a verified source."
-  },
-  {
-    "severity": "must_fix",
-    "text": "The report mentions 'interviewees showed no commitment signals for paying for a template or using a bilingual tool.' but does not cite any verified claims. This is a factual statement that lacks a verified source."
+    "text": "The report states 'the founder's lack of coding skills may limit scalability,' which is a high-severity risk but is not explicitly linked to any verified claim or evidence. This should be addressed in the report.",
+    "downgraded_in_code": "the risk it names is in the report"
   }
 ]
 ```

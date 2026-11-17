@@ -2,25 +2,25 @@
 
 ## title
 
-Digital Template Pack for Freelance Designers
+Basic Template Pack for Freelance Graphic Designers
 
 ## description
 
-A bilingual (Arabic and English) tool for freelance designers in Egypt and the MENA region to manage client projects, invoices, and revisions without collecting client data.
+A bilingual (Arabic and English) template pack for freelance graphic designers in Egypt and the MENA region, helping manage client projects, invoices, and revisions efficiently.
 
 ## price_usd
 
-None
+9.0
 
 ## bullets
 
 ```json
 [
-  "Digital Notion templates for project tracking",
-  "Google Sheets templates for invoicing and client management",
-  "Built for local freelancing habits in Arabic and English",
-  "No subscriptions or client data collection",
-  "Simple and ready to use with Notion and Google Sheets"
+  "Notion templates for project tracking, invoice management, and revision logs",
+  "Google Sheets templates for client communication and time tracking",
+  "Bilingual Arabic and English support for local freelancing habits",
+  "No subscriptions, no client data collected",
+  "Simple templates for Notion and Google Sheets"
 ]
 ```
 

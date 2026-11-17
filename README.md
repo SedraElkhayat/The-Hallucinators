@@ -8,8 +8,8 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 - **Why open beats closed:** every agent action, source, prompt and gate rule is readable (`decision_log.json`, `prompts/`, `gates.py`); it runs for $0.00 on a free open-weight model with one command, and the founder's data stays on their machine. More: [docs/PITCH.md](docs/PITCH.md).
 
 **Committed demo run** (`outputs/`, `decision_log.json`; real `qwen3:8b` on Ollama, live web search through SearXNG):
-- Strong brief (`demo/brief_strong.md`): all six phases ran. The system's own verdict was **STOP** at Gates 1 and 2; the founder overrode both (scripted demo inputs, labeled `SCRIPTED` and logged with `approved_by: founder` and `system_outcome: stop`), and Gates 3 to 6 were **GO**. The Phase 6 memo still recommends stopping because the demand and sales numbers are `MOCKED`. Summary: `outputs/phase6_gate_final_report.md`.
-- Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 1 kill criterion triggered). See `outputs/phase1_gate_weak_decision.md`.
+- Strong brief (`demo/brief_strong.md`): all six phases ran. Gate 1 was **GO** on the evidence (7 verified claims, 4 competitors, no kill criterion). The system's own verdict was **STOP** at Gate 2; the founder overrode it (scripted demo inputs, labeled `SCRIPTED` and logged with `approved_by: founder` and `system_outcome: stop`), and Gates 3 to 6 were **GO**. The Phase 6 memo still recommends stopping because the demand and sales numbers are `MOCKED`. Summary: `outputs/phase6_gate_final_report.md`.
+- Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 2 kill criteria triggered). See `outputs/phase1_gate_weak_decision.md`.
 
 ## Quickstart
 
@@ -28,7 +28,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
 | Phase 1 to 6 agents (one file and one prompt each) | Working: the committed demo run in `outputs/` ran all six phases with the real local model (`qwen3:8b`), 0 agent errors. Offline tests use MockLLM (outputs labeled MOCKED) |
-| Pricing (Phase 4) | Working. In the demo run no verified source stated a competitor's price, so no price is proposed: `price_usd` is empty and labeled `ASSUMPTION` until the founder sets it |
+| Pricing (Phase 4) | Working. In the demo run no verified source stated a competitor's price, so the system proposes none and the founder sets it: USD 9 (scripted demo input, logged `founder_set_price` with `approved_by: founder`), labeled `ASSUMPTION` because no competitor price backs it |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Guardrails and red-team evals (`python evals/run_redteam.py`: 83 trick prompts; live trick briefs with the real model in `evals/live_trick_briefs/`: fake reviews, crypto returns, income promise, each stopped at Gate 1 with the content blocked) | Working |
 | Founder website (Phase 3 build from a template, Phase 5 store version with price and policies, website checks in Gates 3 and 5) | Working (never published by the system; the founder publishes it) |
@@ -41,7 +41,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 
 ### Known limits
 
-- Free public search returns limited evidence. A claim whose quote does not support it is never shown as a fact, so the websites show many labeled `ASSUMPTION`s. Phase 4 found no verified price comparable, so it proposes no price (an `ASSUMPTION`) and the store page says purchasing opens when the founder is ready to sell.
+- Free public search returns limited evidence. A claim whose quote does not support it is never shown as a fact, so the websites show many labeled `ASSUMPTION`s. Phase 4 found no verified price comparable, so the price (USD 9) is the founder's, labeled `ASSUMPTION`, and the store page says purchasing opens when the founder is ready to sell.
 - The small local model reviews its own phase reports inconsistently; code guards stop it from blocking on rules that code already checked (recorded as `downgraded_by_code`). A founder can always override a gate; the override is logged next to the system's verdict.
 - The demand-test result is a `MOCKED` input and the interview notes are `SAMPLE`; the demo's final memo recommends STOP because of that. The sale-to-cash test uses sample amounts, not the Phase 4 price.
 
@@ -49,8 +49,8 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 
 | Where | What it shows |
 |---|---|
-| `outputs/phase1_gate_weak_decision.md` | The weak brief: the system recommends STOP (0 verified claims, 1 kill criterion) and says what would change that |
-| `outputs/phase1_gate_decision.md`, `outputs/phase1_gate_founder_override.md` | The strong brief: the system's own STOP at Gate 1 and the logged founder override (same for Gate 2) |
+| `outputs/phase1_gate_weak_decision.md` | The weak brief: the system recommends STOP (0 verified claims, 2 kill criteria) and says what would change that |
+| `outputs/phase1_gate_decision.md`, `outputs/phase2_gate_decision.md`, `outputs/phase2_gate_founder_override.md` | The strong brief: GO at Gate 1 on the evidence; the system's own STOP at Gate 2 and the logged founder override |
 | `outputs/phase3_step3_site/index.html`, `outputs/phase5_step2_store_site/index.html` | The founder's website (Phase 3) and its store version (Phase 5); open them in a browser |
 | `outputs/payment_test_log.md` | The mocked sale to cash: duplicate event ignored, refund revokes access, reconciliation balanced |
 | `decision_log.json` | One entry per agent action for both runs (`run`: strong or weak), with model, sources, cost and `approved_by` |
@@ -78,7 +78,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Cost per run
 
-**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 71 model calls and about 208k tokens (181,236 in, 26,620 out) and took about 5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 24 calls and about 60k tokens (52,739 in, 7,373 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
+**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 73 model calls and about 200k tokens (176,394 in, 23,928 out) and took about 4.5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 23 calls and about 64k tokens (55,141 in, 8,437 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
 
 ## Demo video
 

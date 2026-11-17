@@ -5,19 +5,15 @@
 ```json
 [
   {
-    "text": "Unknown demand for the bilingual template pack in the MENA region, as no evidence shows freelancers are willing to pay USD 100 for it.",
+    "text": "The founder's lack of coding skills may limit the ability to scale or customize the template pack effectively.",
     "severity": "high"
   },
   {
-    "text": "Lack of commitment signals from interviewees, such as no interest in paying for a template or using a bilingual tool.",
-    "severity": "high"
-  },
-  {
-    "text": "Competitors like Notion Freelance Templates and Fontiverse offer free or low-cost alternatives, which may limit the product's marketability.",
+    "text": "There is no clear evidence that freelance designers in the MENA region are willing to pay USD 100 for the template pack.",
     "severity": "medium"
   },
   {
-    "text": "The founder's idea is not clearly differentiated from existing free tools, which could reduce the perceived value of the product.",
+    "text": "The founder's idea may face competition from free templates and existing Notion tools, which could reduce the product's appeal.",
     "severity": "medium"
   }
 ]
@@ -28,12 +24,17 @@
 ```json
 [
   {
-    "text": "No evidence that freelancers in the MENA region are willing to pay USD 100 for a bilingual template pack.",
-    "triggered": true,
-    "evidence": "Interviewees stated they have never paid for a template, and no commitment signals were observed."
+    "text": "If the founder cannot confirm that freelance designers in the MENA region are willing to pay for the template pack.",
+    "triggered": false,
+    "evidence": ""
   },
   {
-    "text": "Competitors offer free or low-cost alternatives that fulfill the same need.",
+    "text": "If the founder's lack of coding skills makes it impossible to build or maintain the template pack.",
+    "triggered": false,
+    "evidence": ""
+  },
+  {
+    "text": "If the founder cannot find a way to distribute the template pack effectively.",
     "triggered": false,
     "evidence": ""
   }
@@ -44,7 +45,8 @@
 
 ```json
 [
-  "Evidence that freelancers in the MENA region are willing to pay USD 100 for a bilingual template pack.",
-  "Evidence that the product is uniquely positioned and offers value not found in free alternatives."
+  "If the founder can provide clear evidence that freelance designers in the MENA region are willing to pay for the template pack.",
+  "If the founder can demonstrate that the template pack is significantly better than existing free templates.",
+  "If the founder can show that the template pack can be built and maintained without coding skills."
 ]
 ```

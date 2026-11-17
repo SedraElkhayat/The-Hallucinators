@@ -6,17 +6,17 @@
 [
   {
     "name": "Terms of Service",
-    "text": "By using our product, you agree to these terms. The product is provided \"as is\" without any warranties. You may use the product for personal or commercial purposes, but you must not modify, distribute, or sublicense the product. The founder reserves the right to change these terms at any time. Licence limits: [FOUNDER TO SET: licence limits]. Contact address: [FOUNDER TO SET: contact address]. Governing law: [FOUNDER TO SET: governing law].",
+    "text": "By purchasing the Basic Template Pack, you agree to these terms. The templates are for personal use only and may not be shared, sold, or distributed. You are responsible for any use of the templates, and the founder reserves the right to modify or discontinue the service at any time. Licence limits: [FOUNDER TO SET: licence limits]. Contact address: [FOUNDER TO SET: contact address]. Governing law: [FOUNDER TO SET: governing law].",
     "needs_legal_review": true
   },
   {
     "name": "Privacy Policy",
-    "text": "We do not collect any personal data from users. The product does not store passwords, payment card details, or any other sensitive information. We never ask for payment card details or personal details. The product is designed to protect user privacy and ensure that no data is stored or shared without explicit consent. We do not sell, rent, or share user data with third parties. We only use the data that is necessary to provide the product and to improve the user experience. We will not collect client data as per the founder's values and limits.",
+    "text": "We do not collect any personal information from users. The templates are designed to help freelance graphic designers manage their projects and communications without storing any sensitive data. We never ask for passwords, payment card details, or other personal details. The product does not store any user data, and all files are kept on your device. We do not share, sell, or transfer any user data to third parties.",
     "needs_legal_review": true
   },
   {
     "name": "Refund Policy",
-    "text": "<how a buyer asks for a refund and that the founder reviews each request>. Refund window: [FOUNDER TO SET: refund window]. The founder will manually review each refund request and decide whether to approve it. The system does not automatically refund money. The refund process is entirely at the discretion of the founder.",
+    "text": "Refund requests must be submitted to the founder manually. The founder will review each request and decide whether a refund is appropriate. Refund window: [FOUNDER TO SET: refund window].",
     "needs_legal_review": true
   }
 ]

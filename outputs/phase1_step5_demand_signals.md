@@ -49,9 +49,9 @@
     "support_checked": true
   },
   {
-    "claim": "Freelancer templates in Google Sheets are customizable and professional-quality.",
-    "source_url": "https://www.template.net/freelancer/google-sheets",
-    "quote": "Get creative (and organized) with customizable freelancer templates in Google Sheets. Download professional-quality designs today!",
+    "claim": "Freelancer estimate templates in Google Sheets are free, customizable, and printable for a polished, professional look.",
+    "source_url": "https://www.template.net/estimate/freelancer/google-sheets",
+    "quote": "Explore professionally designed freelancer estimate templates in Google Sheets. Free, customizable, and printable for a polished, professional look. Download now!",
     "verified": true,
     "assumption": false,
     "check": "quote found on the source page",

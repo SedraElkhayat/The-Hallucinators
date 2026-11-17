@@ -6,7 +6,7 @@ adequate
 
 ## reasoning
 
-The minimum viable scope is a bilingual digital template pack (Notion and Google Sheets) that helps freelance designers track client projects, invoices, and revisions. Based on the founder's skills, this would take approximately 40 hours to build. The founder has 104 hours available over 3 months, which is sufficient to complete the project within the budget of USD 100.
+The minimum viable scope is a digital template pack (Notion and Google Sheets) that helps freelance graphic designers track client projects, invoices sent, and revision rounds. Based on the founder's skills, this can be built in approximately 100 hours. The founder has 104 hours available over 3 months, which is sufficient to complete the project within the time and budget constraints.
 
 ## evidence_refs
 
@@ -20,4 +20,4 @@ The minimum viable scope is a bilingual digital template pack (Notion and Google
 
 ## effort_hours_estimate
 
-40
+100
