@@ -29,9 +29,9 @@ Six phases, each with agents that do one job and a gate whose criteria are fixed
 
 ## How it decides on evidence
 
-- **Claims are checked by code, three times.** A market claim counts only if its exact quote is on the fetched page,
-  the quote is about this idea, and the model confirms the quote states the claim. Everything else is labeled
-  `ASSUMPTION`, and every downgrade is logged.
+- **Claims are checked by code.** A market claim counts only if its exact quote is on the fetched page and
+  the quote shares at least two of this idea's key terms (a keyword check, not a meaning check). Everything
+  else is labeled `ASSUMPTION`, and every downgrade is logged.
 - **Criteria are fixed before the evidence arrives.** Each gate's criteria are written and hashed before its phase
   runs (`phase<N>_gate_criteria.json`), so a weak result cannot be argued away afterwards.
 - **It says stop.** In the committed run the weak brief stops at Gate 1 (0 verified claims, 2 kill criteria), and the

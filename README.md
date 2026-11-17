@@ -4,7 +4,7 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 
 - **The problem:** a founder with little money and time needs an honest answer before building: do people want this, can I build it, should I stop? A tool that always says "go" and invents evidence makes that decision worse.
 - **The user:** a solo founder of a small digital product, for example a freelance designer in Egypt with USD 100 and 8 hours a week (`demo/brief_strong.md`).
-- **How it decides:** a claim counts only if code finds its exact quote on the source page, the quote is about this idea and states the claim; gate criteria are fixed and hashed before each phase; the system recommends STOP when the evidence is weak, and the founder decides, with every override logged.
+- **How it decides:** a claim counts only if code finds its exact quote on the source page, the quote is about this idea and shares at least two of its key terms (a keyword check, not a meaning check); gate criteria are fixed and hashed before each phase; the system recommends STOP when the evidence is weak, and the founder decides, with every override logged.
 - **Why open beats closed:** every agent action, source, prompt and gate rule is readable (`decision_log.json`, `prompts/`, `gates.py`); it runs for $0.00 on a free open-weight model with one command, and the founder's data stays on their machine. More: [docs/PITCH.md](docs/PITCH.md).
 
 **Committed demo run** (`outputs/`, `decision_log.json`; real `qwen3:8b` on Ollama, live web search through SearXNG):
@@ -44,6 +44,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 - Free public search returns limited evidence. A claim whose quote does not support it is never shown as a fact, so the websites show many labeled `ASSUMPTION`s. Phase 4 found no verified price comparable, so the price (USD 9) is the founder's, labeled `ASSUMPTION`, and the store page says purchasing opens when the founder is ready to sell.
 - The small local model reviews its own phase reports inconsistently; code guards stop it from blocking on rules that code already checked (recorded as `downgraded_by_code`). A founder can always override a gate; the override is logged next to the system's verdict.
 - The demand-test result is a `MOCKED` input and the interview notes are `SAMPLE`; the demo's final memo recommends STOP because of that. The sale-to-cash test uses sample amounts, not the Phase 4 price.
+- In the committed run, some agents read the founder's USD 100 budget as the product price ("willing to pay USD 100" in `phase1_step9_discover_report`, `phase2_step2_lean_canvas`, `phase2_step8_scorecard`); the founder set the price (USD 9) at Gate 4. Claim matching is a keyword check, not a meaning check: one verified claim ("freelance graphic designers in Egypt and the MENA region need a tool") matches its source's keywords, but the source does not mention Egypt or MENA. A model check that each quote states its claim exists in `agents/m2_common.py` (`check_support`) but is not called in this version.
 
 ### Reading the demo run
 
@@ -59,7 +60,7 @@ More detail: [docs/DEMO_RUN.md](docs/DEMO_RUN.md). The rule behind each guarante
 
 ## Architecture
 
-Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` evaluates criteria registered before the phase, and `approval.py` is the only door to anything outward-facing. AI agents (`agents/<role>.py`, prompts in `prompts/<role>.md`) only produce typed artifacts in `outputs/`, and every action is appended to `decision_log.json`. Market claims carry a source URL and an exact quote that code re-checks (quote on the page, about this idea, and stating the claim), or are labeled `ASSUMPTION`. See [ARCHITECTURE.md](ARCHITECTURE.md).
+Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` evaluates criteria registered before the phase, and `approval.py` is the only door to anything outward-facing. AI agents (`agents/<role>.py`, prompts in `prompts/<role>.md`) only produce typed artifacts in `outputs/`, and every action is appended to `decision_log.json`. Market claims carry a source URL and an exact quote that code re-checks (quote on the page and about this idea, by a keyword check), or are labeled `ASSUMPTION`. See [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ### How outputs stay honest
 
