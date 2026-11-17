@@ -4,6 +4,11 @@ services:
     image: ollama/ollama:latest
     volumes:
       - ollama_models:/root/.ollama
+    environment:
+      # Ollama's default context window is small; agent inputs would be cut from the top (the instructions).
+      OLLAMA_CONTEXT_LENGTH: ${OLLAMA_CONTEXT_LENGTH:-8192}
+      # keep the model in memory while the run waits for the founder, so calls do not reload it
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-30m}
     healthcheck:
       test: ["CMD", "ollama", "list"]   # calls /api/tags on the local server
       interval: 10s
