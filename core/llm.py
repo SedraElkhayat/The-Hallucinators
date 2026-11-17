@@ -50,7 +50,7 @@ class RealClient(LLMClient):
     """OpenAI-compatible chat endpoint (Ollama exposes /v1). Local open-weight model: cost 0.0."""
 
     def __init__(self, base_url: Optional[str] = None, model: Optional[str] = None,
-                 api_key: Optional[str] = None, timeout: int = 300):
+                 api_key: Optional[str] = None, timeout: int = 900):
         self.base_url = (base_url or os.getenv("LLM_BASE_URL", "http://ollama:11434/v1")).rstrip("/")
         self.model = model or os.getenv("LLM_MODEL", "qwen3:8b")
         self.api_key = api_key or os.getenv("LLM_API_KEY", "ollama")
