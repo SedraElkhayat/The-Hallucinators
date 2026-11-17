@@ -12,7 +12,7 @@ Check the drafts and list every problem. Code adds its own must_fix issues (scri
 
 ## Output
 JSON object with exactly these keys:
-- `issues`: list of `{"severity": "must_fix"|"should_fix", "text": str}`.
+- `issues`: list of `{"severity": "must_fix"|"should_fix", "quote": str, "text": str}`. `quote` is the exact words copied from the draft that break the rule.
 - `verdict`: `"ok"` or `"revise"`.
 
 Example (placeholders in angle brackets; replace them, never copy them):
@@ -21,6 +21,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
   "issues": [
     {
       "severity": "<must_fix|should_fix>",
+      "quote": "<exact words copied from the draft>",
       "text": "<artifact stem>: <what is wrong and where>"
     }
   ],
@@ -30,5 +31,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
 
 ## Rules
 - `must_fix`: fake proof, counts, testimonials, urgency, income or time-saved numbers, impersonation, anything released without founder approval, anything marked posted.
+- A `must_fix` needs a `quote` copied word for word from the drafts; code downgrades a must_fix whose quote is not in the drafts.
+- Required labels are correct, never issues: MOCKED, STUBBED, SAMPLE, ASSUMPTION, `[FOUNDER TO SET: ...]` placeholders, `needs_legal_review`, the DRAFT marker, `posted: false`, and a page `released` after founder approval.
 - Any `must_fix` means `verdict` is `revise`. With no issues, return `[]` and `ok`.
 - Only list issues; do not rewrite the drafts.

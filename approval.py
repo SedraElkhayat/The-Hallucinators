@@ -23,18 +23,20 @@ class Approvals:
         self.records: list[dict] = []
         self._lock = threading.Lock()
 
-    def _decide(self, kind: str, title: str, content: str, phase: int) -> tuple[str, str]:
+    def _decide(self, kind: str, title: str, content: str, phase: int,
+                outcome: Optional[str] = None) -> tuple[str, str]:
         if self.mode == "scripted":
-            return self.scripted.approval(kind, phase), "SCRIPTED"
+            return self.scripted.approval(kind, phase, outcome), "SCRIPTED"
         if self.mode == "cli":
             print(f"\n===== APPROVAL NEEDED (phase {phase}, {kind}) =====\n{title}\n\n{content[:3000]}\n")
             return self.input_fn("[FOUNDER] approve or reject? > ").strip(), "CLI"
         item = self.inbox.open("approval", kind, title, ["approve", "reject"], content=content, phase=phase)
         return self.inbox.wait(item), "WEB"
 
-    def request(self, kind: str, title: str, content: str, phase: int) -> bool:
+    def request(self, kind: str, title: str, content: str, phase: int, outcome: Optional[str] = None) -> bool:
+        """``outcome`` (optional, gates only) is the system's verdict, so scripted answers can target it."""
         self.log.action("approval", f"approval_requested:{kind}", phase=phase, title=title)
-        answer, provenance = self._decide(kind, title, content, phase)
+        answer, provenance = self._decide(kind, title, content, phase, outcome)
         approved = str(answer).strip().lower() in APPROVE_WORDS
         rec = {"kind": kind, "title": title, "phase": phase,
                "status": "approved" if approved else "rejected", "provenance": provenance}

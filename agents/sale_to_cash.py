@@ -11,6 +11,7 @@ import payments
 import reconcile
 import refunds
 from agents.base import Agent
+from agents.m4_common import price_from_pricing
 from core.contracts import AgentResult, Context
 from webhooks import WebhookHandler
 
@@ -43,13 +44,16 @@ class SaleToCash(Agent):
             "",
         ]
 
-        # 1. Create 3 mock orders
-        orders = [
-            payments.create_mock_order("mock_ord_001", 29.0, "Standard Starter Kit"),
-            payments.create_mock_order("mock_ord_002", 49.0, "Pro Studio Pack"),
-            payments.create_mock_order("mock_ord_003", 29.0, "Standard Starter Kit"),
-        ]
-        log_lines.append(f"1. Created {len(orders)} mock orders: `mock_ord_001` ($29.00), `mock_ord_002` ($49.00), `mock_ord_003` ($29.00).")
+        # 1. Create 3 mock orders at the Phase 4 price; without one, fixed MOCKED test amounts (not a price).
+        price = price_from_pricing(ctx)
+        if price is not None and price > 0:
+            amounts, basis = [price, price, price], f"the Phase 4 price ({price:.2f} USD)"
+        else:
+            amounts, basis = [29.0, 49.0, 29.0], "MOCKED test amounts (no Phase 4 price is set; these are not prices)"
+        orders = [payments.create_mock_order(f"mock_ord_00{i + 1}", a, "Template pack (MOCKED order)")
+                  for i, a in enumerate(amounts)]
+        log_lines.append(f"1. Created {len(orders)} mock orders at {basis}: "
+                         + ", ".join(f"`{o['order_id']}` (${o['amount_usd']:.2f})" for o in orders) + ".")
         ctx.log.action(self.name, "create_mock_orders", order_ids=[o["order_id"] for o in orders])
 
         # 2. Process payments for Order 1, Order 2, Order 3
@@ -59,6 +63,7 @@ class SaleToCash(Agent):
         log_lines.append(f"2. Order 1 payment event received: status={res1['status']}, action={res1.get('action')}, token={res1.get('delivery', {}).get('token')}")
         ctx.log.action(self.name, "process_payment_order_1", status=res1["status"])
 
+        token1 = (res1.get("delivery") or {}).get("token")
         # Send duplicate payment event for Order 1 to test idempotency
         evt1_dup = payments.mock_payment_event(orders[0], "payment.succeeded", "idemp_ord_001_pay")
         res1_dup = handler.handle(evt1_dup)
@@ -77,6 +82,7 @@ class SaleToCash(Agent):
         log_lines.append(f"5. Order 3 payment event received: status={res3['status']}, action={res3.get('action')}, token={res3.get('delivery', {}).get('token')}")
         ctx.log.action(self.name, "process_payment_order_3", status=res3["status"])
 
+        delivered_before_refund = {o["order_id"]: delivery.has_access(o["order_id"]) for o in orders}
         # 3. Process refund for Order 3
         evt3_ref = payments.mock_payment_event(orders[2], "refund.requested", "idemp_ord_003_ref")
         res3_ref = handler.handle(evt3_ref)
@@ -87,7 +93,14 @@ class SaleToCash(Agent):
         # 4. Check double delivery count
         # In delivery, deliveries dictionary should have exactly 3 orders delivered (1 duplicate ignored)
         all_dels = delivery.all_deliveries()
-        double_deliveries = handler.ignored_duplicates - 1 if handler.ignored_duplicates > 1 else 0
+        # Measured from state: a double delivery = more delivery records than paid orders, or Order 1's access
+        # token replaced by the duplicate event.
+        token1_now = (delivery.get_delivery_record("mock_ord_001") or {}).get("token")
+        double_deliveries = max(0, len(all_dels) - len(orders)) + (1 if token1_now != token1 else 0)
+        payment_triggers_delivery = all(delivered_before_refund.values())
+        duplicate_ignored = res1_dup.get("status") == "ignored" and handler.ignored_duplicates == 1
+        refund_revokes_access = (res3_ref.get("status") == "processed" and not access_after_ref
+                                 and delivery.has_access("mock_ord_001") and delivery.has_access("mock_ord_002"))
         log_lines.append(f"7. Delivery validation: total deliveries created={len(all_dels)}, ignored duplicate events={handler.ignored_duplicates}, double deliveries={double_deliveries}")
 
         # 5. Financial Reconciliation
@@ -123,6 +136,10 @@ class SaleToCash(Agent):
 
         data = {
             "orders_processed": [o["order_id"] for o in orders],
+            "order_amounts_basis": basis,
+            "payment_triggers_delivery": payment_triggers_delivery,
+            "duplicate_ignored": duplicate_ignored,
+            "refund_revokes_access": refund_revokes_access,
             "double_deliveries": double_deliveries,
             "access_after_refund": access_after_ref,
             "reconcile_balanced": rec_result["balanced"],
@@ -133,7 +150,10 @@ class SaleToCash(Agent):
         md = (
             f"# Phase 5 Step 5: Sale to Cash (MOCKED)\n\n"
             f"> **MOCKED**: All transactions simulated offline without network.\n\n"
-            f"- Orders Processed: {len(data['orders_processed'])}\n"
+            f"- Orders Processed: {len(data['orders_processed'])} ({basis})\n"
+            f"- Payment Triggers Delivery: {payment_triggers_delivery}\n"
+            f"- Duplicate Webhook Ignored: {duplicate_ignored}\n"
+            f"- Refund Revokes Access: {refund_revokes_access}\n"
             f"- Double Deliveries: {data['double_deliveries']}\n"
             f"- Access After Refund: {data['access_after_refund']}\n"
             f"- Reconcile Balanced: {data['reconcile_balanced']}\n"

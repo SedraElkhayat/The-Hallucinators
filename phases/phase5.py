@@ -63,7 +63,11 @@ def measure(ctx: Context) -> dict:
 
     if ctx.store.has("phase5_step5_sale_to_cash"):
         s2c_data = ctx.store.get("phase5_step5_sale_to_cash")
-        sale_to_cash_passed = 1
+        # Passed only when each sale-to-cash property was measured true (older artifacts without a flag pass on it).
+        sale_to_cash_passed = 1 if (s2c_data.get("payment_triggers_delivery", True) is True
+                                    and s2c_data.get("duplicate_ignored", True) is True
+                                    and s2c_data.get("refund_revokes_access", True) is True
+                                    and s2c_data.get("access_after_refund") is not True) else 0
         double_deliveries = int(s2c_data.get("double_deliveries", 0))
         reconcile_balanced = 1 if s2c_data.get("reconcile_balanced") else 0
 
