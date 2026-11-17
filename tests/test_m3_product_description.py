@@ -106,3 +106,21 @@ def test_TC_M3_final_run_describes_the_product_itself_unit(issue, expected):
     design = ("one-page website for a bilingual arabic and english digital template pack for freelance graphic designers. "
               "no lock-in subscriptions; never collects client data")
     assert describes_the_product_itself(issue, design) is expected
+
+
+def test_TC_M3_final_run_competitor_claim_without_a_clear_source_or_label_is_downgraded_when_the_page_has_one(tmp_path):
+    """Real wording from the last run: the claim is on the page with a source link or the ASSUMPTION label."""
+    seeds = ["phase2_step2_lean_canvas", "phase2_step9_validation_report", "phase2_step3_demand_test_plan",
+             "phase1_step4_idea_card", "phase1_step2_clarification", "phase2_step4_landing_page"]
+    from phases import phase3
+    ctx = make_ctx(tmp_path, llm=ScriptedLLM({"content_reviewer": {"issues": [], "verdict": "ok"}}), seed=seeds)
+    for stage in phase3.STAGES:
+        for name in stage:
+            if name != "content_reviewer":
+                get_agent(name).run(ctx)
+    claim = ctx.store.get("phase3_step3_build")["claims"][0]["claim"]
+    issue = {"severity": "must_fix", "text": f"The claim '{claim}' is presented as a fact without a clear source or "
+                                             "label, which may mislead.", "file": "index.html"}
+    ctx.llm = ScriptedLLM({"content_reviewer": {"issues": [issue], "verdict": "revise"}})
+    data = get_agent("content_reviewer").run(ctx).data
+    assert data["issues"][0]["severity"] == "should_fix" and data["verdict"] == "ok"

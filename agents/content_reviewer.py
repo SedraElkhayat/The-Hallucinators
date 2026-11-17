@@ -98,9 +98,9 @@ class ContentReviewer(M3InputsMixin, Agent):
         if claim_texts and not any("evidence item" in f for f in failures):
             downgrade_must_fix(
                 data, lambda t: any(c in t for c in claim_texts)
-                and re.search(r"without a source|source link|labeled as an? assumption|not labeled|unlabeled|"
+                and (_SOURCE_COMPLAINT.search(t) or re.search(r"without a source|source link|labeled as an? assumption|not labeled|unlabeled|"
                              r"without (?:proper |any )?(?:context or |verification)|without (?:proper |any )?(?:context or )?source"
-                             r"|not (?:been )?verified|unverified", t)
+                             r"|not (?:been )?verified|unverified", t))
                 and not any(w in t for w in _FAKE_PROOF),
                 "rule applied in code: every claim on the page has a source link or the ASSUMPTION label "
                 "(checked in the website checks)")
