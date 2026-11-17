@@ -150,6 +150,27 @@ def founder_budget(brief: str) -> Optional[dict]:
     return {"amount": m.group(1), "note": "Budget the founder can spend to build and launch. NOT the product price."}
 
 
+def _flat_words(text) -> str:
+    return " ".join(re.sub(r"[^\w\s]", " ", str(text or "").lower()).split())
+
+
+def high_risks(skeptic: dict, levels=("high", "medium")) -> list[str]:
+    """Texts of the skeptic's risks at these severities (the critic treats medium ones as high too)."""
+    return [str(r.get("text")).strip() for r in (skeptic or {}).get("risks") or []
+            if isinstance(r, dict) and str(r.get("severity", "")).lower() in levels and str(r.get("text", "")).strip()]
+
+
+def report_mentions(report: dict, text: str) -> bool:
+    """True if the risk text (punctuation and case ignored) appears in the report's summary, findings,
+    assumptions or limitations."""
+    hay = _flat_words(" ".join([str(report.get("summary", ""))]
+                               + [str(f.get("text", "")) if isinstance(f, dict) else str(f) for f in report.get("findings") or []]
+                               + [str(x) for x in report.get("assumptions") or []]
+                               + [str(x) for x in report.get("limitations") or []]))
+    t = _flat_words(text)
+    return bool(t) and t in hay
+
+
 def load_prompt(name: str) -> str:
     own = (PROMPT_DIR / f"{name}.md").read_text(encoding="utf-8")
     common = PROMPT_DIR / "_common.md"

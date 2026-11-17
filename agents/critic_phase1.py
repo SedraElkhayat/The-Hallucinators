@@ -4,7 +4,7 @@ for unsupported confidence; any must_fix forces verdict "revise" (up to 2 revisi
 import re
 
 from agents.base import Agent
-from agents.m2_common import (COMPETITORS, CRITIQUE, DEMAND, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list, claims_index, norm_severity,
+from agents.m2_common import (report_mentions, COMPETITORS, CRITIQUE, DEMAND, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list, claims_index, norm_severity,
                               get_artifact, message)
 
 PRAISE = re.compile(r"\b(excellent|amazing|fantastic|brilliant|incredible|huge potential|massive opportunity|"
@@ -50,6 +50,17 @@ def cited_claims_verified(text: str, verified_ids: set) -> bool:
     return bool(ids) and ids <= verified_ids and bool(SOURCE_COMPLAINT.search(text))
 
 
+RISK_NOT_ADDRESSED = re.compile(r"risk|kill", re.I)
+
+
+def risk_in_report(text: str, report: dict) -> bool:
+    """True if the issue says a skeptic risk is missing and that risk's quoted text is in the report."""
+    if not RISK_NOT_ADDRESSED.search(text):
+        return False
+    quoted = re.findall(r"['\"‘“]([^'\"’”]{25,})['\"’”]", text)
+    return bool(quoted) and all(report_mentions(report, q) for q in quoted)
+
+
 class CriticPhase1(Agent):
     name = "critic_phase1"
     phase = 1
@@ -68,6 +79,7 @@ class CriticPhase1(Agent):
         issues = []
         hit, quiet = kill_texts(get_artifact(ctx, SKEPTIC) or {})
         verified_ids = {c["id"] for c in claims_index(ctx) if c["verified"]}
+        report_art = get_artifact(ctx, REPORT) or {}
         for i in as_list(data.get("issues")):
             if isinstance(i, str):
                 i = {"severity": "should_fix", "text": i}
@@ -78,6 +90,8 @@ class CriticPhase1(Agent):
                 if i["severity"] == "must_fix" and LABELLED_ASSUMPTION.search(str(i["text"])):
                     # The finding it quotes is already labelled ASSUMPTION, which is what the rules ask for.
                     i["severity"], i["downgraded_in_code"] = "should_fix", "finding already labelled ASSUMPTION"
+                elif i["severity"] == "must_fix" and risk_in_report(i["text"], report_art):
+                    i["severity"], i["downgraded_in_code"] = "should_fix", "the risk it names is in the report"
                 elif i["severity"] == "must_fix" and only_untriggered_kill(i["text"], hit, quiet):
                     i["severity"], i["downgraded_in_code"] = "should_fix", "kill criterion was not triggered"
                 issues.append(i)

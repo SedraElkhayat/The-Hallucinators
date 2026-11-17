@@ -639,3 +639,19 @@ def test_support_check_failure_or_mock_changes_nothing():
     ctx.mock = True
     check_support(ctx, {"claims": claims}, "market_scout")
     assert claims[0]["verified"] is True and logged == []
+
+
+def test_skeptic_risks_are_copied_into_report_and_critic_accepts_them():
+    from agents.m2_common import high_risks, report_mentions
+    from agents.critic_phase1 import risk_in_report
+    sk = {"risks": [{"text": "No evidence that designers will pay USD 100 for the pack.", "severity": "high"},
+                    {"text": "Bilingual preference is untested so far.", "severity": "medium"},
+                    {"text": "Minor wording risk.", "severity": "low"}]}
+    assert high_risks(sk) == ["No evidence that designers will pay USD 100 for the pack.",
+                              "Bilingual preference is untested so far."]
+    report = {"summary": "s", "findings": [], "assumptions": [],
+              "limitations": ["Risk (skeptic): No evidence that designers will pay USD 100 for the pack."]}
+    assert report_mentions(report, "no evidence that designers will pay usd 100 for the pack")
+    issue = "The report omits the high-severity risk: 'No evidence that designers will pay USD 100 for the pack.'"
+    assert risk_in_report(issue, report) is True
+    assert risk_in_report("The report omits the risk: 'Bilingual preference is untested so far.'", report) is False
