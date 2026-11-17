@@ -203,10 +203,20 @@ class _SiteScan(HTMLParser):
         self._in_h1 = False
         self.form_sections: list[Optional[str]] = []
         self.saw = set()
+        # Elements that send the browser or the visitor to another address (CONTEXT 4b: nothing leaves the page).
+        self.bases: list[str] = []          # every <base>, whatever its href
+        self.refreshes: list[str] = []      # every <meta http-equiv="refresh">
+        self.pings: list[tuple] = []        # every element with a ping attribute: (tag, value)
 
     def handle_starttag(self, tag, attrs):
         a = {k.lower(): (v if v is not None else "") for k, v in attrs}
         self.saw.add(tag)
+        if tag == "base":
+            self.bases.append(a.get("href", ""))
+        if tag == "meta" and " ".join(a.get("http-equiv", "").split()).lower() == "refresh":
+            self.refreshes.append(a.get("content", ""))
+        if "ping" in a:
+            self.pings.append((tag, a["ping"]))
         if "id" in a:
             if a["id"] in self.ids:
                 self.errors.append(f'duplicate id "{a["id"]}"')
@@ -287,6 +297,14 @@ class _SiteScan(HTMLParser):
             self.section_text[sid].append(data)
         if self._claim is not None:
             self._claim["text"].append(data)
+
+
+def _redirect_failures(scan: "_SiteScan", prefix: str = "") -> list[str]:
+    """<base>, <meta http-equiv="refresh"> and ping= move the browser or the visitor to another address."""
+    failures = [f"{prefix}base tag not allowed: {href!r}" for href in scan.bases]
+    failures += [f"{prefix}meta refresh not allowed: {content!r}" for content in scan.refreshes]
+    failures += [f"{prefix}ping attribute not allowed: <{tag} ping={value!r}>" for tag, value in scan.pings]
+    return failures
 
 
 def _ids_in_file(path: Path) -> set:
@@ -394,6 +412,7 @@ def check_site(html_text: str, site_dir=None, phase: int = 3) -> dict:
     css = "\n".join(scan.styles)
     if re.search(r"@import|url\s*\(\s*['\"]?\s*(https?:|//)", css, re.I):
         failures.append("external request in CSS")
+    failures += _redirect_failures(scan)
 
     # 4. Banned content (markup and words in the HTML, guardrails on the visible text).
     visible = " ".join(" ".join(scan.text).split())
@@ -453,6 +472,7 @@ def _extra_page_failures(path: Path, rel: str, root: Path) -> list[str]:
         for res in scan.resources:
             if res.strip().lower().startswith(("http:", "https:", "//")):
                 failures.append(f"{rel}: external request: {res!r}")
+        failures += _redirect_failures(scan, prefix=f"{rel}: ")
         for href in scan.links:
             problem = _check_link(href, scan.ids, root, page_dir=path.parent)
             if problem and not (href.startswith("#") or href.lower().startswith(("https://", "mailto:"))):

@@ -354,3 +354,75 @@ def test_qa_reports_site_checks_and_gate_metric(tmp_path):
 def test_site_checks_metric_is_zero_without_a_qa_report(tmp_path):
     ctx = make_ctx(tmp_path)
     assert phase3.measure(ctx)["site_checks_passed"] == 0
+
+
+# ---------------------------------------------------------------- nothing leaves the page: base, meta refresh, ping
+
+def _baseline(tmp_path):
+    page = fill_template(_content())
+    assert _site(tmp_path, page) == {"passed": True, "failures": []}  # the unmodified page passes
+    return page
+
+
+def _in_head(page, tag):
+    return page.replace("<title>", tag + "\n  <title>", 1)
+
+
+@pytest.mark.parametrize("tag", ['<base href="https://evil.example/">', '<base href="/">', "<base>",
+                                 '<BASE HREF="https://evil.example/">', '<base target="_blank">'])
+def test_TC_M3_site_base_any_base_tag_fails(tmp_path, tag):
+    page = _in_head(_baseline(tmp_path), tag)
+    result = _site(tmp_path, page)
+    assert not result["passed"]
+    assert any(f.startswith("base tag not allowed") for f in result["failures"]), result["failures"]
+
+
+@pytest.mark.parametrize("tag", [
+    '<meta http-equiv="refresh" content="0;url=https://evil.example">',
+    '<META HTTP-EQUIV="REFRESH" CONTENT="0; URL=https://evil.example">',
+    '<meta   http-equiv = " Refresh "   content="5 ; url=https://evil.example" >',
+    '<meta http-equiv="refresh" content="30">',
+])
+def test_TC_M3_site_meta_refresh_fails(tmp_path, tag):
+    page = _in_head(_baseline(tmp_path), tag)
+    result = _site(tmp_path, page)
+    assert not result["passed"]
+    assert any(f.startswith("meta refresh not allowed") for f in result["failures"]), result["failures"]
+
+
+@pytest.mark.parametrize("snippet", ['<a href="#faq" ping="https://evil.example/p">FAQ</a>',
+                                     '<a href="#faq" PING="https://evil.example/p">FAQ</a>',
+                                     '<area href="#faq" ping="https://evil.example/p">'])
+def test_TC_M3_site_ping_attribute_fails(tmp_path, snippet):
+    page = _baseline(tmp_path).replace("<li>Onboarding checklist</li>", f"<li>Onboarding checklist {snippet}</li>", 1)
+    result = _site(tmp_path, page)
+    assert not result["passed"]
+    assert any(f.startswith("ping attribute not allowed") for f in result["failures"]), result["failures"]
+
+
+@pytest.mark.parametrize("tag,expected", [
+    ('<base href="https://evil.example/">', "policies/terms.html: base tag not allowed"),
+    ('<meta http-equiv="Refresh" content="0;url=https://evil.example">', "policies/terms.html: meta refresh not allowed"),
+    ('<a href="../index.html" ping="https://evil.example/p">Back</a>', "policies/terms.html: ping attribute not allowed"),
+])
+def test_TC_M3_site_redirects_in_an_extra_page_are_caught(tmp_path, tag, expected):
+    _baseline(tmp_path)
+    (tmp_path / "policies").mkdir()
+    clean = ("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>Terms</title></head><body>"
+             "<p>Draft terms. Needs legal review.</p><a href=\"../index.html\">Back</a></body></html>")
+    terms = tmp_path / "policies" / "terms.html"
+    terms.write_text(clean, encoding="utf-8")
+    assert check_site_dir(tmp_path) == {"passed": True, "failures": []}  # baseline extra page passes
+    terms.write_text(clean.replace("<title>", tag + "<title>") if "<a " not in tag
+                     else clean.replace('<a href="../index.html">Back</a>', tag), encoding="utf-8")
+    result = check_site_dir(tmp_path)
+    assert not result["passed"]
+    assert any(f.startswith(expected) for f in result["failures"]), result["failures"]
+
+
+def test_TC_M3_site_harmless_meta_tags_still_pass(tmp_path):
+    page = _baseline(tmp_path)
+    assert '<meta charset="utf-8">' in page and '<meta name="viewport"' in page  # the template's own meta tags
+    extra = _in_head(page, '<meta name="description" content="Onboarding kit">\n  <meta http-equiv="content-type" '
+                           'content="text/html; charset=utf-8">')
+    assert _site(tmp_path, extra) == {"passed": True, "failures": []}
