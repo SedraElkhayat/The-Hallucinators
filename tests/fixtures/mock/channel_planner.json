@@ -1,0 +1,21 @@
+{
+  "channels": [
+    {
+      "name": "Design Freelancer Communities",
+      "evidence": "MOCKED research: Over 4,000 regional designers active in Behance and Discord freelancer channels.",
+      "first_actions": [
+        "Share a free project tracking tip sheet",
+        "Offer template walkthrough video in Arabic"
+      ]
+    },
+    {
+      "name": "LinkedIn Organic Content",
+      "evidence": "MOCKED research: Freelancers actively discussing invoice loss and client scope creep on LinkedIn.",
+      "first_actions": [
+        "Post breakdown of common freelance invoicing mistakes",
+        "Invite feedback on prototype workflow"
+      ]
+    }
+  ],
+  "mocked": true
+}
