@@ -1,15 +1,16 @@
 # OWNER: M4
 """Phase 5 store website (CONTEXT.md section 4b.7): outputs/phase5_step2_store_site/.
 
-index.html plus one page per policy (policies/<slug>.html, each marked "needs legal review").
-Code renders everything with HTML escaping; the model never writes HTML. Inline CSS, no <script>,
-no form that sends anything, and no buy button or payment UI of any kind (the founder publishes this
-site; mocked sale to cash never appears on it). The single-page draft phase5_step2_store_page.html keeps
-its labeled "MOCKED checkout" button.
+Re-fills M3's site_template/index.html with agents.m3_site.fill_template (phase=5): the Phase 3 website
+content (evidence claims, FAQ) plus the store page text that passed M4's checks, the Phase 4 price
+("ASSUMPTION" when pricing.is_assumption) and links to one page per policy (policies/<slug>.html, each
+marked "needs legal review"). Code renders everything with HTML escaping; the model never writes HTML.
+The result is checked with M3's agents.m3_site.check_site_dir(phase=5) (imported, never copied).
 
-INTERIM: until M3's site_template/index.html and website checks are on main, this module renders
-its own static page and runs basic checks. When they land, render_store_site() fills M3's template
-and site_checks() calls M3's checks (import, never copy).
+No buy button or payment UI of any kind on the site (the founder publishes it; mocked sale to cash never
+appears on it). The price section says "Purchasing is not open yet; the founder sets it up." The template's
+demo sign-up box stays (disabled, "Demo only: nothing is sent or stored"). The single-page draft
+phase5_step2_store_page.html keeps its labeled "MOCKED checkout" button.
 """
 from __future__ import annotations
 
@@ -51,8 +52,59 @@ def price_text(price, is_assumption: bool) -> str:
     return f"Price: {float(price):.2f} USD{label}"
 
 
+# M1 asked for one honest line; M3's site checks ban payment words such as "checkout", so the line uses none.
+CHECKOUT_LINE = "Purchasing is not open yet; the founder sets it up."
+
+
+def policy_pages(documents: list[dict]) -> dict[str, str]:
+    """One static page per policy document, each marked as a draft that needs legal review."""
+    files = {}
+    for d in documents:
+        if not isinstance(d, dict):
+            continue
+        name = str(d.get("name", "Policy"))
+        pbody = (
+            '<div class="badge">Draft: needs legal review</div>\n'
+            f"<h1>{html.escape(name)}</h1>\n<p>{html.escape(str(d.get('text', '')))}</p>\n"
+            '<p><a href="../index.html">Back to the store page</a></p>'
+        )
+        files[f"policies/{slug(name)}.html"] = _page(name, pbody)
+    return files
+
+
+def store_content(data: dict, phase3_content: dict) -> dict:
+    """Phase 3 website content, with the Phase 5 store text (already checked by M4) where it survives
+    M3's sanitize_content; any field it drops falls back to the Phase 3 value."""
+    from agents.m3_site import sanitize_content
+    base, _ = sanitize_content(dict(phase3_content or {}))
+    store, _ = sanitize_content({
+        "headline": data.get("title"),
+        "value_proposition": data.get("description"),
+        "features": [b for b in (data.get("bullets") or []) if not str(b).startswith("STUBBED")],
+    })
+    content = dict(base)
+    for key in ("headline", "value_proposition", "features"):
+        if store.get(key):
+            content[key] = store[key]
+    content["title"] = content.get("headline") or "Store page"
+    return content
+
+
+def build_store_site(data: dict, documents: list[dict], is_assumption: bool, phase3_content: dict) -> dict[str, str]:
+    """Return {relative path: html}: M3's template filled for Phase 5, plus the policy pages."""
+    from agents.m3_site import fill_template
+    docs = [d for d in documents if isinstance(d, dict)]
+    links = [{"title": f"{d.get('name', 'Policy')} (draft, needs legal review)",
+              "href": f"policies/{slug(d.get('name'))}.html"} for d in docs]
+    price_line = f"{price_text(data.get('price_usd'), is_assumption)}. {CHECKOUT_LINE}"
+    index = fill_template(store_content(data, phase3_content), phase=5, price_text=price_line, policy_links=links)
+    files = {"index.html": index}
+    files.update(policy_pages(docs))
+    return files
+
+
 def render_store_site(data: dict, documents: list[dict], is_assumption: bool) -> dict[str, str]:
-    """Return {relative path: html} for the store website."""
+    """FALLBACK only (M3's template missing): a plain static page with the same rules."""
     docs = [d for d in documents if isinstance(d, dict)]
     links = "\n".join(
         f'<li><a href="policies/{slug(d.get("name"))}.html">{html.escape(str(d.get("name", "Policy")))}</a> '
@@ -65,20 +117,13 @@ def render_store_site(data: dict, documents: list[dict], is_assumption: bool) ->
         f"<p>{html.escape(str(data.get('description', '')))}</p>\n"
         f'<h2 id="features">Features</h2>\n<ul>\n{bullets}\n</ul>\n'
         f'<h2 id="price">Price</h2>\n<p class="price">{html.escape(price_text(data.get("price_usd"), is_assumption))}</p>\n'
-        '<p class="note">Purchasing opens when the founder sets up checkout.</p>\n'
+        f'<p class="note">{CHECKOUT_LINE}</p>\n'
         f'<h2 id="policies">Policies</h2>\n<ul>\n{links}\n</ul>\n'
         "<footer>This page is a draft. The founder decides whether and where to publish it; "
         "this system never publishes.</footer>"
     )
     files = {"index.html": _page(str(data.get("title") or "Store"), body)}
-    for d in docs:
-        name = str(d.get("name", "Policy"))
-        pbody = (
-            '<div class="badge">Draft: needs legal review</div>\n'
-            f"<h1>{html.escape(name)}</h1>\n<p>{html.escape(str(d.get('text', '')))}</p>\n"
-            '<p><a href="../index.html">Back to the store page</a></p>'
-        )
-        files[f"policies/{slug(name)}.html"] = _page(name, pbody)
+    files.update(policy_pages(documents))
     return files
 
 
@@ -111,7 +156,16 @@ class _Collector(HTMLParser):
 
 
 def site_checks(root: Path) -> dict:
-    """Basic website checks (interim until M3's checks are importable)."""
+    """M3's website checks for Phase 5 (imported). Falls back to basic_site_checks only if M3's module is missing."""
+    try:
+        from agents.m3_site import check_site_dir
+    except ImportError:
+        return basic_site_checks(root)
+    return check_site_dir(root, phase=5)
+
+
+def basic_site_checks(root: Path) -> dict:
+    """FALLBACK only: basic checks used when M3's checks cannot be imported."""
     from core.guardrails import check_output
     failures: list[str] = []
     root = Path(root)

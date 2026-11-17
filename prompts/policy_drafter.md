@@ -30,4 +30,4 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - The refund window and every other term are the founder's decision: write `[FOUNDER TO SET: <term>]`, never a number of days or an amount.
 - `needs_legal_review` is always `true`. Never say a document is compliant, legally binding or approved by a lawyer.
 - The refund policy only describes the founder's manual process in words; the system never refunds money.
-- The product stores no passwords or card numbers; say only what the product actually does with data.
+- The product stores no passwords or card numbers; say only what the product actually does with data. Put the negation right before the term ("never asks for card numbers"), because the store website check rejects payment words that are not directly negated.

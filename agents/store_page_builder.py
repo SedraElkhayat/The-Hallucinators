@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import html
 
-from agents.m4_store_site import SITE_DIR, render_store_site, site_checks, write_site
+from agents.m4_store_site import SITE_DIR, build_store_site, render_store_site, site_checks, write_site
 from agents.m4_common import M4Agent, launch_copy_violations, price_from_pricing, to_float
 from core.contracts import Context
 
@@ -18,7 +18,7 @@ class StorePageBuilder(M4Agent):
     name = "store_page_builder"
     phase = 5
     step = "phase5_step2_store_page"
-    inputs = ["phase4_step1_pricing", "phase4_step2_offer", "phase4_step3_policies"]
+    inputs = ["phase4_step1_pricing", "phase4_step2_offer", "phase4_step3_policies", "phase3_step3_build"]
     tools = []
     required_keys = ["title", "description", "price_usd", "bullets"]
     kind = "llm"
@@ -108,10 +108,17 @@ class StorePageBuilder(M4Agent):
         # Store website (CONTEXT.md 4b.7): index.html + policy pages, checked before approval.
         pricing = ctx.store.get("phase4_step1_pricing") if ctx.store.has("phase4_step1_pricing") else {}
         documents = ctx.store.get("phase4_step3_policies").get("documents", []) if ctx.store.has("phase4_step3_policies") else []
-        files = render_store_site(data, documents, bool(pricing.get("is_assumption", True)))
+        phase3 = ctx.store.get("phase3_step3_build") if ctx.store.has("phase3_step3_build") else {}
+        is_assumption = bool(pricing.get("is_assumption", True))
+        try:
+            files = build_store_site(data, documents, is_assumption, phase3)
+            template = "site_template/index.html (M3)"
+        except FileNotFoundError:
+            files = render_store_site(data, documents, is_assumption)
+            template = "FALLBACK: plain page (site_template/index.html missing)"
         root = write_site(ctx.out_dir, files)
         checks = site_checks(root)
-        data["site"] = {"folder": SITE_DIR, "files": sorted(files), "site_checks": checks}
+        data["site"] = {"folder": SITE_DIR, "template": template, "files": sorted(files), "site_checks": checks}
         ctx.log.action(self.name, "store_site_written", outcome="passed" if checks["passed"] else "failed")
 
         # Request founder approval
