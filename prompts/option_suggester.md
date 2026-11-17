@@ -9,6 +9,7 @@ Propose 2 or 3 short, distinct, realistic options for the field named in `field`
 ## Inputs
 - `brief`, `known_answers`: what the founder already said.
 - `field`: the field to suggest options for.
+- `already_suggested`: options the founder has already seen and did not choose; propose different ones.
 
 ## Output
 JSON object with exactly this key:
@@ -22,4 +23,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 ## Rules
 - Options respect the founder's budget, time and values when they are known.
 - No options involving fake reviews, bought followers, spending beyond the budget, or excluded products (physical goods, financial or crypto products, health or legal advice).
+- Never repeat an option listed in `already_suggested`.
 - No predictions of results (for example how many customers an option will bring).

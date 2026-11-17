@@ -55,7 +55,7 @@ def test_mock_run_waits_for_founder_then_finishes(client):
         time.sleep(0.05)
     assert app_mod.RUNS[rid]["status"] == "running"
     page = client.get("/approvals")
-    assert b"Approval needed" in page.data and b"Approve" in page.data
+    assert b"Your decision" in page.data and b"Agree with the system" in page.data
     _drain(client, rid)
     assert app_mod.RUNS[rid]["status"] == "finished"
     run_page = client.get(f"/run/{rid}")
