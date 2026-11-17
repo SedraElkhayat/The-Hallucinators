@@ -29,7 +29,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - Plain text only: no HTML, no markdown, no links outside `claims`.
 - No price (Phase 4 sets it), no policies (Phase 4 drafts them), no payment words.
 - No numbers in the headline, value proposition, features or FAQ unless they come from a claim; a number that cannot be sourced is removed by code.
-- No ratings, user counts or urgency. Anything simulated must say "SIMULATED, not real users".
-- Include the exact texts that the spec's acceptance tests look for.
+- No ratings, user counts or urgency. Any other simulated number must say "SIMULATED, not real users".
 - FAQ answers address buyer questions (what is included, how it is used, languages). Never mention technical limits of the system (scripts, backend, analytics, payment processing, accounts).
+- No sign-up, waitlist or user numbers anywhere, even labeled MOCKED or SIMULATED: a count on a page the founder publishes is a fake sign-up.
 - Keep every text value short (one or two sentences); no more than 6 items per list (features 5, faq 5, claims 6).

@@ -148,7 +148,8 @@ def test_unsourced_claim_on_page_fails(tmp_path):
 def test_number_without_source_outside_evidence_fails_unless_simulated(tmp_path):
     page = _page_replace("<li>Onboarding checklist</li>", "<li>Saves 5 hours a week</li>")
     assert "number without a source outside the evidence and price sections" in _site(tmp_path, page)["failures"]
-    page = _page_replace("<li>Onboarding checklist</li>", "<li>40 sign-ups (SIMULATED, not real users)</li>")
+    # A SIMULATED label still covers an example number that is not about people.
+    page = _page_replace("<li>Onboarding checklist</li>", "<li>Example timeline: 3 weeks (SIMULATED, not real users)</li>")
     assert _site(tmp_path / "b", page)["passed"]
     content, dropped = sanitize_content(_content(features=["Saves 5 hours a week"]))
     assert content["features"] == [] and dropped[0]["reasons"] == ["number without a source"]
@@ -494,3 +495,43 @@ def test_sanitize_content_sets_assumption_for_every_claim():
                    ("unverified", True, "ASSUMPTION", "https://example.com/b"),
                    ("no source", True, "ASSUMPTION", None),
                    ("http source", True, "ASSUMPTION", None)]
+
+
+
+# ---------------------------------------------------------------- no sign-up numbers on the website, ever (M1 14:54)
+
+@pytest.mark.parametrize("text", ["140 MOCKED sign-ups show demand", "140 sign-ups (SIMULATED, not real users)",
+                                  "Waitlist of 140", "Joined by 1,200 freelancers"])
+def test_TC_M3_signups_number_on_the_page_fails_even_labeled(tmp_path, text):
+    for old in ("<li>Onboarding checklist</li>", "Rival A sells kits to agencies"):
+        page = _page_replace(old, text if old.startswith("Rival") else f"<li>{text}</li>")
+        failures = _site(tmp_path, page)["failures"]
+        assert any("sign-up number" in f for f in failures), (old, failures)
+
+
+def test_TC_M3_signups_number_split_by_markup_is_caught(tmp_path):
+    page = _page_replace("<li>Onboarding checklist</li>", "<li>140 <b>MOCKED</b> sign-ups</li>")
+    assert any(f.startswith("sign-up number in features") for f in _site(tmp_path, page)["failures"])
+
+
+def test_TC_M3_signups_model_content_with_signup_numbers_never_reaches_the_page(tmp_path):
+    resp = dict(fixture("builder"),
+                value_proposition="Templates for each new client; 140 MOCKED sign-ups show demand.",
+                features=fixture("builder")["features"] + ["Waitlist of 140 designers"],
+                claims=[{"claim": "MOCKED: 140 sign-ups in 14 days", "source_url": "https://example.com/mock/1",
+                         "quote": "MOCKED quote: 140 sign-ups"}])
+    ctx, data = _build(tmp_path, resp)
+    page = (Path(ctx.out_dir) / SITE / "index.html").read_text(encoding="utf-8")
+    assert "140" not in page
+    assert {d["field"] for d in data["dropped"]} >= {"value_proposition", "features", "claims"}
+
+
+def test_TC_M3_signups_in_an_extra_page_fail(tmp_path):
+    (tmp_path / "index.html").write_text(fill_template(_content()), encoding="utf-8")
+    (tmp_path / "about.html").write_text("<p>Already <b>140</b> sign-ups</p>", encoding="utf-8")
+    assert any("about.html: sign-up number" in f for f in check_site_dir(tmp_path)["failures"])
+
+
+def test_TC_M3_signups_template_and_cta_words_are_not_numbers(tmp_path):
+    page = fill_template(_content(cta="Join the waitlist", features=["Step 2: join the waitlist", "3 templates"]))
+    assert _site(tmp_path, page)["passed"]
