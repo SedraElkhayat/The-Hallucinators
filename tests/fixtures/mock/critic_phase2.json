@@ -1,0 +1,9 @@
+{
+  "issues": [
+    {
+      "severity": "should_fix",
+      "text": "MOCKED: name the MOCKED provenance in the first sentence of the summary"
+    }
+  ],
+  "verdict": "ok"
+}

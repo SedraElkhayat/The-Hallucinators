@@ -1,0 +1,55 @@
+{
+  "mvp_scope": [
+    "MOCKED: index.html product page",
+    "MOCKED: onboarding_checklist.md",
+    "MOCKED: intake_questionnaire.md",
+    "MOCKED: welcome_message.txt"
+  ],
+  "user_stories": [
+    "MOCKED: as a solo designer, I want a checklist for each new client, so that I do not forget a step",
+    "MOCKED: as a solo designer, I want an intake questionnaire, so that I learn the client's needs before the first call"
+  ],
+  "acceptance_tests": [
+    {
+      "id": "AT1",
+      "description": "MOCKED: the product page exists",
+      "check": {
+        "type": "file_exists",
+        "path": "index.html",
+        "text": ""
+      }
+    },
+    {
+      "id": "AT2",
+      "description": "MOCKED: the checklist has a first-call section",
+      "check": {
+        "type": "text_contains",
+        "path": "onboarding_checklist.md",
+        "text": "First call"
+      }
+    },
+    {
+      "id": "AT3",
+      "description": "MOCKED: the questionnaire marks example answers as SAMPLE",
+      "check": {
+        "type": "text_contains",
+        "path": "intake_questionnaire.md",
+        "text": "SAMPLE"
+      }
+    },
+    {
+      "id": "AT4",
+      "description": "MOCKED: the welcome message template exists",
+      "check": {
+        "type": "file_exists",
+        "path": "welcome_message.txt",
+        "text": ""
+      }
+    }
+  ],
+  "out_of_scope": [
+    "MOCKED: payments",
+    "MOCKED: user accounts",
+    "MOCKED: hosting or deployment"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "results": [
+    {
+      "id": "AT1",
+      "passed": true,
+      "detail": "MOCKED fixture; real results are computed in code"
+    }
+  ],
+  "pass_ratio": 1.0,
+  "total": 1,
+  "passed": 1
+}

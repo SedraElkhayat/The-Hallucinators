@@ -1,0 +1,50 @@
+{
+  "positioning": [
+    {
+      "competitor": "MOCKED Rival Kit A",
+      "position": "MOCKED: sells an onboarding template bundle aimed at design agencies (claim: MOCKED Rival Kit A sells onboarding templates for agencies)"
+    },
+    {
+      "competitor": "MOCKED Rival Kit B",
+      "position": "MOCKED: offers a general freelancer toolkit, not specific to designers ASSUMPTION"
+    }
+  ],
+  "pricing_gaps": [
+    "MOCKED: no rival in the evidence offers a small kit aimed at solo designers (from claim: MOCKED Rival Kit A costs $49) ASSUMPTION"
+  ],
+  "five_forces": {
+    "rivalry": {
+      "level": "medium",
+      "reason": "MOCKED: two rivals appear in the verified claims"
+    },
+    "new_entrants": {
+      "level": "high",
+      "reason": "MOCKED: templates are easy to copy ASSUMPTION"
+    },
+    "substitutes": {
+      "level": "high",
+      "reason": "MOCKED: free checklists exist (claim: MOCKED free onboarding checklists are common)"
+    },
+    "buyer_power": {
+      "level": "unknown",
+      "reason": "MOCKED: no evidence ASSUMPTION"
+    },
+    "supplier_power": {
+      "level": "low",
+      "reason": "MOCKED: no suppliers are needed ASSUMPTION"
+    }
+  },
+  "differentiation_possible": "yes",
+  "differentiation_reason": "MOCKED: rivals target agencies; the evidence shows no kit for one-person studios ASSUMPTION",
+  "claim_refs": [
+    {
+      "claim": "MOCKED Rival Kit A sells onboarding templates for agencies",
+      "source_url": "https://example.com/mock/1"
+    },
+    {
+      "claim": "MOCKED free onboarding checklists are common",
+      "source_url": "https://example.com/mock/2"
+    }
+  ],
+  "insufficient_evidence": false
+}

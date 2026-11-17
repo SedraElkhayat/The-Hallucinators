@@ -1,0 +1,29 @@
+{
+  "risks": [
+    {
+      "text": "MOCKED: free checklists are widely available, so buyers may not pay (phase2_step1_competitor_analysis: substitutes high)",
+      "severity": "high"
+    },
+    {
+      "text": "MOCKED: the demand result is MOCKED, so real demand is untested",
+      "severity": "high"
+    },
+    {
+      "text": "MOCKED: only one traffic source is founder-owned ASSUMPTION",
+      "severity": "medium"
+    }
+  ],
+  "kill_criteria": [
+    {
+      "text": "MOCKED: demand ratio below 0.2 of the pre-set sign-up target",
+      "triggered": false
+    },
+    {
+      "text": "MOCKED: no differentiator possible against free substitutes",
+      "triggered": false
+    }
+  ],
+  "would_change_mind": [
+    "MOCKED: at least 10 waitlist sign-ups agree to pre-order at the planned price"
+  ]
+}
