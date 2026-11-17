@@ -1,0 +1,26 @@
+{
+  "_label": "SCRIPTED founder inputs for demo runs. Interview notes, demand results, support questions and phase 6 results are SAMPLE / MOCKED inputs, not real data. Weak brief: demand results are set so Gate 2 stops (12/100 = 0.12).",
+  "clarify_target_customer": "Everyone interested in tech",
+  "clarify_problem": "unknown",
+  "clarify_product_type": "Paid weekly tech-news newsletter",
+  "clarify_budget": "0",
+  "clarify_time_per_week": "2",
+  "clarify_founder_skills": "Reads tech news; no audience; no writing portfolio",
+  "clarify_monetization_idea": "Paid subscription from the first issue",
+  "clarify_distribution_channel": "unknown",
+  "clarify_differentiation": "unknown",
+  "clarify_values_and_limits": "unknown",
+  "idea_choice": "Keep my starting idea",
+  "interview_notes": "SAMPLE interview notes (not real interviews). A: reads free newsletters already, would not pay. B: gets tech news from social media. C: unsubscribed from two newsletters last month.",
+  "demand_results": "{\"signups\": 12, \"days\": 14, \"provenance\": \"MOCKED\"}",
+  "support_questions": "SAMPLE questions: 1) Can I use the template in Arabic? 2) I bought it twice by mistake, can I get my money back? 3) Does it work on the Notion free plan?",
+  "phase6_results": "metric,value,provenance\nwaitlist_signups,12,MOCKED\n",
+  "prefix_defaults": {
+    "clarify_": "unknown",
+    "option_": "approve",
+    "gate_override_": "stop"
+  },
+  "approvals": {
+    "default": "approve"
+  }
+}

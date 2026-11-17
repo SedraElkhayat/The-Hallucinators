@@ -1,0 +1,26 @@
+{
+  "_label": "SCRIPTED founder inputs for demo runs. Interview notes, demand results, support questions and phase 6 results are SAMPLE / MOCKED inputs, not real data.",
+  "clarify_target_customer": "Freelance graphic designers in Egypt and MENA who juggle several clients",
+  "clarify_problem": "They lose track of project status, revision rounds and unpaid invoices",
+  "clarify_product_type": "Digital template pack (Notion and Google Sheets)",
+  "clarify_budget": "100",
+  "clarify_time_per_week": "8",
+  "clarify_founder_skills": "4 years freelance design; Notion, Google Sheets, Canva; no coding",
+  "clarify_monetization_idea": "One-time purchase",
+  "clarify_distribution_channel": "unknown",
+  "clarify_differentiation": "Bilingual Arabic and English, built for local freelancing habits",
+  "clarify_values_and_limits": "No lock-in subscriptions; never collects client data",
+  "idea_choice": "Keep my starting idea",
+  "interview_notes": "SAMPLE interview notes (not real interviews). A: tracks projects in WhatsApp chats and a notebook; lost one unpaid invoice last month. B: tried a free Trello board, stopped updating it after two weeks. C: has never paid for a template; would ask a friend first.",
+  "demand_results": "{\"signups\": 140, \"days\": 14, \"provenance\": \"MOCKED\"}",
+  "support_questions": "SAMPLE questions: 1) Can I use the template in Arabic? 2) I bought it twice by mistake, can I get my money back? 3) Does it work on the Notion free plan?",
+  "phase6_results": "metric,value,provenance\nwaitlist_signups,140,MOCKED\nmock_sales,9,MOCKED\nmock_refunds,1,MOCKED\n",
+  "prefix_defaults": {
+    "clarify_": "unknown",
+    "option_": "approve",
+    "gate_override_": "stop"
+  },
+  "approvals": {
+    "default": "approve"
+  }
+}

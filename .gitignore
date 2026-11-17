@@ -1,8 +1,19 @@
+# secrets and local-only team files (never commit)
 .env
+CONTEXT.md
+PROGRESS_*.md
+# runs and caches
 runs/
 .cache/
 __pycache__/
 *.pyc
 .pytest_cache/
-CONTEXT.md
-PROGRESS_*.md
+# models and large files
+*.gguf
+*.bin
+models/
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
