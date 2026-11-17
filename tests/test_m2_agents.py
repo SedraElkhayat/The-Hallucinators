@@ -352,3 +352,15 @@ def test_critic_flags_praise_in_code(tmp_path):
     c = ctx.store.get("phase1_step9_critique")
     assert c["verdict"] == "revise"
     assert any(i["severity"] == "must_fix" and i.get("found_in_code") for i in c["issues"])
+
+
+def test_empty_search_is_logged_and_queries_are_keywords(tmp_path):
+    from agents.m2_common import short
+    assert short("a bilingual Notion and Google Sheets template pack", 3) == "bilingual Notion Google"
+    ctx = ctx_for(tmp_path)
+    run_until(ctx, "market_scout")
+    ctx.tools.search = lambda agent, q: []  # e.g. the search engine served a bot-check page
+    results, pages = get_agent("market_scout").gather(ctx)
+    assert results == [] and pages == []
+    empties = [e for e in ctx.log.entries() if e["action"] == "search_empty"]
+    assert len(empties) == 3 and all(e["agent"] == "market_scout" for e in empties)

@@ -277,8 +277,17 @@ def claims_index(ctx) -> list[dict]:
 
 # ---------------------------------------------------------------- research agents (search + fetch)
 
-def short(text: Any, words: int = 8) -> str:
-    return " ".join(re.sub(r"[^\w\s\-؀-ۿ]", " ", str(text or "")).split()[:words])
+STOPWORDS = {"a", "an", "the", "and", "or", "of", "for", "to", "in", "on", "at", "by", "with", "who", "whom", "that",
+              "which", "they", "their", "them", "it", "its", "is", "are", "was", "be", "as", "from", "into", "one",
+              "two", "three", "more", "most", "very", "this", "these", "those", "without", "via", "per", "lose",
+              "track", "mocked", "في", "من", "على", "إلى", "الى", "عن", "مع", "و", "أو"}
+
+
+def short(text: Any, words: int = 5) -> str:
+    """Search keywords from a sentence: punctuation and filler words removed, first ``words`` kept."""
+    toks = re.sub(r"[^\w\s\-؀-ۿ]", " ", str(text or "")).split()
+    keep = [t for t in toks if t.lower() not in STOPWORDS and not t.isdigit()]
+    return " ".join(keep[:words])
 
 
 class ResearchAgent(Agent):
@@ -290,7 +299,7 @@ class ResearchAgent(Agent):
     tools = ["search", "fetch"]
     inputs = [IDEA_CARD]
     optional_inputs: list[str] = []
-    max_searches = 2
+    max_searches = 3
     max_fetches = 3
 
     def queries(self, ctx, card: dict) -> list[str]:
@@ -301,7 +310,10 @@ class ResearchAgent(Agent):
         results, pages, seen = [], [], set()
         for q in [q for q in self.queries(ctx, card) if q.strip()][: self.max_searches]:
             try:
-                for r in ctx.tools.search(self.name, q):
+                found = ctx.tools.search(self.name, q)
+                if not found:  # an empty search (or a blocked one) must be visible in the decision log
+                    ctx.log.action(self.name, "search_empty", query=q)
+                for r in found:
                     if r.get("url") and r["url"] not in seen:
                         seen.add(r["url"])
                         results.append({"title": r.get("title", ""), "url": r["url"], "snippet": r.get("snippet", "")})

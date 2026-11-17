@@ -19,7 +19,8 @@ class CompetitorScanner(ResearchAgent):
     required_keys = ["competitors", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('solution'), 6)} alternatives pricing", f"best {short(card.get('solution'), 6)}"]
+        sol = short(card.get('solution'), 3)
+        return [f"{sol} template", f"{short(card.get('solution'), 2)} alternatives", f"{short(card.get('problem'), 3)} tool"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

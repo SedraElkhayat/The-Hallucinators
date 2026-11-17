@@ -10,7 +10,8 @@ class OpportunityFinder(ResearchAgent):
     required_keys = ["alternatives", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('customer'))} biggest problems", f"{short(card.get('problem'))} solutions"]
+        return [f"{short(card.get('customer'), 3)} tools", f"{short(card.get('problem'), 3)} solution",
+                short(card.get('customer'), 2)]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

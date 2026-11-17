@@ -10,7 +10,8 @@ class DemandAnalyst(ResearchAgent):
     required_keys = ["price_signals", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('solution'), 6)} price", f"{short(card.get('problem'), 6)} forum"]
+        return [f"{short(card.get('solution'), 3)} price", short(card.get('problem'), 3),
+                f"{short(card.get('customer'), 2)} {short(card.get('problem'), 1)}"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

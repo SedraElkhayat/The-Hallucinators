@@ -9,8 +9,8 @@ class MarketScout(ResearchAgent):
     required_keys = ["market_definition", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('customer'))} {short(card.get('problem'), 5)}",
-                f"{short(card.get('solution'), 6)} market"]
+        return [short(card.get('customer'), 3), short(card.get('problem'), 3),
+                f"{short(card.get('customer'), 2)} survey"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)
