@@ -1,5 +1,5 @@
 """opportunity_finder: alternative ideas in the same space, with sourced claims (pivot targets)."""
-from agents.m2_common import CLARIFICATION, OPPORTUNITIES, ResearchAgent, as_list, short
+from agents.m2_common import CLARIFICATION, OPPORTUNITIES, ResearchAgent, as_list, short, topic_queries
 
 
 class OpportunityFinder(ResearchAgent):
@@ -10,8 +10,8 @@ class OpportunityFinder(ResearchAgent):
     required_keys = ["alternatives", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('customer'), 3)} tools", f"{short(card.get('problem'), 3)} solution",
-                short(card.get('customer'), 2)]
+        t = topic_queries(card)
+        return [f"{t['cust']} {t['prob']}", f"{t['cust']} tools {t['prob']}", f"{t['prod']} {t['cust']}"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

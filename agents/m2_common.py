@@ -271,6 +271,9 @@ def norm_claims(claims) -> list[dict]:
     return out
 
 
+SPECULATION = re.compile(r"\b(might|may|could|possibly|potentially|perhaps|likely|assumption)\b|قد |ربما", re.I)
+
+
 def norm_risks(data: dict) -> dict:
     risks = []
     for r in as_list(data.get("risks")):
@@ -287,9 +290,14 @@ def norm_risks(data: dict) -> dict:
             k = {"text": k, "triggered": False}
         if isinstance(k, dict) and k.get("text"):
             trig = truthy(k.get("triggered"))
-            if trig and not str(k.get("evidence", "")).strip():
+            ev = str(k.get("evidence", "")).strip()
+            if trig and not ev:
                 # Honesty rule in code: a criterion only counts as triggered when the evidence is named.
                 k["triggered_without_evidence"] = True
+                trig = False
+            elif trig and SPECULATION.search(ev):
+                # "might be insufficient" is a risk, not evidence that the criterion is met.
+                k["triggered_on_speculation"] = True
                 trig = False
             k["triggered"] = trig
             kills.append(k)
@@ -328,6 +336,34 @@ def short(text: Any, words: int = 5) -> str:
     return " ".join(keep[:words])
 
 
+PRODUCT_NOUNS = {"template", "templates", "course", "ebook", "e-book", "checklist", "planner", "tracker", "spreadsheet",
+                 "toolkit", "guide", "prompts", "plugin", "app", "dashboard", "workbook", "kit", "newsletter",
+                 "قالب", "قوالب", "دورة", "كتاب", "دليل"}
+
+
+def product_terms(card: dict, words: int = 4) -> str:
+    """Search words for the product itself: tool names (capitalized words after the first) and product nouns
+    from the solution, e.g. "Notion Google Sheets template". Falls back to the solution's first keywords."""
+    toks = re.sub(r"[^\w\s\-؀-ۿ]", " ", str(card.get("solution") or "")).split()
+    names: list[str] = []
+    nouns: list[str] = []
+    for i, t in enumerate(toks):
+        low = t.lower()
+        if low in STOPWORDS:
+            continue
+        bucket = nouns if low in PRODUCT_NOUNS else names if (i > 0 and t[:1].isupper()) else None
+        if bucket is not None and low.rstrip("s") not in {k.lower().rstrip("s") for k in names + nouns}:
+            bucket.append(t)
+    keep = names[: max(1, words - len(nouns[:1]))] + nouns[:1]
+    return " ".join(keep[:words]) or short(card.get("solution"), 3)
+
+
+def topic_queries(card: dict) -> dict:
+    """Shared keyword pieces for the research agents' searches."""
+    return {"prod": product_terms(card), "cust": short(card.get("customer"), 2),
+            "prob": short(card.get("problem"), 3)}
+
+
 class ResearchAgent(Agent):
     """Base for the web research agents. Searches, fetches a few pages, hands them to the model as
     untrusted data, and asks for claims with exact quotes that core.claims re-checks.
@@ -364,6 +400,7 @@ class ResearchAgent(Agent):
                 ctx.log.action(self.name, "fetch_failed", sources=[r["url"]], error=str(e)[:200])
                 continue
             pages.append({"url": r["url"], "text": untrusted((text or "")[:MAX_PAGE_CHARS])})
+        self.result_urls = [r["url"] for r in results]  # what the agent really saw (post_process checks URLs)
         return results, pages
 
     def build_user_message(self, ctx) -> str:

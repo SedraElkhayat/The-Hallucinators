@@ -1,6 +1,6 @@
 """demand_analyst: behaviour over opinion. Do people already pay for substitutes? Price signals and repeated
 requests, each as a quote-checked claim."""
-from agents.m2_common import DEMAND, ResearchAgent, as_list, short
+from agents.m2_common import DEMAND, ResearchAgent, as_list, short, topic_queries
 
 
 class DemandAnalyst(ResearchAgent):
@@ -10,8 +10,8 @@ class DemandAnalyst(ResearchAgent):
     required_keys = ["price_signals", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [f"{short(card.get('solution'), 3)} price", short(card.get('problem'), 3),
-                f"{short(card.get('customer'), 2)} {short(card.get('problem'), 1)}"]
+        t = topic_queries(card)
+        return [f"{t['prod']} {t['cust']} price", f"{t['cust']} {t['prob']} reddit", f"{t['cust']} {t['prob']} forum"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

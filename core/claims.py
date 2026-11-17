@@ -43,7 +43,11 @@ def normalize(text: str) -> str:
         t = t.replace(a, b)
     t = _AR_DIACRITICS.sub("", t).translate(_AR_MAP)
     t = t.lower()
-    return re.sub(r"\s+", " ", t).strip()
+    t = re.sub(r"\s+", " ", t)
+    # html_to_text joins text nodes with spaces ("notetaking , knowledge"); match the rendered text too.
+    t = re.sub(r" (?=[,.;:!?)\]%])", "", t)
+    t = re.sub(r"(?<=[(\[]) ", "", t)
+    return t.strip()
 
 
 def quote_found(quote: str, page: str) -> bool:

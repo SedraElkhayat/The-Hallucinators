@@ -12,6 +12,9 @@ PRAISE = re.compile(r"\b(excellent|amazing|fantastic|brilliant|incredible|huge p
                     r"very promising|highly promising)\b", re.I)
 
 
+LABELLED_ASSUMPTION = re.compile(r"['\"‘“]ASSUMPTION\b")
+
+
 class CriticPhase1(Agent):
     name = "critic_phase1"
     phase = 1
@@ -33,6 +36,9 @@ class CriticPhase1(Agent):
                 i = {"severity": "should_fix", "text": i}
             if isinstance(i, dict) and str(i.get("text", "")).strip():
                 i["severity"] = norm_severity(i.get("severity"))
+                if i["severity"] == "must_fix" and LABELLED_ASSUMPTION.search(str(i["text"])):
+                    # The finding it quotes is already labelled ASSUMPTION, which is what the rules ask for.
+                    i["severity"], i["downgraded_in_code"] = "should_fix", "finding already labelled ASSUMPTION"
                 issues.append(i)
         report = get_artifact(ctx, REPORT) or {}
         texts = [str(report.get("summary", ""))] + [str(f.get("text", "")) for f in report.get("findings") or []

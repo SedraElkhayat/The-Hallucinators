@@ -85,3 +85,10 @@ def test_duplicates_are_marked_and_counted_once(tmp_path):
     assert d["claims"][1].get("duplicate") is True
     assert count_verified([d, {"claims": [c("https://a.org/p", q) | {"verified": True}]}]) == 1
     assert len(ctx.tools.calls) == 1  # the page is fetched once
+
+
+def test_quote_matches_despite_html_join_spaces():
+    from core.claims import quote_found
+    page = "It serves as a workspace for notetaking , knowledge management ( see below ) ."
+    assert quote_found("a workspace for notetaking, knowledge management (see below).", page)
+    assert not quote_found("a workspace for cooking, knowledge management", page)

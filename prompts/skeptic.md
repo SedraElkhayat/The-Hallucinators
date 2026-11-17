@@ -24,4 +24,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 ## Rules
 - Do not soften risks to be encouraging. No praise.
 - A criterion is triggered only by evidence in the inputs, never by a guess. Code ignores `triggered: true` without `evidence`.
+- A possibility ("might", "could", "may") is a risk, not a triggered criterion. Code ignores `triggered: true` when the evidence is hedged.
 - No new facts: refer to the inputs or write ASSUMPTION.

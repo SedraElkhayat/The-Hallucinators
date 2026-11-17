@@ -413,3 +413,42 @@ def test_messy_scope_and_kill_criteria(tmp_path):
         {"text": "MOCKED", "triggered": "true", "evidence": "MOCKED interview findings"}]}))
     get_agent("skeptic").run(ctx)
     assert ctx.store.get("phase1_step8_skeptic")["kill_criteria"][0]["triggered"] is True
+
+
+def test_product_terms_and_topic_queries():
+    from agents.m2_common import product_terms, topic_queries
+    card = {"solution": "A bilingual Notion and Google Sheets template pack for designers",
+            "customer": "Freelance designers in Egypt", "problem": "They lose track of unpaid invoices"}
+    assert product_terms(card) == "Notion Google Sheets template"
+    t = topic_queries(card)
+    assert t["cust"] == "Freelance designers" and t["prob"] == "unpaid invoices"
+    assert product_terms({"solution": "a weekly planner"}) == "planner"
+
+
+def test_competitor_url_not_in_search_results_is_not_counted(tmp_path):
+    ctx = ctx_for(tmp_path)
+    run_until(ctx, "competitor_scanner")
+    ctx.llm = TransformLLM(only("competitor_scanner", {
+        "competitors": [{"name": "Invented", "url": "https://invented-rival.org/x", "pricing": "unknown",
+                         "positioning": "MOCKED"},
+                        {"name": "Seen", "url": "https://example.com/mock/cs1", "pricing": "unknown",
+                         "positioning": "MOCKED"}], "claims": [], "insufficient_evidence": False}))
+    get_agent("competitor_scanner").run(ctx)
+    comps = ctx.store.get("phase1_step5_competitors")["competitors"]
+    assert comps[0]["url"] == "" and comps[0]["url_not_in_results"] == "https://invented-rival.org/x"
+    assert comps[1]["url"] == "https://example.com/mock/cs1"
+
+
+def test_hedged_kill_evidence_does_not_trigger():
+    from agents.m2_common import norm_risks
+    d = norm_risks({"risks": [], "kill_criteria": [
+        {"text": "Budget too small", "triggered": True, "evidence": "The budget might be insufficient."},
+        {"text": "No demand evidence", "triggered": True, "evidence": "demand_signals has no verified claims."}]})
+    assert d["kill_criteria"][0]["triggered"] is False and d["kill_criteria"][0]["triggered_on_speculation"]
+    assert d["kill_criteria"][1]["triggered"] is True
+
+
+def test_critic_issue_about_labelled_assumption_is_not_must_fix():
+    from agents.critic_phase1 import LABELLED_ASSUMPTION
+    assert LABELLED_ASSUMPTION.search("The finding 'ASSUMPTION: Canva has a Pro plan' should be marked")
+    assert not LABELLED_ASSUMPTION.search("The finding 'Canva has a Pro plan' cites no claim")

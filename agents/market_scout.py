@@ -1,5 +1,5 @@
 """market_scout: define the market segment and check whether people want this; claims with exact quotes."""
-from agents.m2_common import MARKET, ResearchAgent, short
+from agents.m2_common import MARKET, ResearchAgent, short, topic_queries
 
 
 class MarketScout(ResearchAgent):
@@ -9,8 +9,8 @@ class MarketScout(ResearchAgent):
     required_keys = ["market_definition", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        return [short(card.get('customer'), 3), short(card.get('problem'), 3),
-                f"{short(card.get('customer'), 2)} survey"]
+        t = topic_queries(card)
+        return [f"{short(card.get('customer'), 3)} statistics", f"{t['cust']} {t['prob']}", f"{t['cust']} survey report"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

@@ -2,7 +2,7 @@
 pages. A competitor's pricing counts as sourced only when a verified claim from its URL backs it."""
 from urllib.parse import urlparse
 
-from agents.m2_common import COMPETITORS, ResearchAgent, as_list, short
+from agents.m2_common import COMPETITORS, ResearchAgent, as_list, short, topic_queries
 
 
 def _host(url: str) -> str:
@@ -19,12 +19,14 @@ class CompetitorScanner(ResearchAgent):
     required_keys = ["competitors", "claims", "insufficient_evidence"]
 
     def queries(self, ctx, card):
-        sol = short(card.get('solution'), 3)
-        return [f"{sol} template", f"{short(card.get('solution'), 2)} alternatives", f"{short(card.get('problem'), 3)} tool"]
+        t = topic_queries(card)
+        return [f"{t['prod']} for {t['cust']}", f"best {t['prod']} {t['prob']}", f"{t['prod']} alternatives pricing"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)
         verified_hosts = {_host(c.get("source_url", "")) for c in data["claims"] if c.get("verified") is True}
+        seen_hosts = {_host(u) for u in getattr(self, "result_urls", None) or []} | verified_hosts
+        seen_hosts.discard("")
         comps = []
         for c in as_list(data.get("competitors")):
             if isinstance(c, str):
@@ -32,6 +34,9 @@ class CompetitorScanner(ResearchAgent):
             if not isinstance(c, dict) or not str(c.get("name", "")).strip():
                 continue
             c.setdefault("url", "")
+            if c["url"] and _host(c["url"]) not in seen_hosts:
+                # A URL the searches never returned is invented: keep it out of competitors_found.
+                c["url_not_in_results"], c["url"] = c["url"], ""
             c.setdefault("pricing", "unknown")
             c.setdefault("positioning", "unknown")
             c["pricing_sourced"] = bool(c["url"]) and _host(c["url"]) in verified_hosts
