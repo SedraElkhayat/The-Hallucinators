@@ -113,7 +113,8 @@ def gate_summary(phase: int, res: gates.GateResult) -> str:
 
 
 def founder_gate(ctx: Context, phase: int, res: gates.GateResult) -> str:
-    approved = ctx.approvals.request("gate", f"Gate {phase}: {res.outcome}", gate_summary(phase, res), phase)
+    approved = ctx.approvals.request("gate", f"Gate {phase}: {res.outcome}", gate_summary(phase, res), phase,
+                                     outcome=res.outcome)
     if approved:
         return res.outcome
     choice = ctx.founder.ask(f"gate_override_{phase}",
