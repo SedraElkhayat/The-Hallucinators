@@ -10,7 +10,7 @@ docker compose up
 
 Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox.
 
-Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `make test`.
+Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`).
 
 ## What works and what is mocked
 
@@ -20,7 +20,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Founder UI (web) and CLI | Working |
 | Search and fetch (free public sources, cached) | Working |
 | Phase 1 to 6 agents | In progress (STUBBED phases are labeled in the run) |
-| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |
 | Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
 | Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
 | Real payment provider | STUBBED (roadmap) |

@@ -32,7 +32,13 @@ def tracked_files() -> list[str]:
         return []
 
 
-def main() -> int:
+def repo_files() -> list[str]:
+    return tracked_files() or [p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*")
+                               if p.is_file() and not {".git", "runs", ".cache", "__pycache__"} & set(p.parts)]
+
+
+def run_checks(run_tests: bool = True) -> list[tuple[str, str]]:
+    results.clear()
     readme = (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else ""
     heads = re.findall(r"^## (.+?)\s*$", readme, flags=re.M)
     check("FAIL", [h for h in heads if h in README_HEADINGS] == README_HEADINGS, "README: eight ## headings in order")
@@ -71,8 +77,9 @@ def main() -> int:
     check("FAIL", not any(t.startswith("docs/") and t.lower().endswith("claude.md") for t in tracked), "CLAUDE.md not in docs/")
     env_ex = (ROOT / ".env.example").read_text(encoding="utf-8") if (ROOT / ".env.example").exists() else ""
     check("FAIL", not SECRET_RX.search(env_ex), ".env.example has placeholders only")
+    files = repo_files()
     leaks = []
-    for t in tracked or [str(p.relative_to(ROOT)) for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts]:
+    for t in files:
         p = ROOT / t
         if p.suffix in {".py", ".md", ".json", ".yml", ".yaml", ".txt", ".html", ".sh", ".example", ".csv"}:
             try:
@@ -90,11 +97,16 @@ def main() -> int:
     check("FAIL", any((ROOT / "tests").glob("test_*.py")), "tests/ has smoke tests")
     check("FAIL", "MOCKED" in readme, "README labels mocks")
 
-    r = subprocess.run([sys.executable, "-m", "pytest", "-q"], cwd=ROOT, capture_output=True, text=True)
-    tail = (r.stdout.strip().splitlines() or ["no output"])[-1]
-    check("FAIL", r.returncode == 0, f"tests pass ({tail})")
+    if run_tests:
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"], cwd=ROOT,
+                           capture_output=True, text=True)
+        tail = (r.stdout.strip().splitlines() or ["no output"])[-1]
+        check("FAIL", r.returncode == 0, f"tests pass ({tail})")
+    return list(results)
 
-    width = max(len(m) for _, m in results)
+
+def main() -> int:
+    run_checks(run_tests="--no-tests" not in sys.argv)
     for lvl, msg in results:
         print(f"{lvl:4}  {msg}")
     fails = sum(1 for l, _ in results if l == "FAIL")

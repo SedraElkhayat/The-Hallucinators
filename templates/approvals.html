@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block head %}{% if not items %}<meta http-equiv="refresh" content="5">{% endif %}{% endblock %}
+{% block title %}Founder inbox{% endblock %}
+{% block body %}
+<h2>Founder inbox</h2>
+<p class="muted">Every gate verdict and every outward-facing draft waits here. Approve or reject; questions need your answer before the run continues. If you do not know an answer, write "I don't know" and the system will suggest options for you to approve or reject.</p>
+{% for it in items %}
+<div class="card">
+  {% if it.kind == "approval" %}
+    <p><b>Approval needed</b> · phase {{ it.phase }} · {{ it.key }}</p>
+    <p>{{ it.prompt }}</p>
+    {% if it.content %}<pre>{{ it.content }}</pre>{% endif %}
+    <form method="post" action="/approvals/{{ it.id }}">
+      <button name="decision" value="approve">Approve</button>
+      <button name="decision" value="reject">Reject</button>
+    </form>
+  {% else %}
+    <p><b>Question</b> · {{ it.key }}</p>
+    <p>{{ it.prompt }}</p>
+    <form method="post" action="/approvals/{{ it.id }}">
+      {% for o in it.options %}<button name="decision" value="{{ o }}">{{ o }}</button> {% endfor %}
+      <textarea name="answer" placeholder="Your answer{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %} (label sample or made-up data as SAMPLE or MOCKED){% endif %}"></textarea>
+      <button type="submit">Send answer</button>
+    </form>
+  {% endif %}
+</div>
+{% else %}
+<p class="muted">Nothing is waiting for you.</p>
+{% endfor %}
+{% endblock %}

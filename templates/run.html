@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block head %}{% if run.status == "running" %}<meta http-equiv="refresh" content="3">{% endif %}{% endblock %}
+{% block title %}Run {{ run.id }}{% endblock %}
+{% block body %}
+<h2>Run {{ run.id }} {% if run.mock %}<span class="badge mocked">MOCKED run (MockLLM)</span>{% endif %}</h2>
+<p>Status: <b>{{ run.status }}</b>
+  {% if run.status == "running" %} · phase <b>{{ prog.phase or "starting" }}</b> · latest agent <b>{{ prog.agent or "none yet" }}</b>{% endif %}
+  {% if run.result %} · ended at Gate {{ run.result.phase }}: <span class="badge {{ run.result.outcome }}">{{ run.result.outcome|upper }}</span>{% endif %}
+</p>
+{% if run.error %}<p class="badge stop">{{ run.error }}</p>{% endif %}
+{% if pending %}<p class="card">The run is waiting for you: <a href="/approvals">{{ pending }} item(s) in the founder inbox</a>.</p>{% endif %}
+
+{% if run.result %}
+<h3>Gates</h3>
+<table><tr><th>Phase</th><th>Attempt</th><th>Outcome</th></tr>
+{% for p, a, o in run.result.history %}<tr><td>{{ p }}</td><td>{{ a }}</td><td><span class="badge {{ o }}">{{ o|upper }}</span></td></tr>{% endfor %}
+</table>
+{% endif %}
+
+<h3>Artifacts</h3>
+{% if steps %}<ul>{% for s in steps %}<li><a href="/artifact/{{ s }}?run={{ run.id }}">{{ s }}</a></li>{% endfor %}</ul>
+{% else %}<p class="muted">None yet.</p>{% endif %}
+
+<h3>Events (decision log, newest first; {{ prog.count }} total)</h3>
+<table>
+  <tr><th>Time</th><th>Agent</th><th>Action</th><th>Model</th><th>Approved by</th><th></th></tr>
+  {% for e in prog.events %}
+  <tr><td>{{ e.timestamp[11:19] }}</td><td>{{ e.agent }}</td><td>{{ e.action }}{% if e.outcome %} → {{ e.outcome }}{% endif %}</td>
+      <td>{{ e.model or "" }}</td><td>{{ e.approved_by or "" }}</td>
+      <td>{% if e.mocked or e.model == "mock-llm" %}<span class="badge mocked">MOCKED</span>{% endif %}
+          {% if e.provenance == "SCRIPTED" %}<span class="badge scripted">SCRIPTED</span>{% endif %}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
