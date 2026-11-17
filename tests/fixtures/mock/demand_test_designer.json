@@ -1,0 +1,11 @@
+{
+  "hypothesis": "MOCKED: at least 100 solo designers will join a waitlist for an onboarding kit within 14 days",
+  "metric": "waitlist_signups",
+  "target": 100,
+  "window_days": 14,
+  "traffic_sources": [
+    "MOCKED: design communities",
+    "MOCKED: founder's newsletter"
+  ],
+  "reading_rule": "MOCKED: ratio = sign-ups / 100. ratio >= 1.0 go; 0.5 to 1.0 repeat; 0.2 to 0.5 pivot; below 0.2 stop."
+}

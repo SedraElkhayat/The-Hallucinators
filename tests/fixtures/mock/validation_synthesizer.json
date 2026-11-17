@@ -1,0 +1,38 @@
+{
+  "summary": "MOCKED: the demand test result is compared with a target set before the test; the result is MOCKED. Monetization rests on one rival's price.",
+  "findings": [
+    {
+      "text": "MOCKED: sign-ups compared with the pre-set target of 100 (MOCKED result)",
+      "claim_ids": [
+        "phase2_step5_demand_results"
+      ]
+    },
+    {
+      "text": "MOCKED: rivals focus on agencies rather than solo designers",
+      "claim_ids": [
+        "phase2_step1_competitor_analysis"
+      ]
+    },
+    {
+      "text": "MOCKED: buyers may prefer free checklists",
+      "assumption": true
+    }
+  ],
+  "assumptions": [
+    "MOCKED: solo designers will pay for templates"
+  ],
+  "limitations": [
+    "MOCKED: demand result is MOCKED, not from real visitors",
+    "MOCKED: interview notes are SAMPLE input"
+  ],
+  "confidence": "low",
+  "verdict_inputs": {
+    "demand_ratio": 1.4,
+    "scorecard": {
+      "demand_evidence": "strong",
+      "monetization": "adequate"
+    },
+    "kill_criteria_triggered": [],
+    "untested_high_impact_assumptions": 2
+  }
+}

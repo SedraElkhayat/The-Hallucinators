@@ -1,0 +1,9 @@
+{
+  "signups": 140,
+  "days": 14,
+  "provenance": "MOCKED",
+  "ratio": 1.4,
+  "target": 100,
+  "window_days": 14,
+  "note": "MOCKED fixture; the real value comes from founder input demand_results"
+}

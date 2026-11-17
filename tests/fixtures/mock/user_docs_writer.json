@@ -1,0 +1,17 @@
+{
+  "title": "MOCKED: Using the client onboarding kit",
+  "sections": [
+    {
+      "heading": "MOCKED: what is included",
+      "text": "MOCKED: index.html, onboarding_checklist.md, intake_questionnaire.md and welcome_message.txt."
+    },
+    {
+      "heading": "MOCKED: how to use the checklist",
+      "text": "MOCKED: open onboarding_checklist.md in any text editor and copy it for each new client."
+    },
+    {
+      "heading": "MOCKED: what the kit does not do",
+      "text": "MOCKED: it does not send messages, store client data or take payments."
+    }
+  ]
+}

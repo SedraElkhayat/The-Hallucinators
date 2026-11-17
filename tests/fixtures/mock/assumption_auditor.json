@@ -1,0 +1,29 @@
+{
+  "assumptions": [
+    {
+      "id": "A1",
+      "text": "MOCKED: solo designers will pay for onboarding templates",
+      "source": "phase2_step2_lean_canvas.revenue_streams",
+      "tested": false,
+      "cheapest_test": "MOCKED: ask 10 waitlist sign-ups whether they would pre-order at the planned price",
+      "impact": "high"
+    },
+    {
+      "id": "A2",
+      "text": "MOCKED: design communities allow posts about a waitlist",
+      "source": "phase2_step2_lean_canvas.channels",
+      "tested": false,
+      "cheapest_test": "MOCKED: read the posting rules of three communities",
+      "impact": "medium"
+    },
+    {
+      "id": "A3",
+      "text": "MOCKED: designers want the kit (waitlist result is MOCKED, so untested)",
+      "source": "phase2_step5_demand_results",
+      "tested": false,
+      "cheapest_test": "MOCKED: run the waitlist page with real traffic for 14 days",
+      "impact": "high"
+    }
+  ],
+  "untested_high_impact_count": 2
+}
