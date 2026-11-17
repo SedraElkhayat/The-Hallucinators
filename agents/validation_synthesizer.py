@@ -56,6 +56,12 @@ class ValidationSynthesizer(M3InputsMixin, Agent):
             "kill_criteria_triggered": triggered,
             "untested_high_impact_assumptions": assumptions.get("untested_high_impact_count"),
         }
-        if results.get("provenance") == "MOCKED" and not any("MOCKED" in s for s in data["limitations"]):
-            data["limitations"].append("The demand-test result is MOCKED, not from real visitors.")
+        prov = str(results.get("provenance") or "")
+        if prov in ("MOCKED", "SAMPLE"):
+            if not any(prov in s for s in data["limitations"]):
+                data["limitations"].append(f"The demand-test result is {prov}, not from real visitors.")
+            # The provenance must be visible next to the numbers, so the critic never reads them as real.
+            summary = str(data.get("summary") or "")
+            if prov not in summary:
+                data["summary"] = (summary + f" (Demand data: {prov}, not from real visitors.)").strip()
         return data

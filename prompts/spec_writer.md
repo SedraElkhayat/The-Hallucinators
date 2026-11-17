@@ -29,5 +29,6 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - One static page: no scripts, no payment, no accounts, no network calls, no deployment. The only form is the template's demo sign-up box.
 - Fit the founder's stated skills and hours; keep the scope to one page.
 - Every acceptance test must be checkable by `file_exists` or `text_contains`; use short exact texts.
+- Acceptance tests may check only what the Phase 3 page contains: headline, value proposition, features, FAQ, the evidence section and the sign-up box. Never test a price, a currency amount or a policy name (privacy, terms, refund): Phase 4 and 5 add those, so such a test can never pass.
 - Acceptance tests check `index.html` only; `text_contains` texts must be plain words that will appear on the page.
 - Keep every text value short (one or two sentences); no more than 6 items per list (acceptance tests 6; other lists 5).

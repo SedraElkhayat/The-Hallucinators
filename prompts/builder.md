@@ -31,4 +31,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - No numbers in the headline, value proposition, features or FAQ unless they come from a claim; a number that cannot be sourced is removed by code.
 - No ratings, user counts or urgency. Anything simulated must say "SIMULATED, not real users".
 - Include the exact texts that the spec's acceptance tests look for.
+- FAQ answers address buyer questions (what is included, how it is used, languages). Never mention technical limits of the system (scripts, backend, analytics, payment processing, accounts).
 - Keep every text value short (one or two sentences); no more than 6 items per list (features 5, faq 5, claims 6).

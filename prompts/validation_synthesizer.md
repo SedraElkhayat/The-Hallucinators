@@ -27,4 +27,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 ## Rules
 - Include every high-severity risk and every triggered kill criterion from the Risk Analyst.
 - Never write go, repeat, pivot or stop as a recommendation; the gate decides in code.
+- Write the provenance (MOCKED, SAMPLE or REAL) next to every demand number, for example "140 sign-ups (MOCKED, not real visitors)".
 - Keep every text value short (one or two sentences); no more than 6 items per list (findings 6; other lists 5).
