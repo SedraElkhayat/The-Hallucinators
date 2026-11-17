@@ -1,0 +1,76 @@
+{%- macro ruler(rs) -%}
+<ul class="ruler">
+  {% for r in rs %}
+  <li>
+    <div class="lab"><b>{{ r.name|capitalize }}</b><span>needs {{ r.op }} {{ r.target }}{% if r.value is not none %}, measured {{ r.value }}{% else %}, not measured{% endif %}</span></div>
+    <div class="track" aria-hidden="true">
+      {% if r.target_pos is not none %}<span class="line" style="left: {{ r.target_pos }}%"></span>{% endif %}
+      {% if r.value_pos is not none %}<span class="dot {{ '' if r.ok else 'bad' }}" style="left: {{ r.value_pos }}%"></span>
+      {% else %}<span class="dot none" style="left: 0%"></span>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{%- endmacro -%}
+{% for b in blocks %}
+  {% if b.type == "user" %}
+    <div class="msg-user"><span class="who">Your brief{% if run.mock %}, offline demo{% endif %}</span><div class="md">{{ b.text|md }}</div></div>
+    <p class="say">Thanks. I'll work through six phases. Before each one I write down what evidence would make me stop, so the result can't be talked into a yes.</p>
+  {% elif b.type == "phase" %}
+    <div class="phase">
+      <span class="step">Phase {{ b.n }} of 6</span>
+      <h2>{{ b.name }}</h2>
+      <p class="say">{{ b.intro }}</p>
+      {% if b.rules %}
+      <p class="muted" style="margin: 8px 0 0">Rules written before any evidence is collected:</p>
+      <ul class="rules">{% for r in b.rules %}<li>{{ r.name|capitalize }} must be {{ r.op }} {{ r.target }}, otherwise {{ r.on_fail }}</li>{% endfor %}</ul>
+      {% endif %}
+    </div>
+  {% elif b.type == "thinking" %}
+    <details class="think" data-key="think-{{ loop.index }}">
+      <summary>{{ b.label }}</summary>
+      <ul class="steps">
+        {% for s in b.steps %}
+        <li class="{{ s.kind }}">
+          <span class="ic">{{ {'done': '✓', 'search': '⌕', 'read': '◦', 'error': '!', 'check': '◇'}[s.kind] }}</span>
+          <span>{% if s.link %}<a href="{{ s.link }}">{{ s.text }}</a>{% elif s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.text }}</a>{% else %}{{ s.text }}{% endif %}
+            {% if s.summary %}<span class="sum">{{ s.summary }}</span>{% endif %}
+            {% if s.detail %}<span class="det">{{ s.detail }}</span>{% endif %}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+  {% elif b.type == "answers" %}
+    <div class="answer"><span class="who">Your answers</span>
+      {% for label, a in b["items"].items() %}<div><b>{{ label|capitalize }}:</b> {{ a.text if a.text else "answered" }}{% if a.scripted %} <span class="tag mock">SCRIPTED</span>{% endif %}</div>{% endfor %}
+    </div>
+  {% elif b.type == "gate" %}
+    <section class="verdict {{ b.outcome }}">
+      <div class="top"><span class="gate">Gate {{ b.n }}: checked against the rules written before this phase</span>
+        {% if b.decision == 'accepted' %}<span class="tag go">You accepted</span>{% elif b.decision == 'rejected' %}<span class="tag stop">You rejected</span>{% else %}<span class="tag repeat">Waiting for you</span>{% endif %}</div>
+      <div class="word">{{ b.word }}</div>
+      {{ ruler(b.rulers) }}
+      {% if b.reasons %}<ul class="why">{% for r in b.reasons %}<li>{{ r }}</li>{% endfor %}</ul>
+      {% else %}<p class="muted">Every rule passed.</p>{% endif %}
+      <div class="foot"><a href="{{ b.link }}">Read the full decision (phase{{ b.n }}_gate_decision)</a></div>
+    </section>
+  {% elif b.type == "note" %}
+    <p class="note">{{ b.text }}</p>
+  {% elif b.type == "site" and site %}
+    <section class="site">
+      <div class="bar"><span class="url">Your website · {{ site[1] }} · not published</span>
+        <span><a class="btn" href="/site/{{ run.id }}/" target="_blank" rel="noopener">Open in new tab</a>
+              <a class="btn" href="/download/site/{{ run.id }}">Download site folder</a></span></div>
+      <iframe src="/site/{{ run.id }}/" title="Website preview" loading="lazy"></iframe>
+      <p class="hint">This is a local preview only. The sign-up box is a demo that sends nothing. You publish the site yourself after approving it; the publish guide is in the outputs.</p>
+    </section>
+  {% elif b.type == "finished" %}
+    <div class="finished">
+      <p class="say">{% if b.outcome == 'go' %}All six phases passed their rules. You have a tested website, a price, draft policies and launch drafts, ready for you to review and publish yourself.
+      {% elif b.outcome == 'stop' %}I recommend stopping at gate {{ b.phase }}. The evidence did not reach the targets set in advance; the decision above lists what would change that.
+      {% else %}The run ended at gate {{ b.phase }} with “{{ b.outcome }}”.{% endif %}</p>
+      <p class="muted">{{ b.tokens }} tokens, about ${{ '%.2f'|format(b.cost) }}. <a href="/run/{{ run.id }}/audit">Audit trail</a></p>
+    </div>
+  {% endif %}
+{% endfor %}
+{% if run.error %}<p class="note" style="border-color: var(--halt)">The run stopped with an error: {{ run.error }}</p>{% endif %}

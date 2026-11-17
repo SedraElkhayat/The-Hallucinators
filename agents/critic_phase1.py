@@ -15,6 +15,26 @@ PRAISE = re.compile(r"\b(excellent|amazing|fantastic|brilliant|incredible|huge p
 LABELLED_ASSUMPTION = re.compile(r"['\"‘“]ASSUMPTION\b")
 
 
+def _flat(text) -> str:
+    return " ".join(re.sub(r"[^\w\s]", " ", str(text or "").lower()).split())
+
+
+def kill_texts(skeptic: dict) -> tuple[list[str], list[str]]:
+    """(triggered, not triggered) kill-criterion texts from the skeptic artifact, flattened for matching."""
+    hit, quiet = [], []
+    for k in (skeptic or {}).get("kill_criteria") or []:
+        if isinstance(k, dict) and _flat(k.get("text")):
+            (hit if k.get("triggered") is True else quiet).append(_flat(k.get("text")))
+    return hit, quiet
+
+
+def only_untriggered_kill(text: str, hit: list[str], quiet: list[str]) -> bool:
+    """True if the issue is about a kill criterion the skeptic did NOT trigger (and none it did trigger).
+    A real run's critic called an untriggered criterion a 'high-severity risk missing from the report'."""
+    t = _flat(text)
+    return any(q in t for q in quiet) and not any(h in t for h in hit)
+
+
 class CriticPhase1(Agent):
     name = "critic_phase1"
     phase = 1
@@ -31,6 +51,7 @@ class CriticPhase1(Agent):
 
     def post_process(self, ctx, data: dict) -> dict:
         issues = []
+        hit, quiet = kill_texts(get_artifact(ctx, SKEPTIC) or {})
         for i in as_list(data.get("issues")):
             if isinstance(i, str):
                 i = {"severity": "should_fix", "text": i}
@@ -39,6 +60,8 @@ class CriticPhase1(Agent):
                 if i["severity"] == "must_fix" and LABELLED_ASSUMPTION.search(str(i["text"])):
                     # The finding it quotes is already labelled ASSUMPTION, which is what the rules ask for.
                     i["severity"], i["downgraded_in_code"] = "should_fix", "finding already labelled ASSUMPTION"
+                elif i["severity"] == "must_fix" and only_untriggered_kill(i["text"], hit, quiet):
+                    i["severity"], i["downgraded_in_code"] = "should_fix", "kill criterion was not triggered"
                 issues.append(i)
         report = get_artifact(ctx, REPORT) or {}
         texts = [str(report.get("summary", ""))] + [str(f.get("text", "")) for f in report.get("findings") or []

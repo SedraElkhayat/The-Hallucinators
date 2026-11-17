@@ -1,7 +1,8 @@
 # OWNER: M1
-"""Founder UI (Flask, server-rendered, no JavaScript).
+"""Founder UI (Flask, server-rendered; a little vanilla JavaScript refreshes the live run without a reload).
 
-Pages: /  (brief form, runs)   /run/<id>  (live progress)   /approvals  (founder inbox)
+Pages: /  (start: describe your idea)   /run/<id>  (the run as a conversation)   /approvals  (founder inbox)
+       /run/<id>/feed and /run/<id>/pending (fragments the run page refreshes)   /run/<id>/audit (event table)
        /artifact/<step>?run=<id>  (rendered artifact)   /health
        /site/<id>/  (local preview of the founder's website)   /download/site/<id>  (zip of its folder)
        <id> "outputs" means the committed demo run in outputs/.
@@ -25,6 +26,7 @@ from flask import Flask, abort, redirect, render_template, request, send_file, s
 from markupsafe import Markup
 
 import orchestrator
+import ui_feed
 from core.founder import INBOX
 
 ROOT = Path(__file__).resolve().parent
@@ -49,7 +51,7 @@ def start_run(brief: str, mock: bool, through: int = 6) -> str:
     ctx = orchestrator.build_context(brief, out_dir, out_dir.parent / "decision_log.json", mock=mock,
                                      founder_mode="web", founder_inputs=None)
     run = {"id": rid, "status": "running", "mock": mock, "result": None, "ctx": ctx, "through": through,
-           "brief": brief.strip().splitlines()[0][:120] if brief.strip() else "", "error": None}
+           "brief": ui_feed.brief_title(brief), "error": None}
     with _lock:
         RUNS[rid] = run
 
@@ -146,13 +148,50 @@ def render_md(text: str) -> Markup:
 
 
 # ---------------------------------------------------------------- pages
+@app.template_filter("md")
+def _md_filter(text):
+    return render_md(text or "")
+
+
+@app.context_processor
+def _sidebar():
+    with _lock:
+        runs = sorted(RUNS.values(), key=lambda r: r["id"], reverse=True)
+    return {"all_runs": runs, "pending": len(INBOX.pending()), "model": os.getenv("LLM_MODEL", "qwen3:8b")}
+
+
+def _answers() -> dict[str, str]:
+    """The founder's own answers by input key (web mode), so the conversation can show them."""
+    return {it["key"]: it["answer"] for it in INBOX.all() if it["kind"] == "input" and it["status"] == "answered"}
+
+
+def _is_html(text: str) -> bool:
+    t = (text or "").lstrip().lower()
+    return t.startswith("<!doctype") or t.startswith("<html") or ("<body" in t and "</" in t)
+
+
+def _pending_items() -> list[dict]:
+    items = INBOX.pending()
+    for it in items:
+        it["is_html"] = _is_html(it.get("content", ""))
+        it["label"] = ui_feed.humanize_key(it["key"])
+    return items
+
+
+def _run_view(rid: str) -> dict:
+    run = RUNS.get(rid)
+    if not run:
+        abort(404)
+    return {"run": run, "blocks": ui_feed.build_feed(run, _answers()), "site": site_dir(rid),
+            "activity": ui_feed.current_activity(run), "items": _pending_items()}
+
+
 @app.get("/")
 def index():
     briefs = {p.name: p.read_text(encoding="utf-8") for p in sorted((ROOT / "demo").glob("brief_*.md"))}
     with _lock:
         runs = sorted(RUNS.values(), key=lambda r: r["id"], reverse=True)
-    return render_template("index.html", briefs=briefs, runs=runs, pending=len(INBOX.pending()),
-                           model=os.getenv("LLM_MODEL", "qwen3:8b"), demo_site=site_dir("outputs"))
+    return render_template("index.html", briefs=briefs, runs=runs, demo_site=site_dir("outputs"))
 
 
 @app.post("/start")
@@ -172,19 +211,42 @@ def start():
 
 @app.get("/run/<rid>")
 def run_page(rid):
+    return render_template("run.html", **_run_view(rid))
+
+
+@app.get("/run/<rid>/feed")
+def run_feed(rid):
+    return render_template("_feed.html", **_run_view(rid))
+
+
+@app.get("/run/<rid>/pending")
+def run_pending(rid):
+    return render_template("_pending.html", **_run_view(rid))
+
+
+@app.get("/api/run/<rid>/state")
+def run_state(rid):
+    run = RUNS.get(rid)
+    if not run:
+        abort(404)
+    return {"status": run["status"], "events": len(run["ctx"].log.entries()),
+            "pending": [it["id"] for it in INBOX.pending()], "activity": ui_feed.current_activity(run)}
+
+
+@app.get("/run/<rid>/audit")
+def run_audit(rid):
     run = RUNS.get(rid)
     if not run:
         abort(404)
     out = run["ctx"].out_dir
     files = sorted(p.name for p in out.glob("*") if p.is_file()) if out.is_dir() else []
     steps = sorted({Path(f).stem for f in files if f.endswith((".md", ".json", ".html"))})
-    return render_template("run.html", run=run, prog=progress(run), steps=steps, site=site_dir(rid),
-                           pending=len(INBOX.pending()))
+    return render_template("audit.html", run=run, prog=progress(run), steps=steps)
 
 
 @app.get("/approvals")
 def approvals():
-    return render_template("approvals.html", items=INBOX.pending(), pending=len(INBOX.pending()))
+    return render_template("approvals.html", items=_pending_items())
 
 
 @app.post("/approvals/<int:item_id>")
@@ -193,7 +255,10 @@ def answer(item_id):
         abort(404)
     value = request.form.get("decision") or request.form.get("answer", "")
     INBOX.answer(item_id, value.strip())
-    return redirect(url_for("approvals"))
+    nxt = request.form.get("next", "")
+    if request.headers.get("X-Requested-With") == "fetch":
+        return {"ok": True}
+    return redirect(nxt if re.fullmatch(r"/run/[A-Za-z0-9_\-]+", nxt) else url_for("approvals"))
 
 
 @app.get("/artifact/<step>")
@@ -207,11 +272,14 @@ def artifact(step):
         abort(404)
     data = json.loads(js.read_text(encoding="utf-8")) if js.exists() else {}
     mocked = bool(data.get("mocked")) or (RUNS.get(rid, {}).get("mock", False))
-    return render_template("artifact.html", step=step, rid=rid, mocked=mocked,
+    title = next((ui_feed.done(a) for a, (_, _) in ui_feed.AGENTS.items() if ui_feed._step_for(a) == step), None)
+    m = re.match(r"phase(\d+)_gate_(\w+)", step)
+    if not title and m:
+        title = f"Gate {m.group(1)} " + ("decision" if m.group(2) == "decision" else m.group(2).replace("_", " "))
+    return render_template("artifact.html", step=step, rid=rid, mocked=mocked, title=title or step.replace("_", " "),
                            body=render_md(md.read_text(encoding="utf-8")) if md.exists() else None,
                            html_src=ht.read_text(encoding="utf-8") if ht.exists() else None,
-                           raw=json.dumps(data, indent=2, ensure_ascii=False) if data else None,
-                           pending=len(INBOX.pending()))
+                           raw=json.dumps(data, indent=2, ensure_ascii=False) if data else None)
 
 
 @app.get("/site/<rid>/")

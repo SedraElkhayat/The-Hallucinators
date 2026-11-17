@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Audit trail{% endblock %}
+{% block style %}
+  table { border-collapse: collapse; width: 100%; font-size: 13px; background: var(--paper); border-radius: 12px; overflow: hidden; }
+  td, th { border-bottom: 1px solid var(--rule); padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { font-weight: 600; color: var(--slate); }
+  .files { columns: 2; font-size: 14px; }
+{% endblock %}
+{% block body %}
+<div class="column" style="max-width: 980px">
+  <p><a href="/run/{{ run.id }}">Back to the conversation</a></p>
+  <div class="head"><h1>Audit trail</h1>{% if run.mock %}<span class="tag mock">MOCKED run (MockLLM)</span>{% endif %}</div>
+  <p class="muted">Every agent action as logged in decision_log.json: who acted, what they did, which model, and who approved it. {{ prog.count }} entries.</p>
+  <h2>Outputs</h2>
+  <ul class="files">{% for s in steps %}<li><a href="/artifact/{{ s }}?run={{ run.id }}">{{ s }}</a></li>{% endfor %}</ul>
+  <h2>Events, newest first</h2>
+  <table>
+    <tr><th>Time (UTC)</th><th>Agent</th><th>Action</th><th>Model</th><th>Approved by</th><th></th></tr>
+    {% for e in prog.events %}
+    <tr><td>{{ e.timestamp[11:19] }}</td><td>{{ e.agent }}</td><td>{{ e.action }}{% if e.outcome %}: {{ e.outcome }}{% endif %}</td>
+        <td>{{ e.model or "" }}</td><td>{{ e.approved_by or "" }}</td>
+        <td>{% if e.mocked or e.model == "mock-llm" %}<span class="tag mock">MOCKED</span>{% endif %}
+            {% if e.provenance == "SCRIPTED" %}<span class="tag mock">SCRIPTED</span>{% endif %}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,39 +1,64 @@
 {% extends "base.html" %}
+{% block style %}
+  .hero { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; }
+  .hero h1 { font-family: var(--serif); font-weight: 500; font-size: clamp(30px, 4vw, 42px); line-height: 1.15; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .hero p.lead { color: var(--slate); font-size: 16px; max-width: 60ch; margin: 0 0 24px; }
+  .composer { background: var(--paper); border: 1px solid var(--rule); border-radius: 18px; padding: 14px; box-shadow: 0 1px 2px rgba(24,33,31,.04); }
+  .composer textarea { border: 0; min-height: 132px; padding: 6px 4px; font-size: 16px; }
+  .composer textarea:focus { outline: none; }
+  .composer-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; border-top: 1px solid var(--rule); padding-top: 12px; margin-top: 6px; }
+  .opts { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 14px; color: var(--slate); }
+  .opts select { width: auto; padding: 4px 8px; }
+  .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .example { font: inherit; font-size: 13px; text-align: left; border: 1px solid var(--rule); background: transparent; border-radius: 10px; padding: 7px 11px; cursor: pointer; color: var(--ink); max-width: 340px; }
+  .example:hover { background: var(--paper); }
+  .example span { color: var(--slate); display: block; font-size: 12px; }
+  .demo { margin-top: 28px; padding: 14px 16px; border-radius: 14px; background: var(--paper); border: 1px solid var(--rule); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+{% endblock %}
 {% block body %}
-<p class="muted">Model: <b>{{ model }}</b> (open-weight, local via Ollama). The system drafts; you decide. Nothing is published, sent, spent or signed without your approval in the founder inbox. Payments are <span class="badge mocked">MOCKED</span>.</p>
-
-<h2>Start a run</h2>
-<form method="post" action="/start" class="card">
-  <p><label>Demo brief (SAMPLE):
-    <select name="preset">
-      <option value="">none, use the text below</option>
-      {% for name in briefs %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
-    </select></label></p>
-  <p><textarea name="brief" placeholder="Or paste a brief: starting idea, skills, budget, time per week, target market, values"></textarea></p>
-  <p><label><input type="checkbox" name="mock"> Offline mode: MockLLM, every output labeled MOCKED</label>
-     &nbsp; <label>Through phase <input type="number" name="through" min="1" max="6" value="6" style="width:50px"></label></p>
-  <button type="submit">Start run</button>
-</form>
-
-{% if demo_site %}
-<h2>Committed demo run</h2>
-<p class="card">The website from the demo run in <code>outputs/</code> ({{ demo_site[1] }}, not published).<br><br>
-  <a href="/site/outputs/" target="_blank"><button type="button">Preview website</button></a>
-  <a href="/download/site/outputs"><button type="button">Download site folder</button></a></p>
-{% endif %}
-
-<h2>Runs</h2>
-{% if runs %}
-<table>
-  <tr><th>Run</th><th>Brief</th><th>Status</th><th>Result</th></tr>
-  {% for r in runs %}
-  <tr>
-    <td><a href="/run/{{ r.id }}">{{ r.id }}</a> {% if r.mock %}<span class="badge mocked">MOCKED</span>{% endif %}</td>
-    <td>{{ r.brief }}</td>
-    <td>{{ r.status }}</td>
-    <td>{% if r.result %}Gate {{ r.result.phase }}: <span class="badge {{ r.result.outcome }}">{{ r.result.outcome|upper }}</span>{% endif %}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% else %}<p class="muted">No runs yet.</p>{% endif %}
+<div class="column">
+  <div class="hero">
+    <h1>What do you want to build?</h1>
+    <p class="lead">Describe your idea, your skills, budget, time and who it is for. I'll research it, test demand against a target set in advance, and tell you honestly whether to go on, change course or stop.</p>
+    <form method="post" action="/start" class="composer" id="composer">
+      <textarea name="brief" id="brief" aria-label="Your idea" placeholder="For example: a bilingual Notion template pack that helps freelance designers in Egypt track projects and invoices. I have 8 hours a week and about 100 dollars."></textarea>
+      <input type="hidden" name="preset" id="preset" value="">
+      <div class="composer-bar">
+        <div class="opts">
+          <label><input type="checkbox" name="mock"> Offline demo (mock model, answers labeled MOCKED)</label>
+          <label>Stop after phase
+            <select name="through">{% for n in range(1, 7) %}<option value="{{ n }}" {{ 'selected' if n == 6 }}>{{ n }}</option>{% endfor %}</select>
+          </label>
+        </div>
+        <button class="btn primary" type="submit">Start a run</button>
+      </div>
+    </form>
+    {% if briefs %}
+    <div class="examples">
+      {% for name, text in briefs.items() %}
+      <button type="button" class="example" data-preset="{{ name }}" data-text="{{ text }}">
+        {{ 'A promising idea' if 'strong' in name else ('A weak idea (should stop)' if 'weak' in name else name) }}
+        <span>Sample brief: {{ (text.split('**Starting idea:**')[1] if '**Starting idea:**' in text else text)[:80].strip() }}…</span>
+      </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if demo_site %}
+    <div class="demo">
+      <span>The committed demo run built a website ({{ demo_site[1] }}). It has not been published.</span>
+      <span><a class="btn" href="/site/outputs/" target="_blank" rel="noopener">Preview website</a>
+            <a class="btn" href="/download/site/outputs">Download site folder</a></span>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+document.querySelectorAll('.example').forEach(b => b.addEventListener('click', () => {
+  document.getElementById('brief').value = b.dataset.text;
+  document.getElementById('preset').value = b.dataset.preset;
+  document.getElementById('brief').focus();
+}));
+</script>
 {% endblock %}

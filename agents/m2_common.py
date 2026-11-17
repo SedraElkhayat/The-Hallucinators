@@ -427,25 +427,69 @@ def topic_stems(card: dict) -> set:
 
 MIN_TOPIC_TERMS = 2  # one shared word is too easy for an unrelated page (a quiz page matched 'design')
 
+# Share of the claim's keywords that its quote must contain. Real Phase 1 run (SearXNG, strong brief): supported
+# claims shared 40-100% of their keywords with the quote; claims glued to an unrelated sentence of an on-topic
+# page ("Designers in Egypt need X" quoting "graphic design is not a commodity") shared 8-11%.
+MIN_SUPPORT_SHARE = 0.3
+
+_NUM = re.compile(r"\d+(?:[.,]\d+)*")
+_ARABIC = re.compile(r"[؀-ۿ]")
+
+
+def _numbers(text: str) -> set:
+    return {n.replace(",", "") for n in _NUM.findall(str(text or ""))}
+
+
+def _is_arabic(text: str) -> bool:
+    letters = re.findall(r"[^\W\d_]", str(text or ""))
+    return bool(letters) and len(_ARABIC.findall(str(text or ""))) * 2 > len(letters)
+
+
+def unsupported_reason(claim: str, quote: str) -> str | None:
+    """Why the quote does not back the claim, or None. Numbers in the claim must appear in the quote; the quote
+    must share at least MIN_SUPPORT_SHARE of the claim's keywords (skipped when one is Arabic and the other is
+    not, since a translated claim shares no stems with its quote)."""
+    missing = _numbers(claim) - _numbers(quote)
+    if missing:
+        return f"numbers not in the quote: {', '.join(sorted(missing))}"
+    if _is_arabic(claim) != _is_arabic(quote):
+        return None
+    cs = _stems(claim)
+    if not cs:
+        return None
+    shared = cs & _stems(quote)
+    if len(shared) < min(2, len(cs)) or len(shared) / len(cs) < MIN_SUPPORT_SHARE:
+        return f"the quote shares {len(shared)} of {len(cs)} keywords with the claim"
+    return None
+
+
+def _downgrade(ctx, c: dict, agent: str, check: str, reason: str) -> None:
+    c["verified"], c["assumption"] = False, True
+    c["check"] = check
+    ctx.log.action("claim_checker", "claim_downgraded", sources=[c.get("source_url", "")],
+                   reason=reason, claim=str(c.get("claim", ""))[:200], for_agent=agent)
+
 
 def check_on_topic(ctx, data: dict, card: dict, agent: str) -> None:
     """A verified claim counts as evidence for this idea only if the claim AND its quote mention the idea's
-    customer, problem or product. Search engines can return unrelated pages (physiotherapy, browser help);
-    a true quote from such a page is not evidence here. Downgraded claims become ASSUMPTION and are logged."""
+    customer, problem or product, and the quote actually says what the claim says. Search engines can return
+    unrelated pages (physiotherapy, browser help), and a model can pair a claim with an unrelated sentence of a
+    relevant page; a true quote is then still not evidence. Downgraded claims become ASSUMPTION and are logged."""
     topic = topic_stems(card)
-    if not topic:
-        return
     for c in data.get("claims") or []:
         if not isinstance(c, dict) or c.get("verified") is not True or c.get("mocked"):
             continue
-        in_claim, in_quote = _stems(c.get("claim", "")) & topic, _stems(c.get("quote", "")) & topic
-        if in_claim and len(in_quote) >= MIN_TOPIC_TERMS:
+        if topic:
+            in_claim, in_quote = _stems(c.get("claim", "")) & topic, _stems(c.get("quote", "")) & topic
+            if not (in_claim and len(in_quote) >= MIN_TOPIC_TERMS):
+                _downgrade(ctx, c, agent, "off-topic: the quote is on the page but does not mention this idea's "
+                           "customer, problem or product", "off-topic for this idea")
+                continue
             c["topic_terms"] = sorted(in_quote)
-            continue
-        c["verified"], c["assumption"] = False, True
-        c["check"] = "off-topic: the quote is on the page but does not mention this idea's customer, problem or product"
-        ctx.log.action("claim_checker", "claim_downgraded", sources=[c.get("source_url", "")],
-                       reason="off-topic for this idea", claim=str(c.get("claim", ""))[:200], for_agent=agent)
+        why = unsupported_reason(str(c.get("claim", "")), str(c.get("quote", "")))
+        if why:
+            _downgrade(ctx, c, agent, f"unsupported: the quote is on the page but does not say this ({why})",
+                       "quote does not support the claim")
 
 
 class ResearchAgent(Agent):
