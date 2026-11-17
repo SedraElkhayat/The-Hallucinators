@@ -261,11 +261,11 @@ This table states the current state of the code and is updated as components are
 | Orchestrator (stages, parallel stages, revise loops, repeat, pivot, stop), approval, decision log | Working |
 | Gates: criteria pre-registered for all six phases, evaluation, decision files | Working |
 | Founder UI (web) and CLI, scripted demo inputs (labeled SCRIPTED) | Working |
-| Founder website: template, builder filling, website checks in Gate 3, Phase 5 store version | In progress |
+| Founder website: template, builder filling, website checks in Gate 3, Phase 5 store version | Working |
 | Founder website preview and download in the UI (local only, never published) | Working |
 | Guardrails (input, output and release checks) and red-team evals in `evals/` | Working |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
-| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED); first real-model run in progress |
+| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED). Real-model runs: Phases 2 and 3 checked; the full real run is the committed demo run |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results in the demo run | MOCKED input (labeled) |
 | Mom Test interview notes in the demo run | SAMPLE input (labeled) |
