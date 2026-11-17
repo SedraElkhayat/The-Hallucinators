@@ -5,7 +5,8 @@ Scans offer packaging and policies for banned claims and missing legal review la
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent, normalize_critique, _COMPLIANCE_CLAIM_RX, _WINDOW_RX
+from agents.m4_common import (M4Agent, draft_strings, normalize_critique, verify_model_issues,
+                              _COMPLIANCE_CLAIM_RX, _WINDOW_RX)
 from core.contracts import Context
 from core.guardrails import check_output
 
@@ -51,6 +52,7 @@ class ComplianceReviewerPhase4(M4Agent):
             pr = ctx.store.get("phase4_step1_pricing")
             if not pr.get("comparable_claims") and pr.get("is_assumption") is not True:
                 code_issues.append("phase4_step1_pricing: price has no verified comparable and is not labeled an assumption")
+        data = verify_model_issues(data, draft_strings(ctx, *self.inputs))
         data = normalize_critique(data, code_issues)
         data.pop("mocked", None)
         return data
