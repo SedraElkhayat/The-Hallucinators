@@ -16,11 +16,13 @@
   "kill_criteria": [
     {
       "text": "MOCKED: demand ratio below 0.2 of the pre-set sign-up target",
-      "triggered": false
+      "triggered": false,
+      "evidence": ""
     },
     {
       "text": "MOCKED: no differentiator possible against free substitutes",
-      "triggered": false
+      "triggered": false,
+      "evidence": ""
     }
   ],
   "would_change_mind": [
