@@ -97,10 +97,10 @@ flowchart TD
 | landing_page_builder | llm | none | Build the test page from the plan: no fake counters, timers or reviews; a draft for founder approval | `phase2_step4_landing_page` (`.html`) |
 | (demand results) | founder | none | Real sign-up count from the founder, or a labeled `MOCKED` input in the demo; the run pauses until it arrives | `phase2_step5_demand_results` |
 | assumption_auditor | llm | none | List every assumption, tested or not, cheapest test for each | `phase2_step6_assumptions` |
-| risk_analyst | llm | none | Top risks, kill criteria, what would change the verdict | `phase2_step7_risks` |
-| scorecard_builder | llm | none | Rate six dimensions (problem severity, demand evidence, competition, founder fit, feasibility, monetization); no evidence means `unknown` | `phase2_step8_scorecard` |
+| risk_analyst | llm | none | Top risks, kill criteria, what would change the verdict. A kill criterion counts as triggered only when it names its evidence (checked in code); "no evidence of X" is unknown, never a kill; the demand rule (ratio below 0.2) is decided in code | `phase2_step7_risks` |
+| scorecard_builder | llm | none | Rate six dimensions (problem severity, demand evidence, competition, founder fit, feasibility, monetization); no evidence means `unknown`; a `MOCKED` demand result is capped at `adequate` in code | `phase2_step8_scorecard` |
 | validation_synthesizer | llm | none | Final report including the risk analyst's findings; does not choose the verdict | `phase2_step9_validation_report` |
-| critic_phase2 | llm | none | Review the report; up to 2 revision rounds | `phase2_step9_critique` |
+| critic_phase2 | llm | none | Review the report; up to 2 revision rounds. A `MOCKED` or `SAMPLE` input is acceptable when the report states its provenance. Code downgrades a must-fix that only disputes a rule code has already applied (`downgraded_by_code`, reason recorded); real problems stay must-fix | `phase2_step9_critique` |
 
 Gate 2 output: `outputs/phase2_gate_decision.md`.
 
@@ -120,18 +120,18 @@ flowchart LR
 
 | Agent | Kind | Method | Output artifact |
 |---|---|---|---|
-| spec_writer | llm | MVP scope, user stories, acceptance tests with a concrete check each | `phase3_step1_spec` |
+| spec_writer | llm | MVP scope and user stories. The acceptance tests are structural and set in code (the page exists, every required section exists, the demo sign-up label is shown); the model's own tests are recorded in `dropped_tests` and never run | `phase3_step1_spec` |
 | copywriter | llm | Reuse the tested landing copy; add features and FAQ; no fake reviews or counts | `phase3_step2_page_copy` |
 | builder | llm + code | The model writes structured content only (headline, value proposition, features, FAQ, claims). Code fills the ready-made template `site_template/index.html` with HTML escaping and writes the website to `outputs/phase3_step3_site/`; also writes the publish guide. No deploy, no network code, no payment form | `phase3_step3_build`, `phase3_step3_site/`, `phase3_step7_publish_guide` |
 | user_docs_writer | llm | User guide from the built product | `phase3_step4_user_docs` |
-| qa_agent | code + llm | Run each acceptance check and the website checks (below) against the files; report pass or fail honestly | `phase3_step5_qa_report` |
-| content_reviewer | llm | Honesty review: fake proof, promises, invented numbers, unlabeled samples | `phase3_step6_content_review` |
+| qa_agent | code | Run the structural acceptance checks and the website checks (below) against the files; no model is used; report pass or fail honestly | `phase3_step5_qa_report` |
+| content_reviewer | llm | Honesty review: fake proof, promises, invented numbers, unlabeled samples. Code downgrades a must-fix that disputes a rule the website checks already apply (source link or `ASSUMPTION` label present, demo label present, no urgency wording, price slot filled by code) or that only asks for a source on the product's own description (the founder's design); fake proof and market claims stay must-fix | `phase3_step6_content_review` |
 
 **The founder's website** (`outputs/phase3_step3_site/index.html`):
 - One folder, no build step: CSS inline, opens by double-click. Sections: value proposition, features, evidence, price, FAQ, policy links, sign-up box.
 - Filled from a ready-made template with the approved Idea Card and the verified claims from Phases 1 and 2. Every market claim on the page links its source or is labeled `ASSUMPTION`. In Phase 3 the price slot reads "Price: set in Phase 4"; Phase 5 re-fills the same template with the price and policy pages.
-- The sign-up box is a demo: a form with no action and no script, labeled "Demo only: nothing is sent or stored". Anything simulated is labeled "SIMULATED, not real users". No payment code, testimonials, counters, timers or income claims.
-- **Website checks** (code, in `qa_agent`): the HTML parses; the required sections exist; every local link and anchor resolves; external links are well-formed; a banned-content scan (guardrails: income promises, fake reviews or counts, urgency, impersonation) finds nothing; every claim on the page is sourced or labeled `ASSUMPTION`; the sign-up box is inert and labeled. The result is the gate metric `site_checks_passed`.
+- The sign-up box is a demo: a form with no action and no script, labeled "Demo only: nothing is sent or stored". No sign-up, waitlist or user number is ever shown, even labeled; "SIMULATED, not real users" only labels other simulated example numbers. No payment code, testimonials, counters, timers or income claims.
+- **Website checks** (code, in `qa_agent`): the HTML parses; the required sections exist; every local link and anchor resolves; external links are well-formed; a banned-content scan (guardrails: income promises, fake reviews or counts, urgency, impersonation) finds nothing; every claim on the page is sourced or labeled `ASSUMPTION` (a claim is shown as a fact only if its quote also supports it); the sign-up box is inert and labeled. The result is the gate metric `site_checks_passed`.
 - **Never published by the system.** The founder approves it at Gate 3, previews it in the founder UI (**Preview website**, served locally with a policy that blocks scripts, network calls and form submission), downloads it (**Download site folder**), and publishes it themselves following `phase3_step7_publish_guide.md` (for example GitHub Pages or Netlify).
 
 Gate 3 output: `outputs/phase3_gate_decision.md`.
@@ -187,13 +187,13 @@ Every step ends with a gate: founder approval, a pre-set evidence threshold, or 
 | Gate | After | Pre-set checks (default) | Outcomes |
 |---|---|---|---|
 | 1 | Discover | scope is digital (else stop); at least 3 verified claims; at least 2 competitors or substitutes; no triggered kill criterion (else stop); no unresolved must-fix review issue | go, repeat, stop |
-| 2 | Validate | scorecard: demand not unknown (else repeat), any one weak dimension pivots, two or more weak dimensions stop, three or more unknown repeat; **demand target**: sign-ups divided by target at least 1.0 go, 0.5 to 1.0 repeat, 0.2 to 0.5 pivot, below 0.2 stop | go, repeat, pivot, stop |
+| 2 | Validate | scorecard: demand not unknown (else repeat), any one weak dimension pivots, two or more weak dimensions stop, three or more unknown repeat; **demand target**: sign-ups divided by target at least 1.0 go, 0.5 to 1.0 repeat, 0.2 to 0.5 pivot, below 0.2 stop; a triggered kill criterion stops; open must-fix issues repeat | go, repeat, pivot, stop |
 | 3 | Build | acceptance pass ratio at least 0.8; website checks pass; no honesty must-fix; nothing deployed | go, repeat, pivot, stop |
 | 4 | Commercial setup | price has comparables or an `ASSUMPTION` label; policies carry "needs legal review"; no banned claims; no payment code | go, repeat, pivot, stop |
 | 5 | Launch | every draft pending or approved by the founder; sale-to-cash test passed (no double delivery, refund revokes access, reconciliation balanced); nothing released without approval | go, repeat, pivot, stop |
 | 6 | Operate | inputs labeled; results compared with targets; memo written | go (persevere), pivot, stop |
 
-**When the system recommends STOP.** Example from the demo brief set: the target is 100 sign-ups in 14 days and 12 arrive (ratio 0.12), so Gate 2 returns `stop` and the report states what evidence would change that verdict. The decision file is `outputs/phase2_gate_decision.md`.
+**When the system recommends STOP.** In the committed demo run the weak brief stops at Gate 1: 0 verified claims and 2 triggered kill criteria (`outputs/phase1_gate_weak_decision.md`, which also lists what evidence would change the verdict). In the offline test run with MockLLM the weak brief reaches Gate 2 and stops there: the target is 100 sign-ups in 14 days and 12 arrive (ratio 0.12). In the strong demo the system also recommends STOP at Gates 1 and 2 because the evidence is thin; the scripted founder overrides both, and the override is logged next to the system's verdict (`outputs/phase1_gate_founder_override.md`, `outputs/phase2_gate_founder_override.md`, and `decision_log.json` with `system_outcome` and `provenance: SCRIPTED`). The strong demo's final memo recommends STOP as well, because its demand and sales inputs are `MOCKED`.
 
 **Pivot routing.** A pivot returns to the previous phase's idea step with `pivot_notes`; from Gate 2 the system proposes the next-best alternative from `phase1_step7_opportunity_scores`. At most 2 pivots; the third becomes stop.
 
@@ -265,9 +265,10 @@ This table states the current state of the code and is updated as components are
 | Founder website preview and download in the UI (local only, never published) | Working |
 | Guardrails (input, output and release checks) and red-team evals in `evals/` | Working |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Hacker News API and DuckDuckGo as fallbacks (Bing optional, off by default); a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
-| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED). Real-model runs: Phases 2 and 3 checked; the full real run is the committed demo run |
+| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED) and on a real local model: the committed demo run (all six phases, `qwen3:8b` through Ollama, SearXNG search) took about 3.5 minutes and 55 model calls |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results in the demo run | MOCKED input (labeled) |
+| Amounts in the sale-to-cash test | Sample amounts, not the Phase 4 price (labeled MOCKED) |
 | Mom Test interview notes in the demo run | SAMPLE input (labeled) |
 | Phase 6 inputs (support questions, results) | SAMPLE input (labeled) |
 | Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
@@ -280,3 +281,4 @@ This table states the current state of the code and is updated as components are
 3. More free evidence sources and better claim matching (fuzzy quotes, multilingual).
 4. Arabic-first prompts and evaluation sets.
 5. Maintainers' guide and contribution process; community-run example briefs.
+6. Per-agent model routing (for example a separate, larger reviewer model) and the claim-support check inside the claim checker itself.
