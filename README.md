@@ -20,7 +20,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 | Founder UI (web) and CLI | Working |
 | Search and fetch (free public sources, cached) | Working |
 | Phase 1 to 6 agents | In progress (STUBBED phases are labeled in the run) |
-| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |
 | Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
 | Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
 | Real payment provider | STUBBED (roadmap) |

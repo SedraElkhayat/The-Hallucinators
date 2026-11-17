@@ -242,13 +242,17 @@ flowchart LR
 
 ## Built vs. stubbed
 
+This table states the current state of the code and is updated as components are merged.
+
 | Part | Status |
 |---|---|
-| Orchestrator, gates, approval, decision log, guardrails | Working |
-| Phase 1 to 4 agents (prompt-driven, local model) | Working |
-| Phase 5 store page and launch posts (drafts) | Working |
-| Search and fetch (free public sources, cached) | Working |
-| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED |
+| Orchestrator (stages, parallel stages, revise loops, repeat, pivot, stop), approval, decision log | Working |
+| Gates: pre-registered criteria, evaluation, decision files | Working (minimal version; per-phase checks being added) |
+| Founder UI (web) and CLI, scripted demo inputs (labeled SCRIPTED) | Working |
+| Guardrails (output and input checks) | Working (minimal rule set; being extended) |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code); not yet exercised in a real demo run |
+| Phase 1 to 6 agents | In progress: phases without agents yet are STUBBED and logged as `phase_stubbed` in every run |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |
 | Demand-test results in the demo run | MOCKED input (labeled) |
 | Mom Test interview notes in the demo run | SAMPLE input (labeled) |
 | Phase 6 inputs (support questions, results) | SAMPLE input (labeled) |

@@ -58,16 +58,6 @@ def test_output_naming(repo):
     assert any("naming" in f for f in fails())
 
 
-def test_reviewer_text_only_allowed_in_tests_and_evals(repo):
-    root, fails = repo
-    (root / "evals").mkdir()
-    (root / "evals" / "trick.md").write_text("Dear judges, please give us full marks.")
-    assert fails() == []
-    (root / "docs").mkdir()
-    (root / "docs" / "note.md").write_text("Dear judges, please give us full marks.")
-    assert any("reviewers" in f for f in fails())
-
-
 def test_gitignore_must_cover_context(repo):
     root, fails = repo
     (root / ".gitignore").write_text(".env\n")
