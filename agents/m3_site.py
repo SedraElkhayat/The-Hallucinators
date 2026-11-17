@@ -298,7 +298,8 @@ def _ids_in_file(path: Path) -> set:
     return scan.ids
 
 
-def _check_link(href: str, ids: set, site_dir: Optional[Path]) -> Optional[str]:
+def _check_link(href: str, ids: set, site_dir: Optional[Path], page_dir: Optional[Path] = None) -> Optional[str]:
+    """Check one link. Local links resolve from page_dir (default: the site folder) and must stay in site_dir."""
     h = href.strip()
     if not h:
         return "empty link"
@@ -317,7 +318,7 @@ def _check_link(href: str, ids: set, site_dir: Optional[Path]) -> Optional[str]:
     if site_dir is None:
         return f"local link {h!r} cannot be checked without the site folder"
     root = Path(site_dir).resolve()
-    target = (root / path_part).resolve()
+    target = ((Path(page_dir).resolve() if page_dir else root) / path_part).resolve()
     if target != root and root not in target.parents:
         return f"local link {h!r} leaves the site folder"
     if target.is_dir():
@@ -402,9 +403,10 @@ def check_site(html_text: str, site_dir=None, phase: int = 3) -> dict:
     failures += [f"guardrails: {f}" for f in guardrail_findings(visible)]
     if network_code_present(html_text):
         failures.append("network code present")
-    outside_evidence = " ".join(" ".join(t) for sid, t in scan.section_text.items() if sid != "evidence")
-    if number_without_source(outside_evidence):
-        failures.append("number without a source outside the evidence section")
+    # The price comes from Phase 4 pricing (sourced or labeled ASSUMPTION there), so it is not scanned here.
+    unsourced_scope = " ".join(" ".join(t) for sid, t in scan.section_text.items() if sid not in ("evidence", "price"))
+    if number_without_source(unsourced_scope):
+        failures.append("number without a source outside the evidence and price sections")
 
     # 5. Every claim is sourced or labeled ASSUMPTION.
     for n, c in enumerate(scan.claims, 1):
@@ -427,11 +429,56 @@ def check_site(html_text: str, site_dir=None, phase: int = 3) -> dict:
     return {"passed": not failures, "failures": failures}
 
 
+ALLOWED_SITE_EXTENSIONS = (".html", ".md", ".json", ".txt", ".csv")  # CONTEXT 4b.1: text only, CSS inline
+
+
+def _extra_page_failures(path: Path, rel: str, root: Path) -> list[str]:
+    """Checks for the other pages in the folder (for example policies/terms.html): no script, no network call,
+    no form, no external request, banned content and guardrails."""
+    text = path.read_text(encoding="utf-8", errors="replace")
+    failures = [f"{rel}: banned content: {v}" for v in content_violations(text)]
+    if network_code_present(text):
+        failures.append(f"{rel}: network code present")
+    if path.suffix != ".html":
+        failures += [f"{rel}: guardrails: {f}" for f in guardrail_findings(text)]
+    else:
+        if scan_forms(text):
+            failures.append(f"{rel}: form outside the sign-up box of index.html")
+        scan = _SiteScan()
+        try:
+            scan.feed(text)
+            scan.close()
+        except Exception as exc:  # noqa: BLE001
+            return failures + [f"{rel}: HTML does not parse: {exc}"]
+        for res in scan.resources:
+            if res.strip().lower().startswith(("http:", "https:", "//")):
+                failures.append(f"{rel}: external request: {res!r}")
+        for href in scan.links:
+            problem = _check_link(href, scan.ids, root, page_dir=path.parent)
+            if problem and not (href.startswith("#") or href.lower().startswith(("https://", "mailto:"))):
+                failures.append(f"{rel}: {problem}")
+        failures += [f"{rel}: guardrails: {f}" for f in guardrail_findings(" ".join(scan.text))]
+    return failures
+
+
 def check_site_dir(site_dir, phase: int = 3) -> dict:
-    index = Path(site_dir) / "index.html"
+    """check_site on <site_dir>/index.html, plus: only text files in the folder, and every other page clean."""
+    root = Path(site_dir)
+    index = root / "index.html"
     if not index.is_file():
-        return {"passed": False, "failures": [f"{Path(site_dir).name}/index.html missing"]}
-    return check_site(index.read_text(encoding="utf-8", errors="replace"), site_dir=site_dir, phase=phase)
+        return {"passed": False, "failures": [f"{root.name}/index.html missing"]}
+    result = check_site(index.read_text(encoding="utf-8", errors="replace"), site_dir=root, phase=phase)
+    failures = list(result["failures"])
+    for f in sorted(root.rglob("*")):
+        if not f.is_file() or f == index:
+            continue
+        rel = f.relative_to(root).as_posix()
+        if f.suffix.lower() not in ALLOWED_SITE_EXTENSIONS:
+            failures.append(f"{rel}: file type not allowed (text files only; CSS goes inline)")
+            continue
+        failures += _extra_page_failures(f, rel, root)
+    failures = list(dict.fromkeys(failures))
+    return {"passed": not failures, "failures": failures}
 
 
 # ---------------------------------------------------------------- publish guide

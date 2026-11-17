@@ -147,7 +147,7 @@ def test_unsourced_claim_on_page_fails(tmp_path):
 
 def test_number_without_source_outside_evidence_fails_unless_simulated(tmp_path):
     page = _page_replace("<li>Onboarding checklist</li>", "<li>Saves 5 hours a week</li>")
-    assert "number without a source outside the evidence section" in _site(tmp_path, page)["failures"]
+    assert "number without a source outside the evidence and price sections" in _site(tmp_path, page)["failures"]
     page = _page_replace("<li>Onboarding checklist</li>", "<li>40 sign-ups (SIMULATED, not real users)</li>")
     assert _site(tmp_path / "b", page)["passed"]
     content, dropped = sanitize_content(_content(features=["Saves 5 hours a week"]))
@@ -218,17 +218,40 @@ def test_phase3_price_and_policy_placeholders_are_required(tmp_path):
     assert any("price slot must read" in f for f in failures)
 
 
-def test_phase5_fill_with_price_and_policy_pages(tmp_path):
+def test_phase5_fill_with_price_and_policy_pages_passes(tmp_path):
     (tmp_path / "policies").mkdir(parents=True)
-    (tmp_path / "policies" / "terms.html").write_text("<!DOCTYPE html><title>t</title>", encoding="utf-8")
-    page = fill_template(_content(), phase=5, price_text="Price: 19 USD, one-time (Phase 4)",
+    (tmp_path / "policies" / "terms.html").write_text(
+        "<!DOCTYPE html><html><head><title>Terms</title></head><body><p>Draft terms. Needs legal review.</p>"
+        '<a href="../index.html">Back</a></body></html>', encoding="utf-8")
+    page = fill_template(_content(), phase=5, price_text="Price: 19 USD, one-time",
                          policy_links=[{"title": "Terms (needs legal review)", "href": "policies/terms.html"}])
-    assert "Price: 19 USD" in page and 'href="policies/terms.html"' in page
+    assert "Price: 19 USD" in page and 'href="policies/terms.html"' in page and PHASE3_PRICE not in page
     (tmp_path / "index.html").write_text(page, encoding="utf-8")
-    result = check_site(page, tmp_path, phase=5)
-    assert all("price" not in f.lower() or "number" in f for f in result["failures"])
+    assert check_site(page, tmp_path, phase=5) == {"passed": True, "failures": []}
+    assert check_site_dir(tmp_path, phase=5) == {"passed": True, "failures": []}
+    # The same price in Phase 3 is not allowed: the slot must still wait for Phase 4.
+    assert any("price slot must read" in f for f in check_site(page, tmp_path, phase=3)["failures"])
     (tmp_path / "policies" / "terms.html").unlink()
     assert any("missing file" in f for f in check_site(page, tmp_path, phase=5)["failures"])
+
+
+@pytest.mark.parametrize("name,text,expected", [
+    ("style.css", "body{color:red}", "file type not allowed"),
+    ("logo.png", "x", "file type not allowed"),
+    ("policies/terms.html", "<p>Terms</p><script>alert(1)</script>", "banned content: script tag"),
+    ("policies/terms.html", "<p>Terms</p><form action='/x'></form>", "form outside the sign-up box"),
+    ("policies/terms.html", '<img src="https://cdn.example.com/p.gif">', "external request"),
+    ("policies/terms.html", '<a href="missing.html">x</a>', "missing file"),
+    ("notes.md", "We guarantee results", "notes.md: guardrails: income_promise"),
+])
+def test_every_file_in_the_site_folder_is_checked(tmp_path, name, text, expected):
+    (tmp_path / "index.html").write_text(fill_template(_content()), encoding="utf-8")
+    target = tmp_path / name
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text, encoding="utf-8")
+    result = check_site_dir(tmp_path)
+    assert not result["passed"]
+    assert any(expected in f for f in result["failures"]), result["failures"]
 
 
 # ---------------------------------------------------------------- the sign-up box
