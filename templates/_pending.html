@@ -1,16 +1,17 @@
 {% for it in items %}
 <div class="ask" id="ask-{{ it.id }}">
   {% if it.kind == "approval" and it.key == "gate" %}
-    <div class="what">Approval needed in phase {{ it.phase }}</div>
-    <p class="q">The system recommends “{{ it.prompt.split(': ', 1)[-1]|capitalize }}” for this gate (see the verdict above). Do you accept it? If you reject it, you choose what happens instead, and that is logged as your decision.</p>
-    <details><summary>Show the raw gate summary</summary><div class="content">{{ it.content }}</div></details>
+    {% set word = it.prompt.split(': ', 1)[-1]|lower %}
+    <div class="what">Your decision: should this idea move on after phase {{ it.phase }}?</div>
+    <p class="q">After this phase the system checked the evidence against the targets it wrote down before starting. Its advice is to <b>{{ {'go': 'go on to the next phase', 'repeat': 'repeat this phase to fill the gaps', 'pivot': 'step back and rethink the idea', 'stop': 'stop here, because the evidence is too weak so far'}.get(word, word) }}</b>. It is only advice: you decide. If you disagree, you choose what happens next, and your choice is recorded next to the system's advice.{% if word == 'stop' %} Even after a stop you can try a different direction from the same research.{% endif %}</p>
+    <details><summary>Show the details behind this advice</summary><div class="content">{{ it.content }}</div></details>
     <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
       <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
-      <button class="btn primary" name="decision" value="approve">Approve the verdict</button>
-      <button class="btn danger" name="decision" value="reject">Reject and choose myself</button>
+      <button class="btn primary" name="decision" value="approve">Agree with the system</button>
+      <button class="btn danger" name="decision" value="reject">I disagree, let me decide</button>
     </form>
   {% elif it.kind == "approval" %}
-    <div class="what">Approval needed{% if it.phase %} in phase {{ it.phase }}{% endif %}</div>
+    <div class="what">Your approval is needed{% if it.phase %} (phase {{ it.phase }}){% endif %}. Nothing is published or sent without it.</div>
     <p class="q">{{ it.prompt }}</p>
     {% if it.content %}
       {% if it.is_html %}<iframe sandbox srcdoc="{{ it.content }}" title="Draft to approve"></iframe>
@@ -19,10 +20,10 @@
     <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
       <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
       <button class="btn primary" name="decision" value="approve">Approve</button>
-      <button class="btn danger" name="decision" value="reject">Reject</button>
+      <button class="btn danger" name="decision" value="reject">Don't approve</button>
     </form>
   {% else %}
-    <div class="what">Question about {{ it.label }}</div>
+    <div class="what">{% if it.key.startswith('stop_alternative') or it.key.startswith('gate_override') %}Your choice{% else %}A question about {{ it.label }}{% endif %}</div>
     <p class="q">{{ it.prompt }}</p>
     {% if it.options %}
     <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
@@ -32,7 +33,7 @@
     {% endif %}
     <form method="post" action="/approvals/{{ it.id }}" class="free" data-ask>
       <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
-      <textarea name="answer" aria-label="Your answer" placeholder="Type your answer, or “I don't know” and I'll suggest options{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %}. Label made-up data as SAMPLE or MOCKED{% endif %}"></textarea>
+      <textarea name="answer" aria-label="Your answer" placeholder="Type your answer here. Not sure? Type “I don't know” and I will suggest options{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %}. Label made-up data as SAMPLE or MOCKED{% endif %}"></textarea>
       <div class="acts"><button class="btn primary" type="submit">Send</button></div>
     </form>
   {% endif %}

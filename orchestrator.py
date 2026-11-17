@@ -19,6 +19,7 @@ from pathlib import Path
 import gates
 from agents import get_agent, has_agent
 from approval import Approvals
+from core import alternatives
 from core import cost as cost_mod
 from core.artifacts import ArtifactStore
 from core.contracts import Context
@@ -118,7 +119,9 @@ def founder_gate(ctx: Context, phase: int, res: gates.GateResult) -> str:
     if approved:
         return res.outcome
     choice = ctx.founder.ask(f"gate_override_{phase}",
-                             f"You rejected the Gate {phase} verdict '{res.outcome}'. What should happen?",
+                             f"You disagreed with the system's advice at checkpoint {phase} ('{res.outcome}'). What should happen "
+                             f"instead? go = continue to the next phase, repeat = run this phase again, "
+                             f"pivot = step back and rethink the idea, stop = end here.",
                              ["go", "repeat", "pivot", "stop"]).strip().lower()
     if choice not in gates.SEVERITY:
         choice = "stop"
@@ -165,7 +168,7 @@ def final_report(ctx: Context, phase: int, outcome: str, history: list) -> None:
 def run(ctx: Context, through: int = 6, start: int = 1) -> dict:
     cost_mod.reset()
     ctx.log.action("orchestrator", "run_started", mock=ctx.mock, through=through)
-    phase, attempts, pivots, history = start, {}, 0, []
+    phase, attempts, pivots, restarts, history = start, {}, 0, 0, []
     outcome = "go"
     while phase <= through:
         mod = load_phase(phase)
@@ -204,6 +207,15 @@ def run(ctx: Context, through: int = 6, start: int = 1) -> dict:
                 attempts.pop(p, None)
             phase = target
         else:
+            picked = alternatives.offer(ctx, phase, res.reasons)
+            if picked and restarts < alternatives.MAX_RESTARTS:
+                restarts += 1
+                ctx.brief = (f"{ctx.brief}\n\nDirection chosen by the founder after a STOP at Gate {phase}: "
+                             f"{picked['name']}")
+                ctx.log.action("orchestrator", "restart_with_alternative", phase=phase, alternative=picked["name"])
+                attempts.clear()
+                phase, outcome = start, "go"
+                continue
             break
     final_phase = min(phase, through)
     final_report(ctx, final_phase, outcome, history)

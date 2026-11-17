@@ -70,7 +70,8 @@ AGENTS = {
 
 APPROVAL_KINDS = {"landing_page": "the landing page draft", "store_page": "the store page",
                   "launch_post": "a launch post", "gate": "the gate verdict"}
-OUTCOME_WORDS = {"go": "Go on", "repeat": "Repeat this phase", "pivot": "Pivot", "stop": "Stop"}
+OUTCOME_WORDS = {"go": "Go on to the next phase", "repeat": "Repeat this phase to fill the gaps",
+                 "pivot": "Step back and rethink the idea", "stop": "Pause here: the evidence is too weak so far"}
 OP_WORDS = {">=": "at least", "<=": "at most", "==": "exactly", ">": "more than", "<": "less than"}
 INTERNAL_AGENTS = {"gate", "orchestrator", "approval", "founder", "system:tool_broker"}
 
@@ -93,6 +94,8 @@ def brief_title(text: str) -> str:
 
 
 def humanize_key(key: str) -> str:
+    if key.startswith("stop_alternative") or key.startswith("gate_override"):
+        return "what to do next"
     key = re.sub(r"^(clarify|option)_", "", key)
     return key.replace("_", " ")
 

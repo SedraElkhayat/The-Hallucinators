@@ -74,7 +74,7 @@
   <aside class="side">
     <a class="brand" href="/">Venture Builder<small>Open-source agents that test an idea before you build it</small></a>
     <a class="new" href="/">New idea</a>
-    <a class="inbox-link" href="/approvals">Waiting for you {% if pending %}<span class="count">{{ pending }}</span>{% endif %}</a>
+    <a class="inbox-link" href="/approvals">Needs your decision {% if pending %}<span class="count">{{ pending }}</span>{% endif %}</a>
     <section>
       <h2>Your runs</h2>
       {% if all_runs %}

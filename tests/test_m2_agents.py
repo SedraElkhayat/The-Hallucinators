@@ -126,7 +126,7 @@ def test_excluded_product_halts(tmp_path):
 
 # ---------------------------------------------------------------- clarifier and options
 
-def test_clarifier_asks_product_type_first_and_reasks_unknown_once(tmp_path):
+def test_clarifier_asks_product_type_first_and_never_reasks_an_unknown_answer(tmp_path):
     ctx = ctx_for(tmp_path, brief="I want to sell something to students.",
                   founder_inputs=inputs(clarify_product_type="I don't know", clarify_target_customer="unknown",
                                         clarify_problem="", clarify_budget="50"))
@@ -137,7 +137,11 @@ def test_clarifier_asks_product_type_first_and_reasks_unknown_once(tmp_path):
     assert asked[0]["field"] == "product_type" and "digital" in asked[0]["question"]
     assert sum(1 for q in asked if q["round"] == 1) <= 4
     pt = [q for q in asked if q["field"] == "product_type"]
-    assert len(pt) == 2 and pt[1]["round"] == 2  # asked again exactly once
+    assert len(pt) == 1  # "I don't know" is not asked again: the option suggester takes over
+    assert not any("Asked again" in q["question"] for q in asked)
+    assert "I don't know" in pt[0]["question"] or "I don’t know" in pt[0]["question"] or "don" in pt[0]["question"]
+    fields_asked = [q["field"] for q in asked]
+    assert len(fields_asked) == len(set(fields_asked))
     assert d["fields"]["product_type"]["status"] == "unknown"
     assert d["fields"]["budget"] == {"value": "50", "status": "answered", "source": "founder"}
     assert any(e["action"] == "clarify_question" for e in ctx.log.entries())
@@ -681,3 +685,27 @@ def test_competitor_scanner_fetches_one_page_per_search():
                           store=SimpleNamespace(has=lambda s: True, get=lambda s: {"solution": "A Notion template"}))
     agent.gather(ctx)
     assert fetched == ["https://s1r0.example/", "https://s2r0.example/", "https://s3r0.example/"]
+
+def test_TC_UX_option_suggester_offers_different_options_and_never_repeats_one(tmp_path):
+    """The founder can ask for different options; the second set never repeats the first (demo feedback)."""
+    from agents.option_suggester import MORE, OptionSuggester
+    ctx = ctx_for(tmp_path, founder_inputs=inputs(option_distribution_channel=MORE))
+    run_until(ctx, "option_suggester")
+    asked = []
+    agent = OptionSuggester()
+    calls = []
+
+    def fake_suggest(c, field, known, avoid):
+        if field != "distribution_channel":
+            return ([f"other {field} {i}" for i in range(2)], None, 0.0, {})
+        calls.append(list(avoid))
+        return ([f"new idea {len(calls)}-{i}" for i in range(2)], None, 0.0, {})
+    agent._suggest = fake_suggest
+    orig = ctx.founder.ask
+    ctx.founder.ask = lambda key, prompt, options=None: (asked.append((key, prompt, options)) or orig(key, prompt, options))
+    agent.run(ctx)
+    d = ctx.store.get("phase1_step2_options")
+    ds = [x for x in d["decisions"] if x["field"] == "distribution_channel"][0]
+    assert ds["status"] == "unknown_confirmed"                      # the scripted answer never picks one
+    assert len(calls) == 3 and calls[0] == [] and calls[1] and set(calls[1]) <= set(calls[2])
+    assert any("You were not sure about" in p for _, p, _ in asked)

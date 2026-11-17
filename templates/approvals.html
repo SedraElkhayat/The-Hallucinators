@@ -1,14 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Waiting for you{% endblock %}
+{% block title %}Needs your decision{% endblock %}
 {% block head %}{% if not items %}<meta http-equiv="refresh" content="5">{% endif %}{% endblock %}
 {% block style %}{% include "_chat_css.html" %}{% endblock %}
 {% block body %}
 <div class="column">
-  <div class="head"><h1>Waiting for you</h1></div>
-  <p class="say" style="margin-bottom: 18px">Every gate verdict and every draft that would face the outside world waits here for your decision. Nothing goes ahead without it.</p>
+  <div class="head"><h1>Needs your decision</h1></div>
+  <p class="say" style="margin-bottom: 18px">Here you will find every question the system needs answered and every draft that would be seen by other people. Nothing goes ahead without your decision.</p>
   <div class="feed">
     {% include "_pending.html" %}
     {% if not items %}<p class="muted">Nothing is waiting. Start a run, or open one from the list.</p>{% endif %}
   </div>
+  {% include "_glossary.html" %}
 </div>
 {% endblock %}

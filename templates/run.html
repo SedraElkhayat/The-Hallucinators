@@ -10,6 +10,7 @@
   </div>
   <div class="feed" id="feed">{% include "_feed.html" %}</div>
   <div class="feed" id="pending" style="margin-top: 18px">{% include "_pending.html" %}</div>
+  {% include "_glossary.html" %}
   <div class="working" id="working" style="margin-top: 18px; {{ '' if activity and not items else 'display: none' }}">
     <span class="pulse"></span><span id="activity">{{ activity or "" }}</span>
   </div>
