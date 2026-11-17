@@ -2,11 +2,22 @@
   "phase": 1,
   "what_would_change_the_verdict": [
     "min_verified_claims: verified_claims=0 fails >= 3 -> repeat",
-    "no_kill_criterion: kill_triggered=2 fails == 0 -> stop"
+    "no_kill_criterion: kill_triggered=1 fails == 0 -> stop"
   ],
   "alternatives": [
     {
-      "name": "Weekly Tech Digest",
+      "name": "A weekly newsletter that highlights tech trends for career development",
+      "score": 3.0,
+      "reasons": [
+        "need: unknown",
+        "market: unknown",
+        "fit: weak",
+        "effort: weak"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A newsletter that provides summaries of tech news with career advice",
       "score": 2.0,
       "reasons": [
         "need: unknown",
@@ -17,18 +28,7 @@
       "is_founder_idea": false
     },
     {
-      "name": "Tech Highlights Newsletter",
-      "score": 2.0,
-      "reasons": [
-        "need: unknown",
-        "market: unknown",
-        "fit: weak",
-        "effort: weak"
-      ],
-      "is_founder_idea": false
-    },
-    {
-      "name": "Tech Weekly Summary",
+      "name": "A newsletter that offers insights into emerging tech trends for long-term career planning",
       "score": 2.0,
       "reasons": [
         "need: unknown",
@@ -40,6 +40,7 @@
     }
   ],
   "founder_choice": "stop here",
+  "founder_choice_note": "stop here (the scripted demo file has no answer for this question, so the run stops)",
   "_meta": {
     "agent": "orchestrator",
     "sources": []

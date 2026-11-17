@@ -9,7 +9,7 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 
 **Committed demo run** (`outputs/`, `decision_log.json`; real `qwen3:8b` on Ollama, live web search through SearXNG):
 - Strong brief (`demo/brief_strong.md`): all six phases ran. The system's own verdict was **STOP** at Gates 1 and 2; the founder overrode both (scripted demo inputs, labeled `SCRIPTED` and logged with `approved_by: founder` and `system_outcome: stop`), and Gates 3 to 6 were **GO**. The Phase 6 memo still recommends stopping because the demand and sales numbers are `MOCKED`. Summary: `outputs/phase6_gate_final_report.md`.
-- Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 2 kill criteria triggered). See `outputs/phase1_gate_weak_decision.md`.
+- Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 1 kill criterion triggered). See `outputs/phase1_gate_weak_decision.md`.
 
 ## Quickstart
 
@@ -49,7 +49,7 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 
 | Where | What it shows |
 |---|---|
-| `outputs/phase1_gate_weak_decision.md` | The weak brief: the system recommends STOP (0 verified claims, 2 kill criteria) and says what would change that |
+| `outputs/phase1_gate_weak_decision.md` | The weak brief: the system recommends STOP (0 verified claims, 1 kill criterion) and says what would change that |
 | `outputs/phase1_gate_decision.md`, `outputs/phase1_gate_founder_override.md` | The strong brief: the system's own STOP at Gate 1 and the logged founder override (same for Gate 2) |
 | `outputs/phase3_step3_site/index.html`, `outputs/phase5_step2_store_site/index.html` | The founder's website (Phase 3) and its store version (Phase 5); open them in a browser |
 | `outputs/payment_test_log.md` | The mocked sale to cash: duplicate event ignored, refund revokes access, reconciliation balanced |
@@ -78,7 +78,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 ## Cost per run
 
-**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 71 model calls and about 208k tokens (181,236 in, 26,620 out) and took about 5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 23 calls and about 59k tokens (52,602 in, 6,844 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
+**$0.00 per run** (local open-weight `qwen3:8b` through Ollama, free self-hosted SearXNG search, no paid API). The committed strong-brief run used 71 model calls and about 208k tokens (181,236 in, 26,620 out) and took about 5 minutes on one RTX 5080 GPU; the weak-brief run stopped at Gate 1 after 24 calls and about 60k tokens (52,739 in, 7,373 out). Figures from `outputs/phase6_gate_final_report.md` and `outputs/phase1_gate_weak_final_report.md`; per-call tokens are in `decision_log.json`. A CPU-only machine is much slower.
 
 ## Demo video
 
