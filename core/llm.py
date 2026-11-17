@@ -113,14 +113,23 @@ def _post_with_retries(client, body: dict) -> dict:
             if attempt < client.retries:
                 time.sleep(_retry_after(r, attempt, client.max_wait))
                 continue
-        if r.status_code == 400 and "response_format" in body and "response_format" in (r.text or ""):
-            client.json_mode_supported = False  # parse_json still extracts the JSON from plain text
+            raise requests.HTTPError(f"{r.status_code} from the model endpoint after {client.retries} retries: "
+                                     f"{(r.text or '')[:400]}", response=r)
+        text = r.text or ""
+        if r.status_code == 400 and "response_format" in body and "json_validate_failed" in text:
+            # The endpoint rejected the model's answer as invalid JSON (Groq does this in JSON mode).
+            # Ask once more without JSON mode for this call; parse_json extracts the JSON, and the
+            # agent's own retry gives the model feedback if it is still invalid.
             body = {k: v for k, v in body.items() if k != "response_format"}
             continue
-        r.raise_for_status()
+        if r.status_code == 400 and "response_format" in body and "response_format" in text:
+            client.json_mode_supported = False  # endpoint does not support JSON mode at all
+            body = {k: v for k, v in body.items() if k != "response_format"}
+            continue
+        if r.status_code >= 400:
+            raise requests.HTTPError(f"{r.status_code} from the model endpoint: {text[:400]}", response=r)
         return r.json()
-    r.raise_for_status()
-    return r.json()
+    raise requests.HTTPError(f"no answer from the model endpoint after {client.retries} retries", response=r)
 
 
 RealClient._post = _post_with_retries

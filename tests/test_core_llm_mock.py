@@ -128,7 +128,8 @@ def test_rate_limit_gives_up_after_retries(monkeypatch):
     monkeypatch.setenv("LLM_RETRIES", "2")
     _sequence(monkeypatch, [_R(429), _R(429), _R(429)])
     import pytest
-    with pytest.raises(RuntimeError):
+    import requests
+    with pytest.raises(requests.HTTPError, match="after 2 retries"):
         RealClient(base_url="http://x/v1", model="m").chat("S", "U", agent="a")
 
 
@@ -146,3 +147,20 @@ def test_reasoning_effort_only_when_set(monkeypatch):
     monkeypatch.setenv("LLM_REASONING_EFFORT", "low")
     RealClient(base_url="http://x/v1", model="openai/gpt-oss-120b").chat("S", "U", agent="a")
     assert "reasoning_effort" not in calls[0] and calls[1]["reasoning_effort"] == "low"
+
+
+def test_invalid_json_rejected_by_endpoint_retries_without_json_mode(monkeypatch):
+    err = '{"error":{"message":"Failed to generate JSON.","code":"json_validate_failed"}}'
+    calls, _ = _sequence(monkeypatch, [_R(400, text=err), _R(200, 'sure: {"ok": true}')])
+    c = RealClient(base_url="http://x/v1", model="openai/gpt-oss-20b")
+    assert c.chat("S", "U", agent="a").data == {"ok": True}
+    assert "response_format" in calls[0] and "response_format" not in calls[1]
+    assert c.json_mode_supported is True  # only that call went without JSON mode
+
+
+def test_other_client_errors_show_the_endpoint_reason(monkeypatch):
+    import pytest
+    import requests
+    _sequence(monkeypatch, [_R(400, text='{"error":{"message":"model not found"}}')])
+    with pytest.raises(requests.HTTPError, match="model not found"):
+        RealClient(base_url="http://x/v1", model="nope").chat("S", "U", agent="a")
