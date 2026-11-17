@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -59,6 +60,12 @@ class RealClient(LLMClient):
         # qwen3 "thinks" before answering by default; the thinking can use the whole token budget
         # and leave no JSON. "auto" turns thinking off for qwen3 models with the documented /no_think switch.
         self.no_think = os.getenv("LLM_NO_THINK", "auto").strip().lower()
+        # Optional, for reasoning models on hosted endpoints (e.g. gpt-oss): "low" keeps reasoning short.
+        self.reasoning_effort = os.getenv("LLM_REASONING_EFFORT", "").strip() or None
+        # Free tiers limit tokens per minute: on 429/5xx wait (Retry-After if given) and try again.
+        self.retries = int(os.getenv("LLM_RETRIES", "6"))
+        self.max_wait = float(os.getenv("LLM_RETRY_MAX_WAIT", "65"))
+        self.json_mode_supported = True
 
     def thinking_off(self) -> bool:
         if self.no_think in ("1", "true", "yes", "on"):
@@ -75,18 +82,48 @@ class RealClient(LLMClient):
             "temperature": 0.2,
             "max_tokens": self.max_tokens,
         }
-        if json_mode:
+        if json_mode and self.json_mode_supported:
             body["response_format"] = {"type": "json_object"}
-        r = requests.post(f"{self.base_url}/chat/completions", json=body, timeout=self.timeout,
-                          headers={"Authorization": f"Bearer {self.api_key}"})
-        r.raise_for_status()
-        payload = r.json()
+        if self.reasoning_effort:
+            body["reasoning_effort"] = self.reasoning_effort
+        payload = self._post(body)
         text = payload["choices"][0]["message"].get("content") or ""
         usage = payload.get("usage") or {}
         tin, tout = int(usage.get("prompt_tokens", 0)), int(usage.get("completion_tokens", 0))
         c = cost_mod.compute(self.model, tin, tout)  # 0.0 for local models
         return LLMResponse(text=text, data=parse_json(text) if json_mode else None,
                            model=self.model, tokens_in=tin, tokens_out=tout, cost=c)
+
+
+def _retry_after(r, attempt: int, cap: float) -> float:
+    try:
+        wait = float(r.headers.get("retry-after", ""))
+    except (TypeError, ValueError):
+        wait = 5.0 * (2 ** attempt)
+    return max(1.0, min(cap, wait))
+
+
+def _post_with_retries(client, body: dict) -> dict:
+    """POST to the chat endpoint. Waits and retries on 429 and 5xx; drops JSON mode once if the
+    endpoint rejects response_format. Other errors are raised (the agent then logs agent_error)."""
+    url, headers = f"{client.base_url}/chat/completions", {"Authorization": f"Bearer {client.api_key}"}
+    for attempt in range(client.retries + 1):
+        r = requests.post(url, json=body, timeout=client.timeout, headers=headers)
+        if r.status_code == 429 or r.status_code >= 500:
+            if attempt < client.retries:
+                time.sleep(_retry_after(r, attempt, client.max_wait))
+                continue
+        if r.status_code == 400 and "response_format" in body and "response_format" in (r.text or ""):
+            client.json_mode_supported = False  # parse_json still extracts the JSON from plain text
+            body = {k: v for k, v in body.items() if k != "response_format"}
+            continue
+        r.raise_for_status()
+        return r.json()
+    r.raise_for_status()
+    return r.json()
+
+
+RealClient._post = _post_with_retries
 
 
 def _placeholder(key: str):
