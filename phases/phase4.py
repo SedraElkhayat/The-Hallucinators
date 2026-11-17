@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from core.contracts import Context
+from agents.m4_common import count_must_fix
 from core.guardrails import check_output
 from gates import Check
 
@@ -27,10 +28,11 @@ PAYMENT_SDKS = ("stripe", "paypal", "paymob", "braintree", "square", "paddle", "
 
 def gate_checks(ctx: Context) -> list[Check]:
     return [
-        Check("chk_p4_price", "price_sourced_or_labeled", ">=", 1.0, "pivot"),
+        Check("chk_p4_price", "price_sourced_or_labeled", ">=", 1.0, "repeat"),
         Check("chk_p4_policies", "policies_labeled", ">=", 1.0, "repeat"),
         Check("chk_p4_claims", "banned_claims", "<=", 0.0, "repeat"),
         Check("chk_p4_no_payment_sdk", "payment_code_present", "<=", 0.0, "stop"),
+        Check("chk_p4_compliance", "compliance_must_fix", "<=", 0.0, "repeat"),
     ]
 
 
@@ -75,7 +77,13 @@ def measure(ctx: Context) -> dict:
             if re.search(r"\b" + re.escape(sdk) + r"\b", req_text):
                 payment_code_present += 1
 
+    # compliance_reviewer_phase4 critique: any must_fix issue sends the phase back (repeat)
+    compliance_must_fix = 0
+    if ctx.store.has("phase4_step4_compliance_review"):
+        compliance_must_fix = count_must_fix(ctx.store.get("phase4_step4_compliance_review"))
+
     return {
+        "compliance_must_fix": compliance_must_fix,
         "price_sourced_or_labeled": price_ok,
         "policies_labeled": policies_ok,
         "banned_claims": banned_claims,

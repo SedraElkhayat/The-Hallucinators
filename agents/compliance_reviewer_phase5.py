@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, launch_copy_violations, normalize_critique
 from core.contracts import Context
 from core.guardrails import check_output
 
@@ -25,30 +25,34 @@ class ComplianceReviewerPhase5(M4Agent):
         pass
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        issues = list(data.get("issues", [])) if isinstance(data.get("issues"), list) else []
-
-        # Audit Store Page HTML if present
+        code_issues: list[str] = []
         html_file = ctx.out_dir / "phase5_step2_store_page.html"
         if html_file.exists():
-            html_content = html_file.read_text(encoding="utf-8")
-            if "<script" in html_content.lower():
-                issues.append("Store page contains disallowed <script> tag")
-            if re.search(r"\b(?:countdown|timer|only \d+ left)\b", html_content, re.I):
-                issues.append("Store page contains disallowed timer or artificial scarcity counter")
-            if "MOCKED checkout: no real payment" not in html_content:
-                issues.append("Store page missing required 'MOCKED checkout: no real payment' button label")
-
-        # Audit launch posts
+            page = html_file.read_text(encoding="utf-8")
+            if "<script" in page.lower():
+                code_issues.append("store page: contains a <script> tag")
+            if re.search(r"\b(?:countdown|timer|only \d+ left)\b", page, re.I):
+                code_issues.append("store page: timer or scarcity counter")
+            if "MOCKED checkout: no real payment" not in page:
+                code_issues.append("store page: buy button must say 'MOCKED checkout: no real payment'")
+        if ctx.store.has("phase5_step2_store_page"):
+            sp = ctx.store.get("phase5_step2_store_page")
+            sc = (sp.get("site") or {}).get("site_checks")
+            if isinstance(sc, dict) and not sc.get("passed"):
+                code_issues += [f"store site: {f}" for f in sc.get("failures") or ["site checks failed"]]
+            for t in [sp.get("title", ""), sp.get("description", "")] + list(sp.get("bullets") or []):
+                v = launch_copy_violations(str(t))
+                if v:
+                    code_issues.append(f"store page: {v} in '{str(t)[:60]}'")
         if ctx.store.has("phase5_step3_launch_posts"):
-            posts_data = ctx.store.get("phase5_step3_launch_posts")
-            for p in posts_data.get("posts", []):
-                text = p.get("text", "")
+            for p in ctx.store.get("phase5_step3_launch_posts").get("posts", []):
+                ch = p.get("channel")
                 if p.get("posted"):
-                    issues.append(f"Post for {p.get('channel')} marked posted; system must never auto-post")
-                guard_res = check_output(text)
-                if not guard_res.allowed:
-                    issues.append(f"Post for {p.get('channel')} contains banned content: {guard_res.findings}")
-
-        data["issues"] = issues
-        data["verdict"] = "flagged" if issues else "pass"
+                    code_issues.append(f"post for {ch}: marked posted; the system never posts")
+                if p.get("status") == "approved":
+                    v = launch_copy_violations(str(p.get("text", "")))
+                    if v:
+                        code_issues.append(f"post for {ch}: {v}")
+        data = normalize_critique(data, code_issues)
+        data.pop("mocked", None)
         return data

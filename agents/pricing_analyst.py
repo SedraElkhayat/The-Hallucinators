@@ -6,7 +6,11 @@ Analyzes competitor pricing and demand validation to recommend price and price r
 from __future__ import annotations
 
 from agents.m4_common import M4Agent, to_float
+from core.claims import normalize, verify_claims
 from core.contracts import Context
+
+
+UPSTREAM_CLAIM_STEPS = ("phase1_step5_competitors", "phase2_step1_competitor_analysis")
 
 
 class PricingAnalyst(M4Agent):
@@ -35,7 +39,7 @@ class PricingAnalyst(M4Agent):
             data["is_assumption"] = True
             data["note"] = "STUBBED: the model returned no price; the founder must set one."
             data["range"] = None
-            data["comparable_claims"] = data.get("comparable_claims") if isinstance(data.get("comparable_claims"), list) else []
+            data["comparable_claims"] = self.keep_verified_comparables(ctx, data.get("comparable_claims"))
             return data
 
         r = data.get("range")
@@ -47,13 +51,33 @@ class PricingAnalyst(M4Agent):
         else:
             data["range"] = [round(data["price_usd"] * 0.7, 2), round(data["price_usd"] * 1.3, 2)]
 
-        claims = data.get("comparable_claims")
-        data["comparable_claims"] = claims if isinstance(claims, list) else []
-
-        # If there are no verified comparable claims, ensure is_assumption is True
-        if not data["comparable_claims"]:
-            data["is_assumption"] = True
-        else:
-            data["is_assumption"] = bool(data.get("is_assumption", False))
-
+        data["comparable_claims"] = self.keep_verified_comparables(ctx, data.get("comparable_claims"))
+        # No verified comparable -> the price is an assumption, whatever the model said.
+        data["is_assumption"] = not data["comparable_claims"]
         return data
+
+    def keep_verified_comparables(self, ctx: Context, claims) -> list:
+        """Keep only claims copied from verified upstream claims, then re-check them with the claim checker."""
+        upstream = {}
+        for step in UPSTREAM_CLAIM_STEPS:
+            if ctx.store.has(step):
+                for c in ctx.store.get(step).get("claims") or []:
+                    if isinstance(c, dict) and c.get("verified") is True:
+                        upstream[(str(c.get("source_url", "")).strip(), normalize(str(c.get("quote", ""))))] = c
+        kept, dropped = [], []
+        for c in claims if isinstance(claims, list) else []:
+            if not isinstance(c, dict):
+                continue
+            key = (str(c.get("source_url", "")).strip(), normalize(str(c.get("quote", ""))))
+            if key in upstream:
+                kept.append({"claim": str(c.get("claim") or upstream[key].get("claim", "")),
+                             "source_url": key[0], "quote": str(upstream[key].get("quote", "")),
+                             "verified": None, "assumption": False})
+            else:
+                dropped.append(c)
+                ctx.log.action(self.name, "comparable_dropped", sources=[],
+                               reason="not a verified upstream claim", claim=str(c.get("claim", ""))[:200])
+        verify_claims(ctx, {"claims": kept})
+        verified = [c for c in kept if c.get("verified") is True]
+        self._dropped = dropped + [c for c in kept if c.get("verified") is not True]
+        return verified

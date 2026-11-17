@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import html
 
-from agents.m4_common import M4Agent, price_from_pricing, to_float
+from agents.m4_store_site import SITE_DIR, render_store_site, site_checks, write_site
+from agents.m4_common import M4Agent, launch_copy_violations, price_from_pricing, to_float
 from core.contracts import Context
 
 
@@ -82,12 +83,43 @@ class StorePageBuilder(M4Agent):
                 "STUBBED: the model returned no feature bullets; the founder fills these in.",
             ]
 
+        # Code rules: no user/sales counts, testimonials, income or time-saved numbers, no founder signature.
+        removed = []
+        for key in ("title", "description"):
+            v = launch_copy_violations(str(data.get(key, "")))
+            if v:
+                removed.append({"field": key, "reasons": v})
+                data[key] = f"STUBBED: {key} removed by a code check ({', '.join(v)}); the founder writes it."
+        kept = []
+        for b in data.get("bullets") or []:
+            v = launch_copy_violations(str(b))
+            if v:
+                removed.append({"field": "bullet", "reasons": v})
+            else:
+                kept.append(str(b))
+        data["bullets"] = kept or ["STUBBED: no feature bullets passed the checks; the founder fills these in."]
+        if removed:
+            data["removed_by_checks"] = removed
+
         # Render static HTML
         html_content = self.render_html(data)
         ctx.store.put_file(self.step, "html", html_content, self.name)
 
+        # Store website (CONTEXT.md 4b.7): index.html + policy pages, checked before approval.
+        pricing = ctx.store.get("phase4_step1_pricing") if ctx.store.has("phase4_step1_pricing") else {}
+        documents = ctx.store.get("phase4_step3_policies").get("documents", []) if ctx.store.has("phase4_step3_policies") else []
+        files = render_store_site(data, documents, bool(pricing.get("is_assumption", True)))
+        root = write_site(ctx.out_dir, files)
+        checks = site_checks(root)
+        data["site"] = {"folder": SITE_DIR, "files": sorted(files), "site_checks": checks}
+        ctx.log.action(self.name, "store_site_written", outcome="passed" if checks["passed"] else "failed")
+
         # Request founder approval
-        approved = ctx.approvals.request("store_page", f"Store Page: {data.get('title')}", html_content, self.phase)
+        title = f"Store Page: {data.get('title')}"
+        approved = ctx.approvals.request("store_page", title, html_content, self.phase)
+        if approved:
+            # approval.release() records the release; it refuses anything the founder did not approve.
+            ctx.approvals.release("store_page", title, html_content, self.phase)
         data["released"] = bool(approved)
         data["checkout"] = "MOCKED: no real payment"
         data.pop("mocked", None)

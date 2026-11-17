@@ -42,6 +42,13 @@ class PerseverePivotMemo(M4Agent):
             fallback = True
         data["experiments"] = data["experiments"][:3]
         data["evidence_status"] = status
+        prov = str(metrics.get("provenance", "")).upper()
+        if prov in ("SAMPLE", "MOCKED"):
+            # Demo inputs are SAMPLE/MOCKED: say so, never present them as real customers or feedback.
+            label = f"[{prov} data]"
+            data["reasons"] = [r if ("SAMPLE" in str(r).upper() or "MOCKED" in str(r).upper()) else f"{label} {r}"
+                               for r in data["reasons"]]
+            data["inputs_provenance"] = prov
         if fallback:
             data["stubbed"] = "Part of this memo was filled by a code rule because the model output was incomplete."
         data.pop("mocked", None)
