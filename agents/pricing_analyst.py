@@ -48,11 +48,20 @@ class PricingAnalyst(M4Agent):
                                      "sets the price.")
                 data["budget_not_price"] = f"The model treated the brief's budget (USD {budget:g}) as a price; removed."
         if data["price_usd"] is None:
-            # No invented number: the founder sets the price; labeled as an open assumption.
+            # No invented number: the founder sets the price (founder control); labeled as an assumption.
             data["is_assumption"] = True
-            data["note"] = "STUBBED: the model returned no price; the founder must set one."
             data["range"] = None
             data["comparable_claims"] = self.keep_verified_comparables(ctx, data.get("comparable_claims"))
+            founder_price = self.ask_founder_price(ctx, budget)
+            if founder_price is None:
+                data["note"] = "STUBBED: the model returned no price; the founder must set one."
+                return data
+            data["price_usd"] = founder_price
+            data["price_source"] = "founder"
+            data["price_label"] = (f"Set by the founder: USD {founder_price:g}. ASSUMPTION: no verified competitor "
+                                   "quote states a price, so this is not evidence of what customers will pay.")
+            data["rationale"] = ("ASSUMPTION: no verified comparable quote states a price; the founder set the price "
+                                 f"(USD {founder_price:g}). Test it with real buyers before relying on it.")
             return data
 
         r = data.get("range")
@@ -75,6 +84,29 @@ class PricingAnalyst(M4Agent):
             if not rationale.upper().startswith("ASSUMPTION"):
                 data["rationale"] = ("ASSUMPTION: no verified comparable quote states a price. " + rationale).strip()
         return data
+
+    def ask_founder_price(self, ctx: Context, budget) -> float | None:
+        """Ask the founder for a price when no verified source states one. Returns None if the founder does not
+        know, gives no usable number, gives the brief's budget, or no founder channel is available."""
+        founder = getattr(ctx, "founder", None)
+        if founder is None:
+            return None
+        try:
+            answer = founder.provide(
+                "founder_price",
+                "No verified source states a price for comparable products, so the system will not invent one. "
+                "What price (in USD) do you want to start with? Answer with a number, or 'I don't know' to leave "
+                "it unset.")
+        except Exception as e:  # noqa: BLE001 - no answer available (e.g. a scripted run without this key)
+            ctx.log.action(self.name, "founder_price_unavailable", error=str(e)[:200])
+            return None
+        m = re.search(r"\d+(?:\.\d+)?", str(answer or "").replace(",", ""))
+        price = float(m.group(0)) if m else None
+        if price is None or not (0 < price < 10000) or (budget is not None and price == budget):
+            ctx.log.action(self.name, "founder_price_not_set", answer=str(answer or "")[:100])
+            return None
+        ctx.log.action(self.name, "founder_set_price", approved_by="founder", price_usd=price)
+        return price
 
     def keep_verified_comparables(self, ctx: Context, claims) -> list:
         """Keep only claims copied from verified upstream claims, then re-check them with the claim checker."""

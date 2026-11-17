@@ -68,7 +68,9 @@ def test_pricing_budget_is_not_a_price(tmp_path):
     ctx = make_ctx(tmp_path)
     ctx.brief = "Idea: template pack.\n**Budget:** USD 100 total."
     out = get_agent("pricing_analyst").post_process(ctx, {"price_usd": 100, "comparable_claims": []})
-    assert out["price_usd"] is None and "budget" in out["budget_not_price"]
+    # The budget is never the price: the model's 100 is removed; only the founder may then set a (different) price.
+    assert out["price_usd"] != 100 and "budget" in out["budget_not_price"]
+    assert out["price_usd"] is None or out.get("price_source") == "founder"
 
 
 # ---------------------------------------------------------------- policies

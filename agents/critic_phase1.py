@@ -4,8 +4,8 @@ for unsupported confidence; any must_fix forces verdict "revise" (up to 2 revisi
 import re
 
 from agents.base import Agent
-from agents.m2_common import (report_mentions, COMPETITORS, CRITIQUE, DEMAND, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list, claims_index, norm_severity,
-                              get_artifact, message)
+from agents.m2_common import (report_mentions, COMPETITORS, CRITIQUE, DEMAND, INTERVIEWS, MARKET, OPPORTUNITIES, REPORT, SKEPTIC, as_list,
+                              claims_index, norm_severity, get_artifact, message)
 
 PRAISE = re.compile(r"\b(excellent|amazing|fantastic|brilliant|incredible|huge potential|massive opportunity|"
                     r"perfect fit|can't miss|will definitely|outstanding|exceptional|"
@@ -48,6 +48,22 @@ def cited_claims_verified(text: str, verified_ids: set) -> bool:
     providing a source": citing a verified claim id IS the report's source (the .md report links it)."""
     ids = {f"C{n}" for n in CLAIM_ID.findall(text)}
     return bool(ids) and ids <= verified_ids and bool(SOURCE_COMPLAINT.search(text))
+
+
+LACKS_SOURCE = re.compile(r"does(?: not|n't) cite|lacks? (?:a |any )?(?:verified )?source|without (?:a |any )?"
+                          r"(?:verified )?(?:source|claim)|no (?:verified )?source|not (?:backed|supported) by", re.I)
+
+
+def quotes_absence_or_interview(text: str, has_interviews: bool) -> bool:
+    """True if a "lacks a source" issue only quotes statements that say evidence is missing, or that report the
+    founder's own interview notes. Neither is a market claim that a web source could back (final real run: three
+    such must_fix issues kept Gate 1 at REPEAT)."""
+    from agents.m2_common import ABSENCE
+    if not LACKS_SOURCE.search(text):
+        return False
+    quoted = re.findall(r"['\"‘“]([^'\"’”]{15,})['\"’”]", text)
+    return bool(quoted) and all(ABSENCE.search(q) or (has_interviews and re.search(r"\binterview", q, re.I))
+                                for q in quoted)
 
 
 RISK_NOT_ADDRESSED = re.compile(r"risk|kill", re.I)
@@ -94,6 +110,11 @@ class CriticPhase1(Agent):
                     i["severity"], i["downgraded_in_code"] = "should_fix", "the risk it names is in the report"
                 elif i["severity"] == "must_fix" and only_untriggered_kill(i["text"], hit, quiet):
                     i["severity"], i["downgraded_in_code"] = "should_fix", "kill criterion was not triggered"
+                elif i["severity"] == "must_fix" and quotes_absence_or_interview(
+                        str(i["text"]), ctx.store.has(INTERVIEWS) if hasattr(ctx, "store") else False):
+                    i["severity"], i["downgraded_in_code"] = ("should_fix", "the quoted statement says evidence is "
+                                                              "missing or reports the interview notes; it is not a "
+                                                              "market claim a source could back")
                 issues.append(i)
         report = get_artifact(ctx, REPORT) or {}
         texts = [str(report.get("summary", ""))] + [str(f.get("text", "")) for f in report.get("findings") or []

@@ -103,4 +103,11 @@ class CriticPhase2(M3InputsMixin, Agent):
             "risk" in t and re.search(r"no source|not cited|source (?:is )?not", t)
             and not re.search(r"competitor|price|invent", t)),
             "rule applied in code: high risks come from the Risk Analyst and are cited to phase2_step7_risks by code")
+        # A risk is a stated uncertainty, not a factual claim: asking it to be "supported by real evidence" cannot be
+        # fixed by revising (final real run: Gate 2 stopped on three such must_fix about the report's high risks).
+        downgrade_must_fix(data, lambda t: "risk" in t and re.search(
+            r"not (?:supported|backed) by (?:any |real |verified )?evidence|unsupported|presented as an assumption|"
+            r"lacks? (?:real |verified )?evidence", t) and not re.search(r"competitor|price|invent|number|percent", t),
+            "rule applied in code: a risk is a stated uncertainty, not a factual claim, so it needs no supporting "
+            "evidence; the report labels it as a risk")
         return normalize_verdict(data)

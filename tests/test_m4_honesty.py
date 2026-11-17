@@ -81,7 +81,8 @@ def test_support_redacts_customer_card(tmp_path):
 def test_pricing_no_invented_price(tmp_path):
     ctx = make_ctx(tmp_path)
     out = get_agent("pricing_analyst").post_process(ctx, {"comparable_claims": []})
-    assert out["price_usd"] is None
+    # The system never invents a price: it stays empty, or the founder sets it (asked through FounderInput).
+    assert out["price_usd"] is None or out.get("price_source") == "founder"
     assert out["is_assumption"] is True
 
 

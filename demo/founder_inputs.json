@@ -15,6 +15,8 @@
   "demand_results": "{\"signups\": 140, \"days\": 14, \"provenance\": \"MOCKED\"}",
   "support_questions": "SAMPLE questions: 1) Can I use the template in Arabic? 2) I bought it twice by mistake, can I get my money back? 3) Does it work on the Notion free plan?",
   "phase6_results": "metric,value,provenance\nwaitlist_signups,140,MOCKED\nmock_sales,9,MOCKED\nmock_refunds,1,MOCKED\n",
+  "founder_price": "9",
+  "_founder_price": "Founder decision (scripted demo): asked only when no verified source states a comparable price. The price is the founder's choice, labeled ASSUMPTION, not evidence of what customers will pay.",
   "prefix_defaults": {
     "clarify_": "unknown",
     "option_": "approve",
