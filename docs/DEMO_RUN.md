@@ -9,7 +9,7 @@ Cost: $0.00. This page says what was run, what happened at each gate, what is mo
 | Run | Brief | Phases | Result |
 |---|---|---|---|
 | strong | `demo/brief_strong.md` (bilingual Notion and Google Sheets template pack for freelance designers in Egypt and the MENA region) | 1 to 6 | all six phases; 198 log entries; about 5 minutes; 71 model calls; 181,236 input and 26,620 output tokens; 20 founder approvals; 69 distinct source URLs |
-| weak | `demo/brief_weak.md` (paid newsletter) | 1 | **the system recommends STOP at Gate 1** and the run ends; 86 log entries; about 1.2 minutes; 23 model calls; 52,602 input and 6,844 output tokens; no override; after the STOP the system lists three other directions from the same evidence and the founder chooses to stop (`outputs/phase1_gate_weak_alternatives.md`) |
+| weak | `demo/brief_weak.md` (paid newsletter) | 1 | **the system recommends STOP at Gate 1** and the run ends; 86 log entries; about 1.3 minutes; 24 model calls; 52,739 input and 7,373 output tokens; no override; after the STOP the system lists three other directions from the same evidence (`outputs/phase1_gate_weak_alternatives.md`); the scripted demo file has no answer for that question, so the run stops, labeled `SCRIPTED_DEFAULT` in the log |
 
 Both runs have 0 agent errors. In `decision_log.json` every entry has `run` set to `strong` or `weak`.
 
