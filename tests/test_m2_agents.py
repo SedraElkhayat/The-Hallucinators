@@ -473,3 +473,58 @@ def test_time_kill_criterion_contradicted_by_its_own_numbers(tmp_path):
          "evidence": "104 hours available but the build needs 300 hours."}]})
     assert d["kill_criteria"][0]["triggered"] is False and d["kill_criteria"][0]["triggered_contradicted"]
     assert d["kill_criteria"][1]["triggered"] is True
+
+
+def test_queries_never_repeat_words():
+    from agents.m2_common import dedupe_words
+    assert dedupe_words("Freelance graphic Freelance graphic designers") == "Freelance graphic designers"
+
+
+def test_verified_quote_from_unrelated_page_is_not_evidence(tmp_path):
+    from types import SimpleNamespace
+    from agents.m2_common import check_on_topic
+    logged = []
+    ctx = SimpleNamespace(log=SimpleNamespace(action=lambda *a, **k: logged.append((a, k))))
+    card = {"customer": "Freelance graphic designers in Egypt", "problem": "They lose track of unpaid invoices",
+            "solution": "A Notion and Google Sheets template pack"}
+    data = {"claims": [
+        {"claim": "Designers need invoice tracking", "source_url": "https://webmd.example/physio", "verified": True,
+         "assumption": False, "quote": "Physical therapy is a common treatment that can help you recover."},
+        {"claim": "Freelancers send invoices late", "source_url": "https://hn.example/1", "verified": True,
+         "assumption": False, "quote": "As a freelance designer I chase unpaid invoices every month."},
+        {"claim": "Designers like quizzes", "source_url": "https://quiz.example/1", "verified": True,
+         "assumption": False, "quote": "Quiz: which design era are you? Automoviles, Alimentos, Medicina"},
+        {"claim": "MOCKED claim", "source_url": "https://example.com/mock/1", "verified": True, "mocked": True,
+         "assumption": False, "quote": "MOCKED quote text that is long enough"}]}
+    check_on_topic(ctx, data, card, "demand_analyst")
+    off, on, one_word, mocked = data["claims"]
+    assert one_word["verified"] is False  # a single shared word ("design") is not enough
+    assert off["verified"] is False and off["assumption"] is True and off["check"].startswith("off-topic")
+    assert on["verified"] is True and "invoi" in on["topic_terms"]
+    assert mocked["verified"] is True
+    assert len(logged) == 2 and logged[0][0][1] == "claim_downgraded"
+
+
+def test_feasibility_with_wrong_time_arithmetic_becomes_unknown():
+    from types import SimpleNamespace
+    fa = get_agent("feasibility_analyst")
+    ctx = SimpleNamespace(brief="**Time:** 8 hours per week for 3 months.", store=SimpleNamespace(has=lambda s: True))
+    bad = fa.post_process(ctx, {"rating": "weak", "evidence_refs": ["phase1_step5_competitors"],
+                                "effort_hours_estimate": 40,
+                                "reasoning": "8 hours per week for 3 months (24 hours total) is not enough."})
+    assert bad["rating"] == "unknown" and bad["rating_before_check"] == "weak" and "104" in bad["arithmetic_error"]
+    ok = fa.post_process(ctx, {"rating": "weak", "evidence_refs": ["phase1_step5_competitors"],
+                               "effort_hours_estimate": 300,
+                               "reasoning": "About 104 hours total, but the scope needs 300 hours."})
+    assert ok["rating"] == "weak"
+
+
+def test_missing_evidence_is_a_risk_not_a_kill():
+    from agents.m2_common import norm_risks
+    d = norm_risks({"risks": [], "kill_criteria": [
+        {"text": "No willingness to pay", "triggered": True,
+         "evidence": "The interview findings show no clear evidence of willingness to pay."},
+        {"text": "No willingness to pay", "triggered": True,
+         "evidence": "Interviewees said they are not willing to pay for a newsletter."}]})
+    assert d["kill_criteria"][0]["triggered"] is False and d["kill_criteria"][0]["triggered_on_absence"]
+    assert d["kill_criteria"][1]["triggered"] is True

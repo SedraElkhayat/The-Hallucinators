@@ -25,5 +25,6 @@ Example (placeholders in angle brackets; replace them, never copy them):
 
 ## Rules
 - The hour estimate is your estimate, not a fact: keep it round and say what it covers.
+- For the founder's time, use `founder_time` (computed in code from the brief); never calculate hours yourself.
 - `unknown` when time or skills are unknown. A rating without `evidence_refs` is counted as `unknown`.
 - Include no paid tools beyond the founder's budget.

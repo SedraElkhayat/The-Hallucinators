@@ -294,6 +294,7 @@ def norm_claims(claims) -> list[dict]:
 
 
 SPECULATION = re.compile(r"\b(might|may|could|possibly|potentially|perhaps|likely|assumption)\b|قد |ربما", re.I)
+ABSENCE = re.compile(r"\b(no (clear |direct |verified )?evidence|lack of evidence|insufficient evidence|not (yet )?(known|found|confirmed|validated|verified)|unknown|unclear)\b", re.I)
 
 
 def norm_risks(data: dict) -> dict:
@@ -320,6 +321,11 @@ def norm_risks(data: dict) -> dict:
             elif trig and SPECULATION.search(ev):
                 # "might be insufficient" is a risk, not evidence that the criterion is met.
                 k["triggered_on_speculation"] = True
+                trig = False
+            elif trig and ABSENCE.search(ev):
+                # "no evidence of willingness to pay" is missing evidence, which Phase 2 tests; it stays a risk.
+                # Evidence AGAINST the idea ("interviewees will not pay") still triggers.
+                k["triggered_on_absence"] = True
                 trig = False
             k["triggered"] = trig
             kills.append(k)
@@ -348,7 +354,7 @@ def claims_index(ctx) -> list[dict]:
 STOPWORDS = {"a", "an", "the", "and", "or", "of", "for", "to", "in", "on", "at", "by", "with", "who", "whom", "that",
               "which", "they", "their", "them", "it", "its", "is", "are", "was", "be", "as", "from", "into", "one",
               "two", "three", "more", "most", "very", "this", "these", "those", "without", "via", "per", "lose",
-              "track", "mocked", "في", "من", "على", "إلى", "الى", "عن", "مع", "و", "أو"}
+              "track", "mocked", "unknown", "assumption", "في", "من", "على", "إلى", "الى", "عن", "مع", "و", "أو"}
 
 
 def short(text: Any, words: int = 5) -> str:
@@ -386,6 +392,62 @@ def topic_queries(card: dict) -> dict:
             "prob": short(card.get("problem"), 3)}
 
 
+def dedupe_words(query: str) -> str:
+    """'Freelance graphic Freelance graphic designers' -> 'Freelance graphic designers'."""
+    seen, out = set(), []
+    for w in query.split():
+        if w.lower() not in seen:
+            seen.add(w.lower())
+            out.append(w)
+    return " ".join(out)
+
+
+# Words too general to show that a page is about the founder's idea.
+GENERIC = {"help", "helps", "helping", "digital", "pack", "manage", "managing", "work", "works", "working", "people",
+           "users", "user", "online", "tool", "tools", "based", "wider", "region", "several", "once", "need", "needs",
+           "want", "wants", "make", "makes", "time", "good", "better", "best", "free", "paid", "service", "services",
+           "product", "products", "simple", "easy", "using", "used", "general", "everyone", "anyone", "interested",
+           "weekly", "daily", "small", "large", "world", "global", "local", "first", "keep", "lose", "find", "build"}
+
+
+def _stems(text: str) -> set:
+    toks = re.findall(r"[a-z]{4,}|[\u0600-\u06ff]{3,}", normalize_text(text))
+    return {t[:5] for t in toks if t not in STOPWORDS and t not in GENERIC}
+
+
+def normalize_text(text: str) -> str:
+    from core.claims import normalize
+    return normalize(str(text or ""))
+
+
+def topic_stems(card: dict) -> set:
+    """Keyword stems of the idea: customer, problem, solution (generic words removed)."""
+    return _stems(" ".join(str(card.get(k) or "") for k in ("customer", "problem", "solution")))
+
+
+MIN_TOPIC_TERMS = 2  # one shared word is too easy for an unrelated page (a quiz page matched 'design')
+
+
+def check_on_topic(ctx, data: dict, card: dict, agent: str) -> None:
+    """A verified claim counts as evidence for this idea only if the claim AND its quote mention the idea's
+    customer, problem or product. Search engines can return unrelated pages (physiotherapy, browser help);
+    a true quote from such a page is not evidence here. Downgraded claims become ASSUMPTION and are logged."""
+    topic = topic_stems(card)
+    if not topic:
+        return
+    for c in data.get("claims") or []:
+        if not isinstance(c, dict) or c.get("verified") is not True or c.get("mocked"):
+            continue
+        in_claim, in_quote = _stems(c.get("claim", "")) & topic, _stems(c.get("quote", "")) & topic
+        if in_claim and len(in_quote) >= MIN_TOPIC_TERMS:
+            c["topic_terms"] = sorted(in_quote)
+            continue
+        c["verified"], c["assumption"] = False, True
+        c["check"] = "off-topic: the quote is on the page but does not mention this idea's customer, problem or product"
+        ctx.log.action("claim_checker", "claim_downgraded", sources=[c.get("source_url", "")],
+                       reason="off-topic for this idea", claim=str(c.get("claim", ""))[:200], for_agent=agent)
+
+
 class ResearchAgent(Agent):
     """Base for the web research agents. Searches, fetches a few pages, hands them to the model as
     untrusted data, and asks for claims with exact quotes that core.claims re-checks.
@@ -404,7 +466,7 @@ class ResearchAgent(Agent):
     def gather(self, ctx) -> tuple[list[dict], list[dict]]:
         card = get_artifact(ctx, IDEA_CARD) or {}
         results, pages, seen = [], [], set()
-        for q in [q for q in self.queries(ctx, card) if q.strip()][: self.max_searches]:
+        for q in [dedupe_words(q) for q in self.queries(ctx, card) if q.strip()][: self.max_searches]:
             try:
                 found = ctx.tools.search(self.name, q)
                 if not found:  # an empty search (or a blocked one) must be visible in the decision log
@@ -442,6 +504,7 @@ class ResearchAgent(Agent):
         if any("verified" not in c for c in data["claims"]):
             from core.claims import verify_claims
             data = verify_claims(ctx, data)
+        check_on_topic(ctx, data, get_artifact(ctx, IDEA_CARD) or {}, self.name)
         verified = [c for c in data["claims"] if c.get("verified") is True]
         # Computed in code: the model's own opinion of the evidence does not count.
         data["insufficient_evidence"] = len(verified) == 0
