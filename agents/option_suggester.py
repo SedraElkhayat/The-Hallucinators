@@ -115,7 +115,7 @@ class OptionSuggester(Agent):
     def _question(self, field: str, options: list[str], extra: int, note: str = "") -> str:
         """Friendly wording: what the founder did not know, the ideas, and what they can do next."""
         listing = "; ".join(f"{i}) {o}" for i, o in enumerate(options, 1))
-        again = " (new ideas)" if extra else ""
+        again = " (new ideas)" if extra and not note else ""
         return (f"{note}You were not sure about {FIELD_LABELS.get(field, field)}. Here are some ideas{again}. They are "
                 f"suggestions, not facts: {listing}. Choose one, type your own answer, ask for "
                 f"'{MORE}', or answer '{NONE}' to leave it open.")

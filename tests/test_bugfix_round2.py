@@ -287,6 +287,7 @@ def test_TC_BUG7_when_there_are_no_new_options_the_same_ones_are_shown_again_wit
     agent.run(ctx)
     prompts = [p for p in ctx.founder.prompts if "where you will reach customers" in p]
     assert len(prompts) == 2 and prompts[1].startswith("I could not think of different ideas")
+    assert "(new ideas)" not in prompts[1]                      # they are the same ideas, so do not call them new
     first_options = [o for o in ctx.founder.options if o and "Sell on Gumroad" in o][0]
     second_options = [o for o in ctx.founder.options if o and "Sell on Gumroad" in o][1]
     assert MORE in first_options and MORE not in second_options
