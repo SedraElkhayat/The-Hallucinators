@@ -171,7 +171,9 @@ def test_demo_inputs_override_gate_1_only():
     assert json.loads(DEMO_INPUTS.read_text())["gate_override_1"] == "go"
     assert s.approval("gate", 1, "stop") == "reject" and s.lookup("gate_override_1") == "go"
     assert s.approval("gate", 1, "go") == "approve" and s.approval("gate", 1, "repeat") == "approve"
-    assert all(s.approval("gate", n, o) == "approve" for n in range(2, 7) for o in ("go", "repeat", "pivot", "stop"))
+    assert s.approval("gate", 2, "stop") == "reject" and s.lookup("gate_override_2") == "go"
+    assert all(s.approval("gate", 2, o) == "approve" for o in ("go", "repeat", "pivot"))
+    assert all(s.approval("gate", n, o) == "approve" for n in range(3, 7) for o in ("go", "repeat", "pivot", "stop"))
     assert s.approval("page", 3) == "approve"
 
 
@@ -197,3 +199,6 @@ def test_gate_stop_only_override(env, tmp_path, system, expected_history):
     assert [(p, o) for p, _, o in r["history"]] == expected_history
     overrides = [e for e in ctx.log.entries() if e["action"] == "gate_override_1"]
     assert len(overrides) == (1 if system == "stop" else 0)
+    for o in overrides:
+        assert o["system_outcome"] == "stop" and o["outcome"] == "go" and o["provenance"] == "SCRIPTED"
+        assert "STOP" in (ctx.out_dir / "phase1_gate_decision.md").read_text()  # system verdict kept

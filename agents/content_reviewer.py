@@ -4,9 +4,13 @@
 from the website in code. A must_fix asking for that label is downgraded to should_fix (reason recorded) when code
 finds no sign-up, waitlist or user number on the site: the label has nothing to apply to.
 """
+import re
+
 from agents.base import Agent
-from agents.m3_common import (M3InputsMixin, P3_BUILD, P3_COPY, P3_DOCS, P3_REVIEW, content_violations,
-                              downgrade_must_fix, normalize_verdict, read_site_files, signup_number_present)
+from agents.m3_common import (DEMO_FORM_LABEL, M3InputsMixin, P1_CLARIFICATION, P1_IDEA_CARD, P3_BUILD, P3_COPY, P3_DOCS,
+                              P3_REVIEW, P3_SPEC, content_violations, downgrade_must_fix, get_artifact,
+                              normalize_verdict, read_site_files, shared_key_words, signup_number_present, site_dir)
+from agents.m3_site import check_site_dir
 
 
 # Words that make an issue about fake proof, which is always a real must_fix, whatever label it mentions.
@@ -18,6 +22,50 @@ def asks_for_simulated_label(text: str) -> bool:
     t = text.lower()
     asks = "simulated" in t and ("label" in t or "add" in t or "not real users" in t)
     return asks and not any(word in t for word in _FAKE_PROOF)
+
+
+# The product describing itself is the founder's design (spec, idea card, stated values), not a market claim.
+# A "missing source or ASSUMPTION label" issue about it is downgraded; numbers, prices, reviews, counts and promises
+# and statements about the market stay must_fix.
+_SOURCE_COMPLAINT = re.compile(
+    r"(?:without|lacks?|lacking|missing|no|not (?:have|has|cited|sourced|labeled|labelled)|unsourced|unlabeled|unlabelled)"
+    r"[^.]{0,60}(?:source|assumption)|source link|labeled as an? assumption|presented as (?:a )?fact", re.I)
+_ABOUT_THE_PRODUCT = re.compile(r"\bproduct\b|template pack|\bthe (?:tool|template|kit)\b", re.I)
+_NOT_DESCRIPTION = re.compile(
+    r"\d|%|\$|\b(?:price|pricing|usd|egp|review|testimonial|rating|sign-?ups?|waitlist|promise|guarantee|income|earn\w*|"
+    r"revenue|percent|competitors?|demand|survey|study|studies|research|statistics?|fake|invented|fabricated)\b"
+    r"|\b(?:number|count|amount) of (?:users|customers|designers|people)\b", re.I)
+MIN_SHARED_WORDS = 2
+
+
+def _strings(obj, key=""):
+    """Yield (key, text) for every string inside nested dicts and lists."""
+    if isinstance(obj, str):
+        yield key, obj
+    elif isinstance(obj, dict):
+        for k, v in obj.items():
+            yield from _strings(v, str(k))
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _strings(v, key)
+
+
+def founder_design_text(ctx) -> str:
+    """The product as the founder defined it: the spec, the idea card (customer, solution, value proposition) and the
+    founder's stated values and differentiation."""
+    parts = [t for _, t in _strings(get_artifact(ctx, P3_SPEC) or {})]
+    card = get_artifact(ctx, P1_IDEA_CARD) or {}
+    parts += [str(card.get(k, "")) for k in ("customer", "solution", "value_proposition")]
+    parts += [t for k, t in _strings(get_artifact(ctx, P1_CLARIFICATION) or {})
+              if re.search(r"values|differentiation|product|idea", k, re.I)]
+    return " ".join(parts)
+
+
+def describes_the_product_itself(issue: str, design: str) -> bool:
+    """True for a missing-source issue about the product's own description (lower-cased issue text)."""
+    return bool(_SOURCE_COMPLAINT.search(issue) and _ABOUT_THE_PRODUCT.search(issue)
+                and not _NOT_DESCRIPTION.search(issue)
+                and shared_key_words(issue, design) >= MIN_SHARED_WORDS)
 
 
 class ContentReviewer(M3InputsMixin, Agent):
@@ -40,4 +88,46 @@ class ContentReviewer(M3InputsMixin, Agent):
             downgrade_must_fix(data, asks_for_simulated_label,
                                'rule applied in code: "SIMULATED, not real users" is only for simulated people or '
                                "numbers, and the site has no sign-up, waitlist or user number")
+        # Rules that code checks on the page itself. A must_fix that disputes one of them, when that check passes,
+        # cannot be resolved by revising anything, so it becomes should_fix with the reason recorded.
+        low_site = " ".join(site.split()).lower()
+        manifest = get_artifact(ctx, P3_BUILD) or {}
+        claim_texts = [str(c.get("claim", "")).lower()[:40] for c in manifest.get("claims") or []
+                       if isinstance(c, dict) and c.get("claim")]
+        failures = check_site_dir(site_dir(ctx), phase=3)["failures"]
+        if claim_texts and not any("evidence item" in f for f in failures):
+            downgrade_must_fix(
+                data, lambda t: any(c in t for c in claim_texts)
+                and (_SOURCE_COMPLAINT.search(t) or re.search(r"without a source|source link|labeled as an? assumption|not labeled|unlabeled|"
+                             r"without (?:proper |any )?(?:context or |verification)|without (?:proper |any )?(?:context or )?source"
+                             r"|not (?:been )?verified|unverified", t))
+                and not any(w in t for w in _FAKE_PROOF),
+                "rule applied in code: every claim on the page has a source link or the ASSUMPTION label "
+                "(checked in the website checks)")
+        design = founder_design_text(ctx)
+        downgrade_must_fix(data, lambda t: describes_the_product_itself(t, design),
+                           "rule applied in code: the issue is about the product's own description (the founder's design "
+                           "in the spec, the idea card or the stated values), which needs no source or ASSUMPTION label")
+        if DEMO_FORM_LABEL.lower() in low_site:
+            downgrade_must_fix(data, lambda t: "demo" in t and "label" in t,
+                               f'rule applied in code: the sign-up box shows the label "{DEMO_FORM_LABEL}" '
+                               "(checked in the website checks)")
+        visible = re.sub(r"<style.*?</style>", " ", site, flags=re.S | re.I)   # CSS has numbers ("100%") that are not text
+        low_visible = " ".join(re.sub(r"<[^>]+>", " ", visible).split()).lower()
+
+        def price_not_on_page(t):  # the price slot is filled by code ("Price: set in Phase 4"); check the amount
+            if "price" not in t:
+                return False
+            amounts = re.findall(r"\d[\d,.]*", t)
+            return bool(amounts) and not any(a.strip(",.") in low_visible for a in amounts)
+
+        downgrade_must_fix(data, price_not_on_page,
+                           "rule applied in code: the website's price slot is filled by code (\"Price: set in Phase 4\") "
+                           "and the amount in the issue does not appear on the page")
+        found = content_violations(site)
+        if not any(w in found for w in ("urgency", "scarcity", "countdown")):
+            downgrade_must_fix(data, lambda t: ("urgency" in t or "scarcity" in t)
+                               and ("call-to-action" in t or "cta" in t or "waitlist" in t),
+                               "rule applied in code: the page has no urgency, scarcity or countdown wording "
+                               "(banned-content scan)")
         return normalize_verdict(data)

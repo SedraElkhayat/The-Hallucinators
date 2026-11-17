@@ -16,7 +16,16 @@ from agents.m3_common import (M3InputsMixin, P1_SKEPTIC, P2_ASSUMPTIONS, P2_CANV
 DEMAND_KILL_RATIO = 0.2
 MIN_QUOTE_CHARS = 12
 _QUOTED = re.compile(r"[\"“”']([^\"“”']{%d,})[\"“”']" % MIN_QUOTE_CHARS)
-_DEMAND_RULE = re.compile(r"ratio.*\b0?\.2\b|\b0?\.2\b.*ratio", re.I)
+# Absence of evidence is "unknown", not a reason to stop (same rule as M2's skeptic). Real run: "no willingness to pay"
+# was triggered because "there is no clear evidence".
+_MISSING_EVIDENCE = re.compile(
+    r"\b(?:no|not enough|insufficient|little|limited|lack of|lacks?|without)\s+(?:\w+\s+)?"
+    r"(?:evidence|data|signals?|indications?|signs?|proof)\b|\b(?:might|may|could|possibly|perhaps|unclear|"
+    r"cannot be (?:determined|confirmed))\b", re.I)
+# A kill criterion that is itself "no evidence of X" describes absence: only the scorecard's "unknown" can say that.
+_ABSENCE_CRITERION = re.compile(r"^\s*(?:\w+\s+){0,3}?(?:no|lack of|insufficient|not enough|little|limited)\s+"
+                                r"(?:\w+\s+){0,2}(?:evidence|data|signals?|indications?|willingness)\b", re.I)
+_DEMAND_RULE = re.compile(r"(?:ratio|sign-?ups?|demand|target|waitlist).*(?<![\d.])0?\.2(?!\d)|(?<![\d.])0?\.2(?!\d).*(?:ratio|sign-?ups?|demand|target|waitlist)", re.I)
 
 
 def _norm(text) -> str:
@@ -39,12 +48,23 @@ def evidence_is_named(evidence, stems_present: list, input_texts: list) -> bool:
     if not isinstance(evidence, str) or not evidence.strip():
         return False
     if any(stem in evidence for stem in stems_present):
-        return True
+        rest = evidence
+        for stem in stems_present:
+            rest = rest.replace(stem, " ")
+        # Naming an artifact is not evidence by itself: say what in it shows the condition. (Real run: a kill
+        # criterion "sign-ups below 0.2 of the target" was triggered with only the artifact name, ratio was 1.4.)
+        if len(re.sub(r"[\W_]+", " ", rest).strip()) >= 12:
+            return True
     candidates = _QUOTED.findall(evidence) or [evidence.strip().strip("\"'“”")]
     for quote in candidates:
         q = _norm(quote)
         if len(q) < MIN_QUOTE_CHARS or "assumption" in q:
             continue
+        rest_q = q
+        for stem in stems_present:
+            rest_q = rest_q.replace(stem.lower(), " ")
+        if len(re.sub(r"[\W_]+", " ", rest_q).strip()) < 12:
+            continue  # only an artifact name, not text that shows the condition
         # The quote must come from an input string that is itself not labeled ASSUMPTION.
         if any(q in _norm(t) and "assumption" not in t.lower() for t in input_texts):
             return True
@@ -94,6 +114,12 @@ class RiskAnalyst(M3InputsMixin, Agent):
             k["triggered"] = claimed and evidence_is_named(k["evidence"], stems, texts)
             if claimed and not k["triggered"]:
                 k["triggered_without_evidence"] = True  # the model's bare claim never reaches the gate
+            if k["triggered"] and _ABSENCE_CRITERION.search(str(k.get("text", ""))):
+                k["triggered"] = False
+                k["triggered_on_missing_evidence"] = True  # "no evidence of X" can only be unknown, never a kill
+            if k["triggered"] and _MISSING_EVIDENCE.search(k["evidence"]):
+                k["triggered"] = False
+                k["triggered_on_missing_evidence"] = True  # missing or hedged evidence is unknown, not a kill
             kills.append(k)
 
         self._apply_demand_rule(ctx, kills)

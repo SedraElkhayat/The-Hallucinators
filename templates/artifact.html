@@ -1,12 +1,23 @@
 {% extends "base.html" %}
-{% block title %}{{ step }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+{% block style %}
+  .back { font-size: 14px; }
+  .doc { background: var(--paper); border: 1px solid var(--rule); border-radius: 16px; padding: 22px 26px; margin-top: 14px; }
+  .doc h1, .doc h2 { font-family: var(--serif); font-weight: 600; }
+  .doc h2 { font-size: 22px; margin-top: 0; } .doc h3 { font-size: 17px; margin-top: 22px; }
+  .doc blockquote { margin: 10px 0; padding: 6px 12px; background: var(--mock-soft); border-radius: 8px; font-family: var(--sans); font-size: 14px; }
+  .doc iframe { width: 100%; height: 520px; border: 1px solid var(--rule); border-radius: 10px; }
+  details.tech { margin-top: 16px; } details.tech summary { cursor: pointer; color: var(--slate); font-size: 14px; }
+{% endblock %}
 {% block body %}
-<p class="muted">{% if rid %}<a href="/run/{{ rid }}">← run {{ rid }}</a>{% else %}Committed demo run (outputs/){% endif %}</p>
-<h2>{{ step }} {% if mocked %}<span class="badge mocked">MOCKED</span>{% endif %}</h2>
-{% if html_src %}
-  <p class="muted">Draft page, shown in a sandbox. Not published: only the founder publishes.</p>
-  <iframe sandbox srcdoc="{{ html_src }}" style="width:100%;height:520px;border:1px solid #ddd;border-radius:6px"></iframe>
-{% endif %}
-{% if body %}<div class="card">{{ body }}</div>{% endif %}
-{% if raw %}<details><summary>JSON</summary><pre>{{ raw }}</pre></details>{% endif %}
+<div class="column">
+  <p class="back">{% if rid %}<a href="/run/{{ rid }}">Back to the conversation</a>{% else %}<a href="/">Committed demo run</a>{% endif %}</p>
+  <div class="head"><h1>{{ title|capitalize }}</h1>{% if mocked %}<span class="tag mock">MOCKED</span>{% endif %}</div>
+  {% if html_src %}
+  <div class="doc"><p class="muted">Draft page in a sandbox. It is not published; only you can publish it.</p>
+    <iframe sandbox srcdoc="{{ html_src }}" title="Draft page"></iframe></div>
+  {% endif %}
+  {% if body %}<div class="doc prose">{{ body }}</div>{% endif %}
+  {% if raw %}<details class="tech"><summary>Technical details ({{ step }}.json)</summary><pre>{{ raw }}</pre></details>{% endif %}
+</div>
 {% endblock %}

@@ -244,6 +244,62 @@ def signup_number_present(text: str) -> bool:
     return bool(SIGNUP_NUMBER.search(text or ""))
 
 
+# ---------------------------------------------------------------- does the quote support the claim?
+# A claim is "verified" upstream when its quote is found on the source page. That does not mean the quote says what
+# the claim says (real run: "designers in Egypt struggle to track invoices" was backed by a quote about survey tools).
+# The website shows a claim as a fact only when the quote also supports it: most of the claim's key words must
+# appear in the quote. Otherwise it is shown with the ASSUMPTION label.
+_STOPWORDS = frozenset("""a an the of in on for to and or is are was were be been will would can could may might their
+there that this these those with as at by from it its not no we our they them have has had more most than then who which
+when what so such also into about over under per""".split())
+_WORD = re.compile(r"[^\W_]+", re.UNICODE)
+SUPPORT_THRESHOLD = 0.5
+
+
+def _stem(w: str) -> str:
+    if w.isdigit() or not w.isascii():
+        return w
+    if w.endswith("ies") and len(w) > 4:
+        w = w[:-3] + "y"
+    elif w.endswith("s") and not w.endswith("ss") and len(w) > 3:
+        w = w[:-1]
+    if w.endswith("ing") and len(w) > 5:
+        w = w[:-3]
+    elif w.endswith("ed") and len(w) > 4:
+        w = w[:-2]
+    if w.endswith("e") and len(w) > 3:
+        w = w[:-1]
+    return w
+
+
+def _key_tokens(text: str) -> set:
+    out = set()
+    for w in _WORD.findall((text or "").lower()):
+        if w in _STOPWORDS or (len(w) < 3 and not w.isdigit()):
+            continue
+        out.add(_stem(w))
+    return out
+
+
+def shared_key_words(a: str, b: str) -> int:
+    """How many key words (stemmed, without stop words) the two texts have in common."""
+    return len(_key_tokens(a) & _key_tokens(b))
+
+
+def claim_support(claim: str, quote: str) -> float:
+    """Share of the claim's key words that appear in the quote (0.0 to 1.0)."""
+    ct, qt = _key_tokens(claim), _key_tokens(quote)
+    if not ct or not qt:
+        return 0.0
+    return len(ct & qt) / len(ct)
+
+
+def claim_supported_by_quote(claim: str, quote: str) -> bool:
+    ct = _key_tokens(claim)
+    need = 1.0 if len(ct) < 3 else SUPPORT_THRESHOLD
+    return claim_support(claim, quote) >= need
+
+
 def content_violations(text: str) -> list[str]:
     """Code-found honesty/safety violations in a piece of page or build content."""
     text = text or ""

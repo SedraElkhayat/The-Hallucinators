@@ -28,4 +28,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - Quote the problem text briefly so it can be found.
 - The labels mean different things: MOCKED marks demo inputs or mock-model output; ASSUMPTION marks an unchecked claim; "SIMULATED, not real users" is only for simulated people or numbers. Never ask for the SIMULATED label on a claim or on MOCKED text.
 - Any sign-up, waitlist or user number on the page is `must_fix`, even when labeled.
+- Statements that describe the product itself (what it is, who it is for, its features, what it does NOT do, its languages), as given in the spec, the idea card or the founder's values, are the founder's design, not claims: never raise an issue for a missing source or ASSUMPTION label on them. Only statements about the market, customers, competitors, demand, results or numbers need a source or the ASSUMPTION label.
 - Keep every text value short (one or two sentences); no more than 6 items per list.

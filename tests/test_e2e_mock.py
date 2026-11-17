@@ -100,3 +100,11 @@ def test_e2e_weak_brief_stops_at_gate_2(tmp_path):
     ctx, result = _run(tmp_path, "brief_weak.md", "founder_inputs_weak.json")
     assert result["outcome"] == "stop"
     assert "STOP" in (ctx.out_dir / "phase2_gate_decision.md").read_text(encoding="utf-8")
+
+
+
+def test_weak_inputs_never_override_a_gate():
+    import json
+    d = json.loads((ROOT / "demo" / "founder_inputs_weak.json").read_text(encoding="utf-8"))
+    assert not any(k.startswith("gate_override_") for k in d)
+    assert all(not k.startswith("gate") for k in d.get("approvals", {}))

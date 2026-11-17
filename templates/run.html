@@ -1,43 +1,63 @@
 {% extends "base.html" %}
-{% block head %}{% if run.status == "running" %}<meta http-equiv="refresh" content="3">{% endif %}{% endblock %}
-{% block title %}Run {{ run.id }}{% endblock %}
+{% block title %}{{ run.brief or "Run" }}{% endblock %}
+{% block style %}{% include "_chat_css.html" %}{% endblock %}
 {% block body %}
-<h2>Run {{ run.id }} {% if run.mock %}<span class="badge mocked">MOCKED run (MockLLM)</span>{% endif %}</h2>
-<p>Status: <b>{{ run.status }}</b>
-  {% if run.status == "running" %} · phase <b>{{ prog.phase or "starting" }}</b> · latest agent <b>{{ prog.agent or "none yet" }}</b>{% endif %}
-  {% if run.result %} · ended at Gate {{ run.result.phase }}: <span class="badge {{ run.result.outcome }}">{{ run.result.outcome|upper }}</span>{% endif %}
-</p>
-{% if run.error %}<p class="badge stop">{{ run.error }}</p>{% endif %}
-{% if pending %}<p class="card">The run is waiting for you: <a href="/approvals">{{ pending }} item(s) in the founder inbox</a>.</p>{% endif %}
+<div class="column">
+  <div class="head">
+    <h1>{{ run.brief or "Your idea" }}</h1>
+    <span>{% if run.mock %}<span class="tag mock">MOCKED run (MockLLM)</span>{% endif %}
+      <a class="muted" href="/run/{{ run.id }}/audit">Audit trail</a></span>
+  </div>
+  <div class="feed" id="feed">{% include "_feed.html" %}</div>
+  <div class="feed" id="pending" style="margin-top: 18px">{% include "_pending.html" %}</div>
+  <div class="working" id="working" style="margin-top: 18px; {{ '' if activity and not items else 'display: none' }}">
+    <span class="pulse"></span><span id="activity">{{ activity or "" }}</span>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+(() => {
+  const rid = {{ run.id|tojson }};
+  let events = -1, pendingKey = {{ items|map(attribute='id')|list|tojson }}.join(','), status = {{ run.status|tojson }};
+  const feed = document.getElementById('feed'), pending = document.getElementById('pending');
+  const working = document.getElementById('working'), activity = document.getElementById('activity');
 
-{% if run.result %}
-<h3>Gates</h3>
-<table><tr><th>Phase</th><th>Attempt</th><th>Outcome</th></tr>
-{% for p, a, o in run.result.history %}<tr><td>{{ p }}</td><td>{{ a }}</td><td><span class="badge {{ o }}">{{ o|upper }}</span></td></tr>{% endfor %}
-</table>
-{% endif %}
-
-<h3>Founder website</h3>
-{% if site %}
-<p class="card">
-  {{ site[1] }} · <b>not published</b>: you publish it yourself after approving it (see the publish guide in the artifacts).<br><br>
-  <a href="/site/{{ run.id }}/" target="_blank"><button type="button">Preview website</button></a>
-  <a href="/download/site/{{ run.id }}"><button type="button">Download site folder</button></a>
-</p>
-{% else %}<p class="muted">Not built yet (Phase 3 builds it).</p>{% endif %}
-
-<h3>Artifacts</h3>
-{% if steps %}<ul>{% for s in steps %}<li><a href="/artifact/{{ s }}?run={{ run.id }}">{{ s }}</a></li>{% endfor %}</ul>
-{% else %}<p class="muted">None yet.</p>{% endif %}
-
-<h3>Events (decision log, newest first; {{ prog.count }} total)</h3>
-<table>
-  <tr><th>Time</th><th>Agent</th><th>Action</th><th>Model</th><th>Approved by</th><th></th></tr>
-  {% for e in prog.events %}
-  <tr><td>{{ e.timestamp[11:19] }}</td><td>{{ e.agent }}</td><td>{{ e.action }}{% if e.outcome %} → {{ e.outcome }}{% endif %}</td>
-      <td>{{ e.model or "" }}</td><td>{{ e.approved_by or "" }}</td>
-      <td>{% if e.mocked or e.model == "mock-llm" %}<span class="badge mocked">MOCKED</span>{% endif %}
-          {% if e.provenance == "SCRIPTED" %}<span class="badge scripted">SCRIPTED</span>{% endif %}</td></tr>
-  {% endfor %}
-</table>
+  async function refreshFeed() {
+    const open = new Set([...feed.querySelectorAll('details[open]')].map(d => d.dataset.key));
+    const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 80;
+    feed.innerHTML = await (await fetch(`/run/${rid}/feed`)).text();
+    feed.querySelectorAll('details').forEach(d => { if (open.has(d.dataset.key)) d.open = true; });
+    if (atBottom) window.scrollTo({ top: document.body.scrollHeight });
+  }
+  async function refreshPending() {
+    pending.innerHTML = await (await fetch(`/run/${rid}/pending`)).text();
+    bindForms();
+  }
+  function bindForms() {
+    pending.querySelectorAll('form[data-ask]').forEach(f => f.addEventListener('submit', async ev => {
+      ev.preventDefault();
+      const data = new FormData(f);
+      if (ev.submitter && ev.submitter.name) data.set(ev.submitter.name, ev.submitter.value);
+      f.closest('.ask').style.opacity = .5;
+      await fetch(f.action, { method: 'POST', body: data, headers: { 'X-Requested-With': 'fetch' } });
+      tick();
+    }));
+  }
+  async function tick() {
+    try {
+      const s = await (await fetch(`/api/run/${rid}/state`)).json();
+      const key = s.pending.join(',');
+      if (s.events !== events || s.status !== status) { events = s.events; await refreshFeed(); }
+      if (key !== pendingKey) { pendingKey = key; await refreshPending(); }
+      status = s.status;
+      activity.textContent = s.activity || '';
+      working.style.display = s.activity && !s.pending.length ? 'flex' : 'none';
+    } catch (e) { /* the app may be restarting; try again on the next tick */ }
+  }
+  bindForms();
+  setInterval(() => { if (status === 'running') tick(); }, 2000);
+  tick();
+})();
+</script>
 {% endblock %}

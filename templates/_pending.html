@@ -1,0 +1,40 @@
+{% for it in items %}
+<div class="ask" id="ask-{{ it.id }}">
+  {% if it.kind == "approval" and it.key == "gate" %}
+    <div class="what">Approval needed in phase {{ it.phase }}</div>
+    <p class="q">The system recommends “{{ it.prompt.split(': ', 1)[-1]|capitalize }}” for this gate (see the verdict above). Do you accept it? If you reject it, you choose what happens instead, and that is logged as your decision.</p>
+    <details><summary>Show the raw gate summary</summary><div class="content">{{ it.content }}</div></details>
+    <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
+      <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
+      <button class="btn primary" name="decision" value="approve">Approve the verdict</button>
+      <button class="btn danger" name="decision" value="reject">Reject and choose myself</button>
+    </form>
+  {% elif it.kind == "approval" %}
+    <div class="what">Approval needed{% if it.phase %} in phase {{ it.phase }}{% endif %}</div>
+    <p class="q">{{ it.prompt }}</p>
+    {% if it.content %}
+      {% if it.is_html %}<iframe sandbox srcdoc="{{ it.content }}" title="Draft to approve"></iframe>
+      {% else %}<div class="content">{{ it.content }}</div>{% endif %}
+    {% endif %}
+    <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
+      <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
+      <button class="btn primary" name="decision" value="approve">Approve</button>
+      <button class="btn danger" name="decision" value="reject">Reject</button>
+    </form>
+  {% else %}
+    <div class="what">Question about {{ it.label }}</div>
+    <p class="q">{{ it.prompt }}</p>
+    {% if it.options %}
+    <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
+      <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
+      {% for o in it.options %}<button class="btn" name="decision" value="{{ o }}">{{ o }}</button>{% endfor %}
+    </form>
+    {% endif %}
+    <form method="post" action="/approvals/{{ it.id }}" class="free" data-ask>
+      <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
+      <textarea name="answer" aria-label="Your answer" placeholder="Type your answer, or “I don't know” and I'll suggest options{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %}. Label made-up data as SAMPLE or MOCKED{% endif %}"></textarea>
+      <div class="acts"><button class="btn primary" type="submit">Send</button></div>
+    </form>
+  {% endif %}
+</div>
+{% endfor %}

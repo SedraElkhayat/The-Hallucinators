@@ -528,3 +528,55 @@ def test_missing_evidence_is_a_risk_not_a_kill():
          "evidence": "Interviewees said they are not willing to pay for a newsletter."}]})
     assert d["kill_criteria"][0]["triggered"] is False and d["kill_criteria"][0]["triggered_on_absence"]
     assert d["kill_criteria"][1]["triggered"] is True
+
+
+def test_quote_that_does_not_say_the_claim_is_not_evidence():
+    # Real run (SearXNG, strong brief): an on-topic page, but the quote says something else entirely.
+    from types import SimpleNamespace
+    from agents.m2_common import check_on_topic, unsupported_reason
+    logged = []
+    ctx = SimpleNamespace(log=SimpleNamespace(action=lambda *a, **k: logged.append(k)))
+    card = {"customer": "Freelance graphic designers in Egypt", "problem": "They lose track of client projects and invoices",
+            "solution": "A Notion and Google Sheets template pack"}
+    data = {"claims": [
+        {"claim": "Freelance designers in Egypt need a way to track client projects, invoices sent, and revision rounds.",
+         "source_url": "https://www.fiverr.com/categories/graphics-design", "verified": True, "assumption": False,
+         "quote": "There is no simple answer to this question as graphic design is not a commodity or a product that "
+                  "has an exact way to be measured or priced."},
+        {"claim": "Freelancers can use Notion templates to manage client projects, invoices, and time tracking.",
+         "source_url": "https://www.notion.com/templates/category/freelance", "verified": True, "assumption": False,
+         "quote": "Designed for independent professionals, our collection of Notion freelance templates includes "
+                  "project proposals, client management tools, invoice trackers, and time management sheets."}]}
+    check_on_topic(ctx, data, card, "opportunity_finder")
+    bad, good = data["claims"]
+    assert bad["verified"] is False and bad["assumption"] is True and bad["check"].startswith("unsupported")
+    assert good["verified"] is True
+    assert [k["reason"] for k in logged] == ["quote does not support the claim"]
+    # numbers in a claim must be in its quote
+    assert "49" in unsupported_reason("49% of graphic designers are freelancers.",
+                                      "Most graphic designers work as freelancers today.")
+    assert unsupported_reason("Designers earn $72,122 a year as freelancers.",
+                              "freelance designers earn $72,122 average annual income") is None
+    # a translated claim shares no stems with its Arabic quote: only numbers are checked
+    assert unsupported_reason("Freelance designers in Egypt chase unpaid invoices.",
+                              "المصممون المستقلون في مصر يطاردون الفواتير غير المدفوعة") is None
+
+
+def test_critic_issue_about_untriggered_kill_criterion_is_not_must_fix():
+    # Real run: the critic called kill criteria with triggered=false 'high-severity risks missing from the report'.
+    from types import SimpleNamespace
+    from agents.critic_phase1 import CriticPhase1
+    arts = {"phase1_step8_skeptic": {"kill_criteria": [
+                {"text": "No evidence of willingness to pay for the template pack.", "triggered": True},
+                {"text": "Competitors offer similar solutions with better features or lower costs.", "triggered": False}]},
+            "phase1_step9_discover_report": {"summary": "s", "findings": [], "confidence": "low"}}
+    store = SimpleNamespace(has=lambda s: s in arts, get=lambda s: arts[s], names=lambda: list(arts))
+    ctx = SimpleNamespace(store=store, extra={}, mock=False)
+    out = CriticPhase1().post_process(ctx, {"verdict": "revise", "issues": [
+        {"severity": "must_fix", "text": "The report does not mention the kill criteria that 'Competitors offer "
+                                         "similar solutions with better features or lower costs.'"},
+        {"severity": "must_fix", "text": "The report omits the triggered kill criterion 'No evidence of willingness "
+                                         "to pay for the template pack.'"}]})
+    quiet, triggered = out["issues"][:2]
+    assert quiet["severity"] == "should_fix" and quiet["downgraded_in_code"] == "kill criterion was not triggered"
+    assert triggered["severity"] == "must_fix" and out["verdict"] == "revise"

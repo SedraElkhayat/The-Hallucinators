@@ -22,8 +22,11 @@
   },
   "approvals": {
     "default": "approve",
-    "gate_1_stop": "reject"
+    "gate_1_stop": "reject",
+    "gate_2_stop": "reject"
   },
   "_gate_1_override": "Founder decision (human): if the system recommends STOP at Gate 1, reject it and continue with 'go'. Only a Gate 1 STOP is rejected (approvals.gate_1_stop); a Gate 1 GO or REPEAT, and every later gate, is approved as the system recommends. The system's own Gate 1 verdict stays unchanged in phase1_gate_decision.md.",
-  "gate_override_1": "go"
+  "gate_override_1": "go",
+  "gate_override_2": "go",
+  "_gate_2_override": "Founder decision (human): if the system recommends STOP at Gate 2, reject it and continue with 'go'. Only a Gate 2 STOP is rejected (approvals.gate_2_stop). The system's own Gate 2 verdict stays unchanged in phase2_gate_decision.md; the override is in phase2_gate_founder_override.md and in decision_log.json (approved_by: founder)."
 }
