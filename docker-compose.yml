@@ -35,6 +35,11 @@ services:
     environment:
       LLM_BASE_URL: ${LLM_BASE_URL:-http://ollama:11434/v1}
       LLM_MODEL: ${LLM_MODEL:-qwen3:8b}
+      LLM_API_KEY: ${LLM_API_KEY:-ollama}
+      # a CPU-only laptop writes about 4 tokens per second, so one 1,500-token answer can take 6+ minutes
+      LLM_TIMEOUT: ${LLM_TIMEOUT:-900}
+      LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-1500}
+      LLM_NO_THINK: ${LLM_NO_THINK:-auto}
       ORCH_CONCURRENCY: ${ORCH_CONCURRENCY:-1}
       FOUNDER_MODE: ${FOUNDER_MODE:-web}
       APP_PORT: ${APP_PORT:-8000}

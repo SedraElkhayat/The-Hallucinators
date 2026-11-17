@@ -84,3 +84,10 @@ def test_real_client_leaves_other_models_alone(monkeypatch):
     sent = _capture(monkeypatch)
     RealClient(base_url="http://x/v1", model="qwen3:8b").chat("SYS", "USER", agent="a")
     assert sent["body"]["messages"][0]["content"] == "SYS"
+
+
+def test_real_client_default_timeout_allows_slow_cpu(monkeypatch):
+    monkeypatch.delenv("LLM_TIMEOUT", raising=False)
+    assert RealClient(base_url="http://x/v1").timeout == 900
+    monkeypatch.setenv("LLM_TIMEOUT", "120")
+    assert RealClient(base_url="http://x/v1").timeout == 120
