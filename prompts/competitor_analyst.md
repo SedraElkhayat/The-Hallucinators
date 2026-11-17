@@ -29,6 +29,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
 
 ## Rules
 - Make no new factual claim: no new names, prices, numbers or URLs that are not in the Phase 1 claims.
+- The budget in the brief is what the founder can spend to build the product. It is never a price, a competitor's price, or what customers are willing to pay.
 - `claim_refs` entries must copy the `claim` text and `source_url` of existing Phase 1 claims exactly.
 - Thin evidence: level `unknown`; never guess a level.
 - Keep every text value short (one or two sentences); no more than 6 items per list.

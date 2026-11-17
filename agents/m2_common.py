@@ -586,25 +586,35 @@ class ResearchAgent(Agent):
     optional_inputs: list[str] = []
     max_searches = 3
     max_fetches = 3
+    # True: fetch the top result of each search first, so every query (for example a pricing query) gets a page.
+    fetch_one_per_query = False
 
     def queries(self, ctx, card: dict) -> list[str]:
         raise NotImplementedError
 
     def gather(self, ctx) -> tuple[list[dict], list[dict]]:
         card = get_artifact(ctx, IDEA_CARD) or {}
-        results, pages, seen = [], [], set()
+        results, pages, seen, firsts = [], [], set(), []
         for q in [dedupe_words(q) for q in self.queries(ctx, card) if q.strip()][: self.max_searches]:
             try:
                 found = ctx.tools.search(self.name, q)
                 if not found:  # an empty search (or a blocked one) must be visible in the decision log
                     ctx.log.action(self.name, "search_empty", query=q)
+                first = True
                 for r in found:
                     if r.get("url") and r["url"] not in seen:
                         seen.add(r["url"])
-                        results.append({"title": r.get("title", ""), "url": r["url"], "snippet": r.get("snippet", "")})
+                        item = {"title": r.get("title", ""), "url": r["url"], "snippet": r.get("snippet", "")}
+                        results.append(item)
+                        if first:
+                            firsts.append(item)
+                            first = False
             except Exception as e:  # noqa: BLE001 - search failure means less evidence, not a crash
                 ctx.log.action(self.name, "search_failed", query=q, error=str(e)[:200])
-        for r in results[: self.max_fetches]:
+        order = results
+        if self.fetch_one_per_query:
+            order = firsts + [r for r in results if r not in firsts]
+        for r in order[: self.max_fetches]:
             try:
                 text = ctx.tools.fetch(self.name, r["url"])
             except Exception as e:  # noqa: BLE001

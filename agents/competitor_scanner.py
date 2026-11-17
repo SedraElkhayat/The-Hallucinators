@@ -17,10 +17,13 @@ class CompetitorScanner(ResearchAgent):
     phase = 1
     step = COMPETITORS
     required_keys = ["competitors", "claims", "insufficient_evidence"]
+    # One page per search, so the pricing search is read too (a real run fetched only listing pages without
+    # prices, and Phase 4 then had no sourced price to compare with).
+    fetch_one_per_query = True
 
     def queries(self, ctx, card):
         t = topic_queries(card)
-        return [f"{t['prod']} for {t['cust']}", f"best {t['prod']} {t['prob']}", f"{t['prod']} alternatives pricing"]
+        return [f"{t['prod']} for {t['cust']}", f"best {t['prod']} {t['prob']}", f"{t['prod']} price"]
 
     def post_process(self, ctx, data):
         data = super().post_process(ctx, data)

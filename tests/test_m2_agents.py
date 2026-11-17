@@ -662,3 +662,22 @@ def test_no_clear_indication_is_missing_evidence():
     d = norm_risks({"risks": [], "kill_criteria": [{"text": "No willingness to pay", "triggered": True,
                     "evidence": "Interview findings show no clear indication of willingness to pay for a solution."}]})
     assert d["kill_criteria"][0]["triggered"] is False
+
+
+def test_competitor_scanner_fetches_one_page_per_search():
+    # Real run: only listing pages from the first search were fetched, so no page stated a price.
+    from types import SimpleNamespace
+    agent = get_agent("competitor_scanner")
+    assert agent.fetch_one_per_query and any("price" in q for q in agent.queries(None, {"solution": "A Notion template"}))
+    calls, fetched = [], []
+
+    def search(name, q):
+        calls.append(q)
+        n = len(calls)
+        return [{"url": f"https://s{n}r{i}.example/", "title": "t", "snippet": "s"} for i in range(3)]
+
+    tools = SimpleNamespace(search=search, fetch=lambda name, url: fetched.append(url) or "page text")
+    ctx = SimpleNamespace(tools=tools, log=SimpleNamespace(action=lambda *a, **k: None),
+                          store=SimpleNamespace(has=lambda s: True, get=lambda s: {"solution": "A Notion template"}))
+    agent.gather(ctx)
+    assert fetched == ["https://s1r0.example/", "https://s2r0.example/", "https://s3r0.example/"]

@@ -1,9 +1,46 @@
 """competitor_analyst: deep analysis of Phase 1's verified competitor evidence; no new claims."""
+import re
+
 from agents.base import Agent
+from agents.m2_common import founder_budget
 from agents.m3_common import (M3InputsMixin, P1_COMPETITORS, P1_DEMAND_SIGNALS, P1_IDEA_CARD,
                               P1_MARKET, P2_COMPETITOR_ANALYSIS, get_artifact)
 
 _FORCES = ("rivalry", "new_entrants", "substitutes", "buyer_power", "supplier_power")
+
+
+def _budget_rx(brief: str):
+    """Pattern for the brief's budget written as money ("USD 100", "$100", "100 dollars"), or None."""
+    b = founder_budget(brief or "")
+    if not b:
+        return None
+    amt = re.escape(str(b["amount"]).replace(",", ""))
+    return re.compile(rf"(?:usd|us\$|\$)\s?{amt}(?![\d.])|(?<![\d.]){amt}\s?(?:usd|dollars|\$)", re.I)
+
+
+def remove_budget_as_price(brief: str, data: dict) -> dict:
+    """The brief's budget is what the founder can spend, not a price or what customers will pay (a real run
+    used "USD 100" as willingness to pay). Pricing gaps built on it are dropped; force and differentiation
+    reasons built on it become unknown. Everything removed is recorded in ``budget_not_price``."""
+    rx = _budget_rx(brief)
+    if rx is None:
+        return data
+    removed = []
+    gaps = []
+    for g in data.get("pricing_gaps") or []:
+        (removed if rx.search(str(g)) else gaps).append(g)
+    data["pricing_gaps"] = gaps
+    forces = data.get("five_forces") if isinstance(data.get("five_forces"), dict) else {}
+    for name, v in forces.items():
+        if isinstance(v, dict) and rx.search(str(v.get("reason", ""))):
+            removed.append(f"{name}: {v.get('reason')}")
+            forces[name] = {"level": "unknown", "reason": "ASSUMPTION: no evidence; the brief's budget is not a price."}
+    if rx.search(str(data.get("differentiation_reason", ""))):
+        removed.append(f"differentiation_reason: {data.get('differentiation_reason')}")
+        data["differentiation_reason"] = "ASSUMPTION: no evidence; the brief's budget is not a price."
+    if removed:
+        data["budget_not_price"] = removed
+    return data
 
 
 class CompetitorAnalyst(M3InputsMixin, Agent):
@@ -59,6 +96,7 @@ class CompetitorAnalyst(M3InputsMixin, Agent):
                 v["level"] = "unknown"
             forces[f] = v
         data["five_forces"] = forces
+        remove_budget_as_price(getattr(ctx, "brief", "") or "", data)
         dp = str(data.get("differentiation_possible", "unknown")).lower()
         data["differentiation_possible"] = {"true": "yes", "false": "no"}.get(dp, dp if dp in ("yes", "no", "unknown") else "unknown")
         if not kept:
