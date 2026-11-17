@@ -3,21 +3,25 @@
 
 Pages: /  (brief form, runs)   /run/<id>  (live progress)   /approvals  (founder inbox)
        /artifact/<step>?run=<id>  (rendered artifact)   /health
+       /site/<id>/  (local preview of the founder's website)   /download/site/<id>  (zip of its folder)
+       <id> "outputs" means the committed demo run in outputs/.
 The pipeline runs in a background thread with founder mode "web": every question and approval waits
 in the inbox until the founder answers. Nothing is published, sent, spent or signed by the system.
 """
 from __future__ import annotations
 
 import html
+import io
 import json
 import os
 import re
 import threading
 import uuid
+import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, send_file, send_from_directory, url_for
 from markupsafe import Markup
 
 import orchestrator
@@ -30,6 +34,12 @@ STEP_RX = re.compile(r"^[A-Za-z0-9_\-]+$")
 app = Flask(__name__, template_folder=str(ROOT / "templates"))
 RUNS: dict[str, dict] = {}
 _lock = threading.Lock()
+
+# The founder's website: built in Phase 3, re-filled with price and policies in Phase 5 (newest first).
+SITE_DIRS = (("phase5_step2_store_site", "Phase 5 store version"), ("phase3_step3_site", "Phase 3 build version"))
+# Preview is local only and inert: no scripts, no network, and forms cannot submit anywhere.
+SITE_CSP = ("default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; "
+            "form-action 'none'; base-uri 'none'; frame-ancestors 'self'")
 
 
 # ---------------------------------------------------------------- runs
@@ -77,6 +87,15 @@ def artifact_dir(rid: str | None) -> Path:
     if STEP_RX.match(rid) and d.is_dir():
         return d
     abort(404)
+
+
+def site_dir(rid: str) -> tuple[Path, str] | None:
+    """The newest website folder of a run (or of the committed outputs/ when rid == "outputs")."""
+    base = COMMITTED_OUT if rid == "outputs" else artifact_dir(rid)
+    for name, label in SITE_DIRS:
+        if (base / name / "index.html").is_file():
+            return base / name, label
+    return None
 
 
 # ---------------------------------------------------------------- tiny markdown renderer
@@ -133,7 +152,7 @@ def index():
     with _lock:
         runs = sorted(RUNS.values(), key=lambda r: r["id"], reverse=True)
     return render_template("index.html", briefs=briefs, runs=runs, pending=len(INBOX.pending()),
-                           model=os.getenv("LLM_MODEL", "qwen3:8b"))
+                           model=os.getenv("LLM_MODEL", "qwen3:8b"), demo_site=site_dir("outputs"))
 
 
 @app.post("/start")
@@ -159,7 +178,7 @@ def run_page(rid):
     out = run["ctx"].out_dir
     files = sorted(p.name for p in out.glob("*") if p.is_file()) if out.is_dir() else []
     steps = sorted({Path(f).stem for f in files if f.endswith((".md", ".json", ".html"))})
-    return render_template("run.html", run=run, prog=progress(run), steps=steps,
+    return render_template("run.html", run=run, prog=progress(run), steps=steps, site=site_dir(rid),
                            pending=len(INBOX.pending()))
 
 
@@ -193,6 +212,37 @@ def artifact(step):
                            html_src=ht.read_text(encoding="utf-8") if ht.exists() else None,
                            raw=json.dumps(data, indent=2, ensure_ascii=False) if data else None,
                            pending=len(INBOX.pending()))
+
+
+@app.get("/site/<rid>/")
+@app.get("/site/<rid>/<path:name>")
+def site_preview(rid, name="index.html"):
+    """Serve the founder's website locally for preview. The system never publishes or deploys it."""
+    found = site_dir(rid)
+    if not found:
+        abort(404)
+    resp = send_from_directory(found[0], name)  # rejects paths outside the folder
+    resp.headers["Content-Security-Policy"] = SITE_CSP
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-Robots-Tag"] = "noindex"
+    resp.headers["Cache-Control"] = "no-store"
+    return resp
+
+
+@app.get("/download/site/<rid>")
+def site_download(rid):
+    """Zip the website folder in memory so the founder can publish it themselves. Nothing is written to outputs/."""
+    found = site_dir(rid)
+    if not found:
+        abort(404)
+    folder = found[0]
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(folder.rglob("*")):
+            if f.is_file():
+                z.write(f, f"{folder.name}/{f.relative_to(folder).as_posix()}")
+    buf.seek(0)
+    return send_file(buf, mimetype="application/zip", as_attachment=True, download_name=f"{folder.name}.zip")
 
 
 @app.get("/health")

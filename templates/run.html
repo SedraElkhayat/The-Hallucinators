@@ -17,6 +17,15 @@
 </table>
 {% endif %}
 
+<h3>Founder website</h3>
+{% if site %}
+<p class="card">
+  {{ site[1] }} · <b>not published</b>: you publish it yourself after approving it (see the publish guide in the artifacts).<br><br>
+  <a href="/site/{{ run.id }}/" target="_blank"><button type="button">Preview website</button></a>
+  <a href="/download/site/{{ run.id }}"><button type="button">Download site folder</button></a>
+</p>
+{% else %}<p class="muted">Not built yet (Phase 3 builds it).</p>{% endif %}
+
 <h3>Artifacts</h3>
 {% if steps %}<ul>{% for s in steps %}<li><a href="/artifact/{{ s }}?run={{ run.id }}">{{ s }}</a></li>{% endfor %}</ul>
 {% else %}<p class="muted">None yet.</p>{% endif %}

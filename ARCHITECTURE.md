@@ -106,21 +106,33 @@ Gate 2 output: `outputs/phase2_gate_decision.md`.
 
 ### Phase 3: Build
 
-Goal: ship a tested MVP with user docs.
+Goal: ship a tested MVP: **one website for the founder's product**, plus user docs. The system builds and tests the site; it never publishes it.
 
 ```mermaid
 flowchart LR
-  P2[Phase 2 artifacts] --> SP[spec_writer] --> CW[copywriter] --> BD[builder] --> UD[user_docs_writer] --> QA[qa_agent] --> CRV[content_reviewer] --> G3{Gate 3}
+  P2[Phase 2 artifacts] --> SP[spec_writer] --> CW[copywriter] --> BD[builder]
+  TPL[(site_template/<br/>ready-made page)] --> BD
+  BD --> SITE[(outputs/phase3_step3_site/<br/>index.html)]
+  BD --> PG[(phase3_step7_publish_guide)]
+  BD --> UD[user_docs_writer] --> QA[qa_agent<br/>acceptance + website checks] --> CRV[content_reviewer] --> G3{Gate 3}
+  G3 -. founder approves, then publishes it themselves .-> F([Founder])
 ```
 
 | Agent | Kind | Method | Output artifact |
 |---|---|---|---|
 | spec_writer | llm | MVP scope, user stories, acceptance tests with a concrete check each | `phase3_step1_spec` |
 | copywriter | llm | Reuse the tested landing copy; add features and FAQ; no fake reviews or counts | `phase3_step2_page_copy` |
-| builder | llm | Produce a small static product in `outputs/phase3_build/` (sandbox folder); no deploy, no network code, no payment form | `phase3_step3_build` |
+| builder | llm + code | The model writes structured content only (headline, value proposition, features, FAQ, claims). Code fills the ready-made template `site_template/index.html` with HTML escaping and writes the website to `outputs/phase3_step3_site/`; also writes the publish guide. No deploy, no network code, no payment form | `phase3_step3_build`, `phase3_step3_site/`, `phase3_step7_publish_guide` |
 | user_docs_writer | llm | User guide from the built product | `phase3_step4_user_docs` |
-| qa_agent | code + llm | Run each acceptance check against the files; report pass or fail honestly | `phase3_step5_qa_report` |
+| qa_agent | code + llm | Run each acceptance check and the website checks (below) against the files; report pass or fail honestly | `phase3_step5_qa_report` |
 | content_reviewer | llm | Honesty review: fake proof, promises, invented numbers, unlabeled samples | `phase3_step6_content_review` |
+
+**The founder's website** (`outputs/phase3_step3_site/index.html`):
+- One folder, no build step: CSS inline, opens by double-click. Sections: value proposition, features, evidence, price, FAQ, policy links, sign-up box.
+- Filled from a ready-made template with the approved Idea Card and the verified claims from Phases 1 and 2. Every market claim on the page links its source or is labeled `ASSUMPTION`. In Phase 3 the price slot reads "Price: set in Phase 4"; Phase 5 re-fills the same template with the price and policy pages.
+- The sign-up box is a demo: a form with no action and no script, labeled "Demo only: nothing is sent or stored". Anything simulated is labeled "SIMULATED, not real users". No payment code, testimonials, counters, timers or income claims.
+- **Website checks** (code, in `qa_agent`): the HTML parses; the required sections exist; every local link and anchor resolves; external links are well-formed; a banned-content scan (guardrails: income promises, fake reviews or counts, urgency, impersonation) finds nothing; every claim on the page is sourced or labeled `ASSUMPTION`; the sign-up box is inert and labeled. The result is the gate metric `site_checks_passed`.
+- **Never published by the system.** The founder approves it at Gate 3, previews it in the founder UI (**Preview website**, served locally with a policy that blocks scripts, network calls and form submission), downloads it (**Download site folder**), and publishes it themselves following `phase3_step7_publish_guide.md` (for example GitHub Pages or Netlify).
 
 Gate 3 output: `outputs/phase3_gate_decision.md`.
 
@@ -149,7 +161,7 @@ flowchart LR
 | Agent or module | Kind | Method | Output artifact |
 |---|---|---|---|
 | channel_planner | llm | 2 to 3 channels, each tied to evidence of where the audience is | `phase5_step1_channel_plan` |
-| store_page_builder | llm | Store page from the same tested copy, price and terms; no fake counters or timers | `phase5_step2_store_page` (`.html`) |
+| store_page_builder | llm + code | Re-fill the Phase 3 website template with the Phase 4 price, offer and policy pages (each marked "needs legal review"); same checks as Phase 3; no fake counters or timers | `phase5_step2_store_page`, `phase5_step2_store_site/` |
 | launch_post_drafter | llm | Launch posts as drafts; the founder approves each; nothing is posted | `phase5_step3_launch_posts` |
 | compliance_reviewer_phase5 | llm | No fake proof, urgency or promises | `phase5_step4_launch_review` |
 | `payments.py`, `webhooks.py`, `delivery.py`, `refunds.py`, `reconcile.py` | code | Mocked sale to cash; see below | `payment_test_log` |
@@ -176,7 +188,7 @@ Every step ends with a gate: founder approval, a pre-set evidence threshold, or 
 |---|---|---|---|
 | 1 | Discover | scope is digital (else stop); at least 3 verified claims; at least 2 competitors or substitutes; no triggered kill criterion (else stop); no unresolved must-fix review issue | go, repeat, stop |
 | 2 | Validate | scorecard: demand not unknown (else repeat), any one weak dimension pivots, two or more weak dimensions stop, three or more unknown repeat; **demand target**: sign-ups divided by target at least 1.0 go, 0.5 to 1.0 repeat, 0.2 to 0.5 pivot, below 0.2 stop | go, repeat, pivot, stop |
-| 3 | Build | acceptance pass ratio at least 0.8; no honesty must-fix; nothing deployed | go, repeat, pivot, stop |
+| 3 | Build | acceptance pass ratio at least 0.8; website checks pass; no honesty must-fix; nothing deployed | go, repeat, pivot, stop |
 | 4 | Commercial setup | price has comparables or an `ASSUMPTION` label; policies carry "needs legal review"; no banned claims; no payment code | go, repeat, pivot, stop |
 | 5 | Launch | every draft pending or approved by the founder; sale-to-cash test passed (no double delivery, refund revokes access, reconciliation balanced); nothing released without approval | go, repeat, pivot, stop |
 | 6 | Operate | inputs labeled; results compared with targets; memo written | go (persevere), pivot, stop |
@@ -249,6 +261,8 @@ This table states the current state of the code and is updated as components are
 | Orchestrator (stages, parallel stages, revise loops, repeat, pivot, stop), approval, decision log | Working |
 | Gates: pre-registered criteria, evaluation, decision files | Working (minimal version; per-phase checks being added) |
 | Founder UI (web) and CLI, scripted demo inputs (labeled SCRIPTED) | Working |
+| Founder website: template, builder filling, website checks in Gate 3, Phase 5 store version | In progress |
+| Founder website preview and download in the UI (local only, never published) | Working |
 | Guardrails (output and input checks) | Working (minimal rule set; being extended) |
 | Search and fetch (free public sources, cached) and claim re-checking | Working (code); not yet exercised in a real demo run |
 | Phase 1 to 6 agents | In progress: phases without agents yet are STUBBED and logged as `phase_stubbed` in every run |

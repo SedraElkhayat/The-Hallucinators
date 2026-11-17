@@ -15,6 +15,13 @@
   <button type="submit">Start run</button>
 </form>
 
+{% if demo_site %}
+<h2>Committed demo run</h2>
+<p class="card">The website from the demo run in <code>outputs/</code> ({{ demo_site[1] }}, not published).<br><br>
+  <a href="/site/outputs/" target="_blank"><button type="button">Preview website</button></a>
+  <a href="/download/site/outputs"><button type="button">Download site folder</button></a></p>
+{% endif %}
+
 <h2>Runs</h2>
 {% if runs %}
 <table>

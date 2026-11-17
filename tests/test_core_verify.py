@@ -68,3 +68,24 @@ def test_secret_detection(repo):
     root, fails = repo
     (root / "config.py").write_text('KEY = "sk-' + "a" * 30 + '"\n')
     assert any("secrets" in f for f in fails())
+
+
+def test_site_folder_with_html_passes(repo):
+    root, fails = repo
+    site = root / "outputs" / "phase3_step3_site"
+    site.mkdir()
+    (site / "index.html").write_text("<!doctype html><title>Demo</title>")
+    (site / "policies").mkdir()
+    (site / "policies" / "terms.html").write_text("<p>Draft</p>")
+    assert fails() == []
+
+
+def test_folder_naming_and_text_only(repo):
+    root, fails = repo
+    (root / "outputs" / "site").mkdir()
+    assert any("naming" in f for f in fails())
+    (root / "outputs" / "site").rmdir()
+    site = root / "outputs" / "phase3_step3_site"
+    site.mkdir()
+    (site / "style.css").write_text("body{}")
+    assert any("text files only" in f for f in fails())
