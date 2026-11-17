@@ -20,11 +20,11 @@ _QUOTED = re.compile(r"[\"“”']([^\"“”']{%d,})[\"“”']" % MIN_QUOTE_CH
 # was triggered because "there is no clear evidence".
 _MISSING_EVIDENCE = re.compile(
     r"\b(?:no|not enough|insufficient|little|limited|lack of|lacks?|without)\s+(?:\w+\s+)?"
-    r"(?:evidence|data|signals?)\b|\b(?:might|may|could|possibly|perhaps|unclear|"
+    r"(?:evidence|data|signals?|indications?|signs?|proof)\b|\b(?:might|may|could|possibly|perhaps|unclear|"
     r"cannot be (?:determined|confirmed))\b", re.I)
 # A kill criterion that is itself "no evidence of X" describes absence: only the scorecard's "unknown" can say that.
-_ABSENCE_CRITERION = re.compile(r"^\s*(?:no|lack of|insufficient|not enough|little|limited)\s+(?:\w+\s+){0,2}"
-                                r"(?:evidence|data|signals?)\b", re.I)
+_ABSENCE_CRITERION = re.compile(r"^\s*(?:\w+\s+){0,3}?(?:no|lack of|insufficient|not enough|little|limited)\s+"
+                                r"(?:\w+\s+){0,2}(?:evidence|data|signals?|indications?|willingness)\b", re.I)
 _DEMAND_RULE = re.compile(r"(?:ratio|sign-?ups?|demand|target|waitlist).*(?<![\d.])0?\.2(?!\d)|(?<![\d.])0?\.2(?!\d).*(?:ratio|sign-?ups?|demand|target|waitlist)", re.I)
 
 

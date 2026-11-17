@@ -470,3 +470,16 @@ def test_TC_M3_real_critic_downgrades_verified_as_false_without_source_but_not_o
     data = _critic(tmp_path, [flagged, other])
     sev = {i["text"]: i["severity"] for i in data["issues"]}
     assert sev[flagged] == "should_fix" and sev[other] == "must_fix"
+
+
+def test_TC_M3_real_no_clear_indication_is_absence_of_evidence_not_a_kill(tmp_path):
+    kills = _risk_run(tmp_path, {"text": "Interviewees show no willingness to pay for the solution.", "triggered": True,
+                                 "evidence": "phase2_step5_demand_results: no clear indication of willingness to pay"})
+    assert kills[0]["triggered"] is False and kills[0]["triggered_on_missing_evidence"] is True
+
+
+def test_TC_M3_real_explicit_refusal_still_triggers_after_the_wording_change(tmp_path):
+    kills = _risk_run(tmp_path, {"text": "Two of three interviewees say they will not pay", "triggered": True,
+                                 "evidence": "phase2_step5_demand_results: interviewees B and C said they would "
+                                             "never pay for a template"})
+    assert kills[0]["triggered"] is True
