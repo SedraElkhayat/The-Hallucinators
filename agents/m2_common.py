@@ -117,6 +117,28 @@ def message(ctx, stems: Iterable[str], extra: Optional[dict] = None, brief: bool
     return f"<data>\n{body}\n</data>\nAnswer with the JSON object described in your instructions."
 
 
+_HOURS = re.compile(r"(\d+(?:\.\d+)?)\s*(?:hours?|hrs?|h)\s*(?:per|a|/|each)\s*week", re.I)
+_SPAN = re.compile(r"(\d+(?:\.\d+)?)\s*(months?|weeks?)", re.I)
+
+
+def founder_time(brief: str) -> Optional[dict]:
+    """Founder time budget computed in code (small models get this arithmetic wrong).
+    "8 hours per week for 3 months" -> 8 h/week, 13 weeks, about 104 hours."""
+    h = _HOURS.search(brief or "")
+    if not h:
+        return None
+    per_week = float(h.group(1))
+    out: dict = {"hours_per_week": per_week}
+    rest = (brief or "")[h.end():h.end() + 80]
+    sp = _SPAN.search(rest)
+    if sp:
+        n = float(sp.group(1))
+        weeks = round(n * 52 / 12) if sp.group(2).lower().startswith("month") else n
+        out.update({"weeks": weeks, "total_hours": round(per_week * weeks)})
+    out["note"] = "Computed in code from the brief. Use these numbers; do not redo the arithmetic."
+    return out
+
+
 def load_prompt(name: str) -> str:
     own = (PROMPT_DIR / f"{name}.md").read_text(encoding="utf-8")
     common = PROMPT_DIR / "_common.md"

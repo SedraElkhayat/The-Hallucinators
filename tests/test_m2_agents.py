@@ -452,3 +452,24 @@ def test_critic_issue_about_labelled_assumption_is_not_must_fix():
     from agents.critic_phase1 import LABELLED_ASSUMPTION
     assert LABELLED_ASSUMPTION.search("The finding 'ASSUMPTION: Canva has a Pro plan' should be marked")
     assert not LABELLED_ASSUMPTION.search("The finding 'Canva has a Pro plan' cites no claim")
+
+
+def test_founder_time_is_computed_in_code():
+    from agents.m2_common import founder_time
+    t = founder_time("**Time:** 8 hours per week for 3 months.")
+    assert t["hours_per_week"] == 8 and t["weeks"] == 13 and t["total_hours"] == 104
+    assert founder_time("**Time:** 2 hours per week.") == {"hours_per_week": 2.0, "note": founder_time("2 hours per week")["note"]}
+    assert founder_time("no time given") is None
+
+
+def test_time_kill_criterion_contradicted_by_its_own_numbers(tmp_path):
+    from types import SimpleNamespace
+    sk = get_agent("skeptic")
+    ctx = SimpleNamespace(brief="**Time:** 8 hours per week for 3 months.")
+    d = sk.post_process(ctx, {"risks": [], "would_change_mind": [], "kill_criteria": [
+        {"text": "Founder time is insufficient", "triggered": True,
+         "evidence": "8 hours per week for 13 weeks, totaling 104 hours, but the project requires 40 hours."},
+        {"text": "Founder time is insufficient", "triggered": True,
+         "evidence": "104 hours available but the build needs 300 hours."}]})
+    assert d["kill_criteria"][0]["triggered"] is False and d["kill_criteria"][0]["triggered_contradicted"]
+    assert d["kill_criteria"][1]["triggered"] is True
