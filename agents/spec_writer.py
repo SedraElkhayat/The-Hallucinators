@@ -1,10 +1,15 @@
-"""spec_writer: MVP spec of a small static product with acceptance tests that code can run."""
+"""spec_writer: MVP spec of the founder website.
+
+The acceptance tests are STRUCTURAL and set in code (M1 review, Tuesday 14:54): the page file exists, every required
+section exists, and the demo sign-up label is shown. Exact marketing sentences and literal HTML from the model were
+brittle (a real run passed 0 of 5), so the model's own tests are recorded in ``dropped_tests`` and never run.
+"""
 import re
 
 from agents.base import Agent
 from agents.m3_common import (M3InputsMixin, P1_CLARIFICATION, P1_IDEA_CARD, P2_CANVAS, P2_PLAN,
                               P2_REPORT, P3_SPEC, safe_rel_path)
-from agents.m3_site import PHASE3_POLICIES, PHASE3_PRICE
+from agents.m3_site import DEMO_FORM_LABEL, PHASE3_POLICIES, PHASE3_PRICE, REQUIRED_SECTIONS
 
 CHECK_TYPES = ("file_exists", "text_contains")
 
@@ -51,6 +56,23 @@ def drop_later_phase_tests(tests) -> tuple:
     return kept, dropped
 
 
+STRUCTURAL_REASON = "replaced by the structural checks set in code (exact marketing text is brittle)"
+SECTION_NAMES = {"value-proposition": "value proposition", "features": "features", "evidence": "evidence",
+                 "price": "price", "faq": "FAQ", "policies": "policy links", "signup": "sign-up box"}
+
+
+def structural_acceptance_tests() -> list:
+    """The page exists, each required section exists (by its id in the template), the demo label is visible."""
+    tests = [{"id": "AT1", "description": "The website page exists",
+              "check": {"type": "file_exists", "path": "index.html", "text": ""}}]
+    for n, sid in enumerate(REQUIRED_SECTIONS, 2):
+        tests.append({"id": f"AT{n}", "description": f"The page has the {SECTION_NAMES.get(sid, sid)} section",
+                      "check": {"type": "text_contains", "path": "index.html", "text": f'id="{sid}"'}})
+    tests.append({"id": f"AT{len(tests) + 1}", "description": "The sign-up box shows the demo label",
+                  "check": {"type": "text_contains", "path": "index.html", "text": DEMO_FORM_LABEL}})
+    return tests
+
+
 class SpecWriter(M3InputsMixin, Agent):
     name = "spec_writer"
     phase = 3
@@ -65,6 +87,8 @@ class SpecWriter(M3InputsMixin, Agent):
             v = data.get(k)
             data[k] = [v] if isinstance(v, str) else [str(x) for x in (v or [])]
         kept, dropped = drop_later_phase_tests(normalize_acceptance_tests(data.get("acceptance_tests")))
-        data["acceptance_tests"] = kept
+        dropped += [{"id": t.get("id"), "text": (t.get("check") or {}).get("text") or (t.get("check") or {}).get("path", ""),
+                     "reason": STRUCTURAL_REASON} for t in kept]
+        data["acceptance_tests"] = structural_acceptance_tests()
         data["dropped_tests"] = dropped
         return data

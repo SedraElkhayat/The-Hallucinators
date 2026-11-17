@@ -25,4 +25,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - A MOCKED or SAMPLE input is acceptable when the report states where it comes from (the word MOCKED or SAMPLE next to the numbers or in the limitations) and does not present it as real customer behavior: that is at most `should_fix`. It is `must_fix` only when the provenance is missing, or mocked or sample data is presented as real.
 - Any `must_fix` issue means `verdict` is `revise`. With no issues, return an empty list and `ok`.
 - Do not rewrite the report yourself; only list issues.
+- Two points are decided in code and are correct by design; never raise them as issues: (1) a demand result that is not REAL caps `demand_evidence` at `adequate`; (2) a kill criterion counts as triggered only with named evidence, so a MOCKED result alone triggers none.
 - Keep every text value short (one or two sentences); no more than 6 items per list.

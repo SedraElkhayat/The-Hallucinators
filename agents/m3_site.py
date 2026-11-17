@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 from agents.m3_common import (BLOCK_MARK, DEMO_FORM_LABEL, ROOT, SIMULATED_LABEL, SITE_DIRNAME,
                               content_violations, form_problems, guardrail_findings, network_code_present,
-                              scan_forms)
+                              scan_forms, signup_number_present)
 
 TEMPLATE_PATH = ROOT / "site_template" / "index.html"
 REQUIRED_SECTIONS = ("value-proposition", "features", "evidence", "price", "faq", "policies", "signup")
@@ -426,6 +426,13 @@ def check_site(html_text: str, site_dir=None, phase: int = 3) -> dict:
     failures += [f"guardrails: {f}" for f in guardrail_findings(visible)]
     if network_code_present(html_text):
         failures.append("network code present")
+    # Sign-up, waitlist and user numbers: never on the page, not even labeled (checked on visible text, so markup
+    # between the number and the word does not hide it).
+    texts = {sid: " ".join(" ".join(t).split()) for sid, t in scan.section_text.items()}
+    texts["title"] = scan.title
+    for sid, text in texts.items():
+        if signup_number_present(text):
+            failures.append(f"sign-up number in {sid} (never shown on the website, even labeled MOCKED or SIMULATED)")
     # The price comes from Phase 4 pricing (sourced or labeled ASSUMPTION there), so it is not scanned here.
     unsourced_scope = " ".join(" ".join(t) for sid, t in scan.section_text.items() if sid not in ("evidence", "price"))
     if number_without_source(unsourced_scope):
@@ -460,6 +467,8 @@ def _extra_page_failures(path: Path, rel: str, root: Path) -> list[str]:
     no form, no external request, banned content and guardrails."""
     text = path.read_text(encoding="utf-8", errors="replace")
     failures = [f"{rel}: banned content: {v}" for v in content_violations(text)]
+    if signup_number_present(re.sub(r"<[^>]+>", " ", text)) and "sign-up number" not in content_violations(text):
+        failures.append(f"{rel}: sign-up number (never shown on the website, even labeled MOCKED or SIMULATED)")
     if network_code_present(text):
         failures.append(f"{rel}: network code present")
     if path.suffix != ".html":

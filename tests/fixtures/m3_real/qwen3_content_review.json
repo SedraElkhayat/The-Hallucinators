@@ -1,0 +1,39 @@
+{
+  "issues": [
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users",
+      "file": "phase3_step3_build"
+    }
+  ],
+  "verdict": "revise",
+  "_meta": {
+    "agent": "content_reviewer",
+    "sources": []
+  }
+}

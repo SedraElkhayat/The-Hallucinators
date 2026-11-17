@@ -28,4 +28,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - No ratings, user counts, "spots left" or deadlines.
 - No price unless the demand test plan includes one.
 - The page collects interest only; never mention buying or paying.
+- No sign-up, waitlist or user numbers anywhere, even labeled MOCKED or SIMULATED: a count on a page the founder publishes is a fake sign-up.
 - Keep every text value short (one or two sentences); no more than 5 items per list.

@@ -66,7 +66,7 @@ def test_builder_sends_at_most_six_claims(tmp_path):
 
 
 LIMITS = {"landing_page_builder": 5, "risk_analyst": 5, "copywriter": 5, "user_docs_writer": 5,
-          "spec_writer": 6, "validation_synthesizer": 6, "builder": 6, "critic_phase2": 6, "content_reviewer": 6,
+          "spec_writer": 5, "validation_synthesizer": 6, "builder": 6, "critic_phase2": 6, "content_reviewer": 6,
           "competitor_analyst": 6, "assumption_auditor": 6, "scorecard_builder": 3}
 
 
@@ -89,6 +89,6 @@ def test_specific_list_limits_are_stated():
     read = lambda n: (ROOT / "prompts" / f"{n}.md").read_text(encoding="utf-8")
     assert "features 5, faq 5, claims 6" in read("builder")
     assert "features 5, faq 5" in read("copywriter")
-    assert "acceptance tests 6" in read("spec_writer")
+    assert "code adds the structural tests" in read("spec_writer")
     assert "findings 6" in read("validation_synthesizer")
     assert "risks 5" in read("risk_analyst")

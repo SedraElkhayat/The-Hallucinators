@@ -27,4 +27,5 @@ Example (placeholders in angle brackets; replace them, never copy them):
 - No ratings, customer counts, "best-selling" or urgency; no promises of clients, time saved or results.
 - Features must exist in the spec; do not describe anything out of scope.
 - FAQ answers address buyer questions (what is included, how it is used, languages). Never mention technical limits of the system (scripts, backend, analytics, payment processing, accounts).
+- No sign-up, waitlist or user numbers anywhere, even labeled MOCKED or SIMULATED: a count on a page the founder publishes is a fake sign-up.
 - Keep every text value short (one or two sentences); no more than 5 items per list (features 5, faq 5).

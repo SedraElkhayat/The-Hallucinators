@@ -65,10 +65,15 @@ def test_TC_M3_real_spec_agent_records_the_dropped_tests(tmp_path):
     agent = get_agent("spec_writer")
     ctx = make_ctx(tmp_path, llm=ScriptedLLM({"spec_writer": _spec_with_bad_tests()}), seed=agent.inputs)
     result = agent.run(ctx)
+    from agents.spec_writer import STRUCTURAL_REASON, structural_acceptance_tests
     ids = [t["id"] for t in result.data["acceptance_tests"]]
     assert "AT90" not in ids and "AT91" not in ids
-    assert [d["id"] for d in result.data["dropped_tests"]] == ["AT90", "AT91"]
-    assert len(ids) == len(fixture("spec_writer")["acceptance_tests"])
+    # M1 review 14:54: acceptance tests are structural and set in code; the model's own tests are all recorded.
+    assert result.data["acceptance_tests"] == structural_acceptance_tests()
+    dropped = {d["id"]: d["reason"] for d in result.data["dropped_tests"]}
+    assert "Phase 4 and 5" in dropped["AT90"] and "Phase 4 and 5" in dropped["AT91"]
+    assert {t["id"] for t in fixture("spec_writer")["acceptance_tests"]} <= {k for k, v in dropped.items()
+                                                                           if v == STRUCTURAL_REASON}
 
 
 def test_TC_M3_real_corrected_spec_reaches_full_acceptance_pass_ratio(tmp_path):

@@ -81,7 +81,12 @@ def test_labeled_demo_form_does_not_excuse_a_script_or_network_call():
     assert network_code_present(DEMO_FORM + "<script>fetch('https://x.example')</script>")
 
 
-def test_simulated_counts_need_the_label():
+def test_signup_and_user_counts_are_never_allowed_even_labeled():
+    # M1 review 14:54: a sign-up count on a published page counts as fake sign-ups, labeled or not.
     assert "invented count" in content_violations("Join 40 designers on the waitlist")
-    assert content_violations("Join 40 designers on the waitlist (SIMULATED, not real users)") == []
-    assert "invented count" in content_violations("Join 40 designers. " + "x" * 120 + " SIMULATED, not real users")
+    assert "invented count" in content_violations("Join 40 designers on the waitlist (SIMULATED, not real users)")
+    for text in ["140 MOCKED sign-ups show demand", "140 waitlist sign-ups (SIMULATED, not real users)",
+                 "Waitlist of 140", "sign-ups: 140", "joined by 1,200 freelancers", "40 users joined"]:
+        assert "sign-up number" in content_violations(text), text
+    for text in ["Join the waitlist", "Sign up in 2 minutes", "3 templates for designers", "Step 2: join the waitlist"]:
+        assert "sign-up number" not in content_violations(text), text
