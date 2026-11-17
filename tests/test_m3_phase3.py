@@ -1,4 +1,5 @@
 """Phase 3: the website builder sandbox rules, QA pass ratio, honesty counting, nothing deployed, Gate 3."""
+import json
 from pathlib import Path
 
 import pytest
@@ -213,3 +214,44 @@ def test_unsafe_manifest_path_counts_as_deployed(tmp_path):
     ctx = make_ctx(tmp_path)
     put(ctx, "phase3_step3_build", {"files": [{"path": "../../public/index.html"}], "notes": ""})
     assert phase3.measure(ctx)["deployed"] == 1
+
+
+# ---------------------------------------------------------------- structural acceptance tests (M1 review 14:54)
+
+def test_TC_M3_spec_acceptance_tests_are_structural_and_set_in_code(tmp_path):
+    from agents.spec_writer import structural_acceptance_tests
+    from agents.m3_site import DEMO_FORM_LABEL, REQUIRED_SECTIONS
+    brittle = dict(fixture("spec_writer"), acceptance_tests=[
+        {"id": "AT1", "description": "x", "check": {"type": "text_contains", "path": "index.html",
+                                                    "text": "140 MOCKED sign-ups show demand"}},
+        {"id": "AT2", "description": "x", "check": {"type": "text_contains", "path": "index.html",
+                                                    "text": "Name <input> Email <input> Join waitlist <button>"}}])
+    agent = get_agent("spec_writer")
+    ctx = make_ctx(tmp_path, llm=ScriptedLLM({"spec_writer": brittle}), seed=agent.inputs)
+    data = agent.run(ctx).data
+    tests = data["acceptance_tests"]
+    assert tests == structural_acceptance_tests()
+    texts = [t["check"]["text"] for t in tests]
+    assert tests[0]["check"] == {"type": "file_exists", "path": "index.html", "text": ""}
+    assert [f'id="{sid}"' for sid in REQUIRED_SECTIONS] == texts[1:-1] and texts[-1] == DEMO_FORM_LABEL
+    assert {d["text"] for d in data["dropped_tests"]} == {"140 MOCKED sign-ups show demand",
+                                                          "Name <input> Email <input> Join waitlist <button>"}
+    assert "140" not in json.dumps(tests)
+
+
+def test_TC_M3_spec_structural_tests_pass_on_any_valid_site_and_fail_on_a_broken_one(tmp_path):
+    from agents.spec_writer import structural_acceptance_tests
+    ctx = make_ctx(tmp_path)
+    put(ctx, "phase3_step1_spec", dict(fixture("spec_writer"), acceptance_tests=structural_acceptance_tests()))
+    put(ctx, "phase3_step3_build", {"files": [{"path": "index.html"}]})
+    root = Path(ctx.out_dir) / SITE
+    root.mkdir(parents=True)
+    page = fill_template({"headline": "Different words entirely", "value_proposition": "Other copy.",
+                          "features": ["Something else"], "faq": [], "claims": []})
+    (root / "index.html").write_text(page, encoding="utf-8")
+    assert get_agent("qa_agent").run(ctx).data["pass_ratio"] == 1.0  # marketing words do not matter
+    (root / "index.html").write_text(page.replace('id="faq"', 'id="questions"'), encoding="utf-8")
+    qa = get_agent("qa_agent").run(ctx).data
+    assert qa["pass_ratio"] < 1.0 and [r["id"] for r in qa["results"] if not r["passed"]] == ["AT6"]
+    (root / "index.html").unlink()
+    assert get_agent("qa_agent").run(ctx).data["pass_ratio"] == 0.0

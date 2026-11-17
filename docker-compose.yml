@@ -22,7 +22,9 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: ollama:11434
-    entrypoint: ["/bin/sh", "-c", "ollama pull ${LLM_MODEL:-qwen3:8b}"]
+    # the local open-weight model to download; separate from LLM_MODEL so a hosted free-tier model
+    # name in .env does not break the download (the app then waits for a pull that cannot succeed)
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${OLLAMA_MODEL:-qwen3:8b}"]
     restart: "no"
 
   app:
@@ -40,6 +42,9 @@ services:
       LLM_TIMEOUT: ${LLM_TIMEOUT:-900}
       LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-1500}
       LLM_NO_THINK: ${LLM_NO_THINK:-auto}
+      LLM_REASONING_EFFORT: ${LLM_REASONING_EFFORT:-}
+      LLM_RETRIES: ${LLM_RETRIES:-6}
+      LLM_RETRY_MAX_WAIT: ${LLM_RETRY_MAX_WAIT:-65}
       ORCH_CONCURRENCY: ${ORCH_CONCURRENCY:-1}
       FOUNDER_MODE: ${FOUNDER_MODE:-web}
       APP_PORT: ${APP_PORT:-8000}

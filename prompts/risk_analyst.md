@@ -20,33 +20,11 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "risks": [
-    {
-      "text": "<risk> (<artifact stem>) or <risk> ASSUMPTION",
-      "severity": "<high|medium|low>"
-    }
-  ],
-  "kill_criteria": [
-    {
-      "text": "<condition under which to stop>",
-      "triggered": false,
-      "evidence": ""
-    },
-    {
-      "text": "<condition that an input already shows is met>",
-      "triggered": true,
-      "evidence": "<input artifact stem, or an exact quote from the inputs>"
-    }
-  ],
-  "would_change_mind": [
-    "<evidence that would change the verdict>"
-  ]
-}
+{"risks": [{"text": "<risk> (<artifact stem>) or <risk> ASSUMPTION", "severity": "<high|medium|low>"}], "kill_criteria": [{"text": "<condition under which to stop>", "triggered": false, "evidence": ""}, {"text": "<condition that an input already shows is met>", "triggered": true, "evidence": "<input artifact stem, or an exact quote from the inputs>"}], "would_change_mind": ["<evidence that would change the verdict>"]}
 ```
 
 ## Rules
 - Mark triggered:true only when an input shows the condition is met; name that evidence in evidence; never on a guess. Code ignores triggered:true without evidence.
 - The demand rule (sign-ups below 0.2 of the target set before the test) is decided by code from `phase2_step5_demand_results`; a MOCKED result is still stated as MOCKED.
-- Do not soften risks to be encouraging. No praise.
-- No new facts: refer to the input artifacts or write `ASSUMPTION`.
+- Do not soften risks to be encouraging.
+- Keep every text value short (one or two sentences); no more than 5 items per list (risks 5, kill criteria 5).

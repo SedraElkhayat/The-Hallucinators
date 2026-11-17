@@ -13,7 +13,7 @@ from typing import Any, Iterable, Optional
 ROOT = Path(__file__).resolve().parent.parent
 PROMPTS_DIR = ROOT / "prompts"
 SITE_DIRNAME = "phase3_step3_site"  # outputs/ folder of the founder website (phase<N>_step<M>_<name>/)
-MAX_ARTIFACT_CHARS = 6000
+MAX_ARTIFACT_CHARS = 3500  # per input artifact in a model message; small local models and 8k tokens/min caps
 
 # Artifact stems used by Phase 2 and 3 (CONTEXT.md section 5).
 P1_CLARIFICATION = "phase1_step2_clarification"
@@ -63,11 +63,25 @@ def get_artifact(ctx, step: str) -> Optional[dict]:
     return data if isinstance(data, dict) else None
 
 
+TRUNCATED = " [truncated]"
+# Claim-checker bookkeeping that the model does not need (the verified/assumption flags themselves are kept).
+_NOISE_KEYS = {"check", "fetch_error", "duplicate"}
+
+
+def _slim(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {k: _slim(v) for k, v in obj.items() if not str(k).startswith("_") and k not in _NOISE_KEYS}
+    if isinstance(obj, list):
+        return [_slim(v) for v in obj]
+    return obj
+
+
 def _clip(obj: Any, limit: int = MAX_ARTIFACT_CHARS) -> Any:
-    text = json.dumps(obj, ensure_ascii=False, default=str)
+    """The object itself if its compact JSON fits the limit, else the START of that JSON plus " [truncated]"."""
+    text = json.dumps(obj, ensure_ascii=False, default=str, separators=(",", ":"))
     if len(text) <= limit:
         return obj
-    return text[:limit] + " ...[truncated]"
+    return text[:limit] + TRUNCATED
 
 
 def inputs_message(ctx, stems: Iterable[str], extra: Optional[dict] = None) -> str:
@@ -76,12 +90,12 @@ def inputs_message(ctx, stems: Iterable[str], extra: Optional[dict] = None) -> s
     for stem in stems:
         art = get_artifact(ctx, stem)
         if art is not None:
-            art = {k: v for k, v in art.items() if not str(k).startswith("_") and k != "mocked"}
+            art = _slim({k: v for k, v in art.items() if k != "mocked"})
             payload["inputs"][stem] = _clip(art)
     for key, value in (extra or {}).items():
         if value is not None:
             payload[key] = _clip(value)
-    body = json.dumps(payload, ensure_ascii=False, indent=1, default=str)
+    body = json.dumps(payload, ensure_ascii=False, default=str, separators=(",", ":"))
     return f"<data>\n{body}\n</data>\nAnswer with the JSON object described in your instructions."
 
 
@@ -210,13 +224,24 @@ def _negated(text: str, start: int) -> bool:
 
 SIMULATED_LABEL = "SIMULATED, not real users"
 DEMO_FORM_LABEL = "Demo only: nothing is sent or stored"
-SIMULATED_WINDOW = 100
 
 
-def _simulated(text: str, start: int, end: int) -> bool:
-    """A count is allowed when it is labeled SIMULATED within 100 characters around it."""
-    around = text[max(0, start - SIMULATED_WINDOW):end + SIMULATED_WINDOW]
-    return SIMULATED_LABEL.lower() in " ".join(around.split()).lower()
+# Sign-up, waitlist and user numbers are never shown on anything the founder publishes, not even labeled MOCKED or
+# SIMULATED: under the never-rules a sign-up count on a published page is a fake sign-up (M1 review, Tuesday 14:54).
+_SIGNUP_WORDS = r"(?:sign[- ]?ups?|signups|registrations?|subscribers?|waitlist)"
+SIGNUP_NUMBER = re.compile(
+    r"\d[\d,.]*\s*(?:k\b|\+)?\s*(?:[A-Za-z]+\s+){0,2}?" + _SIGNUP_WORDS + r"(?![\w-])"            # "140 MOCKED sign-ups"
+    r"|\d[\d,.]*\s*(?:k\b|\+)?\s+(?:users|customers|members|people|designers|freelancers|buyers)\s+"
+    r"(?:have\s+|already\s+|who\s+(?:have\s+|already\s+)?)?(?:joined|signed|registered|subscribed|are\s+on)\b"
+    # "40 users joined", "1,200 users who joined"
+    r"|(?<![\w-])" + _SIGNUP_WORDS + r"\s*(?::|=|\bof\b|\breached\b|\bhit\b|\bat\b|\btotal\b|\bcount\b)\s*"
+    r"(?:of\s+)?\d"                                                                                # "waitlist of 140"
+    r"|\bjoined\s+by\s+\d",
+    re.I)
+
+
+def signup_number_present(text: str) -> bool:
+    return bool(SIGNUP_NUMBER.search(text or ""))
 
 
 def content_violations(text: str) -> list[str]:
@@ -229,10 +254,10 @@ def content_violations(text: str) -> list[str]:
         for m in rx.finditer(text):
             if _negated(text, m.start()):
                 continue
-            if label == "invented count" and _simulated(text, m.start(), m.end()):
-                continue
             found.append(label)
             break
+    if signup_number_present(text):
+        found.append("sign-up number")
     if "<form" in low or "</form" in low:
         if form_problems(text):
             found.append("form element")
@@ -353,19 +378,39 @@ def count_must_fix(critique: Optional[dict]) -> int:
 
 def normalize_verdict(data: dict) -> dict:
     """A critique with any must_fix issue has verdict 'revise'; verdict is 'ok' or 'revise'."""
-    issues = []
+    issues, seen = [], set()
     for i in data.get("issues") or []:
         if isinstance(i, str):
             i = {"severity": "should_fix", "text": i}
         if isinstance(i, dict):
             sev = str(i.get("severity", "should_fix")).lower().replace("-", "_").replace(" ", "_")
             i["severity"] = "must_fix" if sev == "must_fix" else "should_fix"
+            key = (i["severity"], " ".join(str(i.get("text", "")).split()).lower(), str(i.get("file", "")))
+            if key in seen:  # the same issue repeated counts once
+                continue
+            seen.add(key)
             issues.append(i)
     data["issues"] = issues
     verdict = str(data.get("verdict", "ok")).lower()
     if count_must_fix(data) > 0:
         verdict = "revise"
     data["verdict"] = verdict if verdict in ("ok", "revise") else "ok"
+    return data
+
+
+def downgrade_must_fix(data: dict, matches, reason: str) -> dict:
+    """Turn must_fix issues for which matches(text) is true into should_fix, recording why. Used only where code
+    has already decided the point the issue disputes, so revising the report could never resolve it."""
+    changed = False
+    for i in data.get("issues") or []:
+        if isinstance(i, dict) and i.get("severity") == "must_fix" and matches(str(i.get("text", "")).lower()):
+            i["severity"] = "should_fix"
+            i["downgraded_by_code"] = reason
+            changed = True
+    # If the only must_fix issues were these disputes, the "revise" verdict rested on them: nothing is left to revise.
+    if changed and count_must_fix(data) == 0 and data.get("verdict") == "revise":
+        data["verdict"] = "ok"
+        data["verdict_changed_by_code"] = "every must_fix disputed a rule that code applies; none remain"
     return data
 
 

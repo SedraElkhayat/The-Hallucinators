@@ -20,21 +20,13 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "headline": "<what the product is, for whom>",
-  "subheadline": "<what it contains or does>",
-  "bullets": [
-    "<what the product does 1>",
-    "<what the product does 2>",
-    "<what the product does 3>"
-  ],
-  "call_to_action": "<join-the-waitlist wording>"
-}
+{"headline": "<what the product is, for whom>", "subheadline": "<what it contains or does>", "bullets": ["<what the product does 1>", "<what the product does 2>", "<what the product does 3>"], "call_to_action": "<join-the-waitlist wording>"}
 ```
 
 ## Rules
-- Describe what the product does; do not promise results, income or time saved as a number.
-- No testimonials, reviews, ratings, user counts, "spots left", countdowns or deadlines.
+- Describe what the product does; no results or time saved as a number.
+- No ratings, user counts, "spots left" or deadlines.
 - No price unless the demand test plan includes one.
-- Do not write as the founder or claim to be a company; plain neutral voice.
 - The page collects interest only; never mention buying or paying.
+- No sign-up, waitlist or user numbers anywhere, even labeled MOCKED or SIMULATED: a count on a page the founder publishes is a fake sign-up.
+- Keep every text value short (one or two sentences); no more than 5 items per list.

@@ -44,6 +44,8 @@ def test_parse_json_tolerant():
 
 
 class _Resp:
+    status_code, headers, text = 200, {}, ""
+
     def __init__(self, content):
         self._c = content
 
@@ -91,3 +93,74 @@ def test_real_client_default_timeout_allows_slow_cpu(monkeypatch):
     assert RealClient(base_url="http://x/v1").timeout == 900
     monkeypatch.setenv("LLM_TIMEOUT", "120")
     assert RealClient(base_url="http://x/v1").timeout == 120
+
+
+class _R:
+    def __init__(self, status, content='{"ok": true}', headers=None, text=""):
+        self.status_code, self.headers, self.text, self._c = status, headers or {}, text, content
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise RuntimeError(f"HTTP {self.status_code}")
+
+    def json(self):
+        return {"choices": [{"message": {"content": self._c}}], "usage": {"prompt_tokens": 5, "completion_tokens": 2}}
+
+
+def _sequence(monkeypatch, responses):
+    import time as _time
+    import requests
+    calls, waits = [], []
+    it = iter(responses)
+    monkeypatch.setattr(requests, "post", lambda url, json=None, timeout=None, headers=None: (calls.append(json), next(it))[1])
+    monkeypatch.setattr(_time, "sleep", lambda s: waits.append(s))
+    return calls, waits
+
+
+def test_rate_limit_waits_and_retries(monkeypatch):
+    calls, waits = _sequence(monkeypatch, [_R(429, headers={"retry-after": "7"}), _R(503), _R(200)])
+    r = RealClient(base_url="http://x/v1", model="openai/gpt-oss-120b").chat("S", "U", agent="a")
+    assert r.data == {"ok": True} and len(calls) == 3
+    assert waits[0] == 7.0 and waits[1] >= 1.0
+
+
+def test_rate_limit_gives_up_after_retries(monkeypatch):
+    monkeypatch.setenv("LLM_RETRIES", "2")
+    _sequence(monkeypatch, [_R(429), _R(429), _R(429)])
+    import pytest
+    import requests
+    with pytest.raises(requests.HTTPError, match="after 2 retries"):
+        RealClient(base_url="http://x/v1", model="m").chat("S", "U", agent="a")
+
+
+def test_json_mode_rejected_falls_back_to_plain_text(monkeypatch):
+    calls, _ = _sequence(monkeypatch, [_R(400, text="response_format is not supported"), _R(200, 'Here: {"ok": true}')])
+    c = RealClient(base_url="http://x/v1", model="m")
+    assert c.chat("S", "U", agent="a").data == {"ok": True}
+    assert "response_format" in calls[0] and "response_format" not in calls[1] and c.json_mode_supported is False
+
+
+def test_reasoning_effort_only_when_set(monkeypatch):
+    monkeypatch.delenv("LLM_REASONING_EFFORT", raising=False)
+    calls, _ = _sequence(monkeypatch, [_R(200), _R(200)])
+    RealClient(base_url="http://x/v1", model="m").chat("S", "U", agent="a")
+    monkeypatch.setenv("LLM_REASONING_EFFORT", "low")
+    RealClient(base_url="http://x/v1", model="openai/gpt-oss-120b").chat("S", "U", agent="a")
+    assert "reasoning_effort" not in calls[0] and calls[1]["reasoning_effort"] == "low"
+
+
+def test_invalid_json_rejected_by_endpoint_retries_without_json_mode(monkeypatch):
+    err = '{"error":{"message":"Failed to generate JSON.","code":"json_validate_failed"}}'
+    calls, _ = _sequence(monkeypatch, [_R(400, text=err), _R(200, 'sure: {"ok": true}')])
+    c = RealClient(base_url="http://x/v1", model="openai/gpt-oss-20b")
+    assert c.chat("S", "U", agent="a").data == {"ok": True}
+    assert "response_format" in calls[0] and "response_format" not in calls[1]
+    assert c.json_mode_supported is True  # only that call went without JSON mode
+
+
+def test_other_client_errors_show_the_endpoint_reason(monkeypatch):
+    import pytest
+    import requests
+    _sequence(monkeypatch, [_R(400, text='{"error":{"message":"model not found"}}')])
+    with pytest.raises(requests.HTTPError, match="model not found"):
+        RealClient(base_url="http://x/v1", model="nope").chat("S", "U", agent="a")

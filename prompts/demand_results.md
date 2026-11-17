@@ -20,14 +20,7 @@ Artifact `phase2_step5_demand_results`:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "signups": "<whole number from the founder>",
-  "days": "<whole number>",
-  "provenance": "<REAL|MOCKED>",
-  "ratio": "<signups / target>",
-  "target": "<from the plan>",
-  "window_days": "<from the plan>"
-}
+{"signups": "<whole number from the founder>", "days": "<whole number>", "provenance": "<REAL|MOCKED>", "ratio": "<signups / target>", "target": "<from the plan>", "window_days": "<from the plan>"}
 ```
 The markdown always starts with the line `PROVENANCE: MOCKED` or `PROVENANCE: REAL`.
 

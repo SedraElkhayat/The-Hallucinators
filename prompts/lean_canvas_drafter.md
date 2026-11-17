@@ -19,23 +19,11 @@ JSON object with one key `boxes`, holding exactly these nine string keys: `custo
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "boxes": {
-    "customer_segments": "<customer segments> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "problem": "<problem> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "unique_value_proposition": "<unique value proposition> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "solution": "<solution> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "channels": "<channels> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "revenue_streams": "<revenue streams> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "cost_structure": "<cost structure> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "key_metrics": "<key metrics> (source: <artifact stem or URL>) or <statement> ASSUMPTION",
-    "unfair_advantage": "<unfair advantage> (source: <artifact stem or URL>) or <statement> ASSUMPTION"
-  }
-}
+{"boxes": {"customer_segments": "<customer segments> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "problem": "<problem> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "unique_value_proposition": "<unique value proposition> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "solution": "<solution> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "channels": "<channels> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "revenue_streams": "<revenue streams> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "cost_structure": "<cost structure> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "key_metrics": "<key metrics> (source: <artifact stem or URL>) or <statement> ASSUMPTION", "unfair_advantage": "<unfair advantage> (source: <artifact stem or URL>) or <statement> ASSUMPTION"}}
 ```
 
 ## Rules
 - Every box is a single string. If you have no evidence, write `unknown ASSUMPTION`.
 - `revenue_streams` only describes the intended pricing model. Do not set up, mention or imply any payment being taken.
 - Interview findings labeled SAMPLE are inputs for the demo, not real customers: say so when you use them.
-- No income promises, no praise, no invented numbers.
+- Keep every text value short (one or two sentences); no more than 5 items per list.

@@ -11,9 +11,8 @@ Nothing is deployed and no network connection is opened.
 import shutil
 
 from agents.base import Agent
-from agents.m3_common import (M3InputsMixin, P1_COMPETITORS, P1_DEMAND_SIGNALS, P1_IDEA_CARD, P1_MARKET,
-                              P2_CANVAS, P2_COMPETITOR_ANALYSIS, P3_BUILD, P3_COPY, P3_PUBLISH_GUIDE, P3_SPEC,
-                              SITE_DIRNAME, site_dir)
+from agents.m3_common import (M3InputsMixin, P1_IDEA_CARD, P2_COMPETITOR_ANALYSIS, P3_BUILD, P3_COPY,
+                              P3_PUBLISH_GUIDE, P3_SPEC, SITE_DIRNAME, get_artifact, inputs_message, site_dir)
 from agents.m3_site import TEMPLATE_PATH, fill_template, publish_guide, sanitize_content
 
 
@@ -22,7 +21,19 @@ class Builder(M3InputsMixin, Agent):
     phase = 3
     step = P3_BUILD
     inputs = [P3_SPEC, P3_COPY]
-    optional_inputs = [P1_IDEA_CARD, P2_CANVAS, P2_COMPETITOR_ANALYSIS, P1_MARKET, P1_DEMAND_SIGNALS, P1_COMPETITORS]
+    optional_inputs = [P1_IDEA_CARD, P2_COMPETITOR_ANALYSIS]  # the competitor analysis is sent as claims only
+    MAX_CLAIMS = 6
+
+    def verified_claims(self, ctx) -> list:
+        """The verified claims re-cited by the competitor analysis: claim, source_url and quote only."""
+        out = []
+        for c in (get_artifact(ctx, P2_COMPETITOR_ANALYSIS) or {}).get("claims") or []:
+            if isinstance(c, dict) and c.get("verified") is True:
+                out.append({k: c.get(k) for k in ("claim", "source_url", "quote")})
+        return out[:self.MAX_CLAIMS]
+
+    def build_user_message(self, ctx) -> str:
+        return inputs_message(ctx, [P3_SPEC, P3_COPY, P1_IDEA_CARD], {"verified_claims": self.verified_claims(ctx)})
     tools = []
     required_keys = ["headline", "value_proposition", "features", "faq", "claims"]
     kind = "llm"

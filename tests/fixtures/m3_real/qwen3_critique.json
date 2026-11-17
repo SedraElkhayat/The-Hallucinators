@@ -1,0 +1,33 @@
+{
+  "issues": [
+    {
+      "severity": "must_fix",
+      "text": "Demand evidence rated 'adequate' based on MOCKED results, not real visitor data"
+    },
+    {
+      "severity": "must_fix",
+      "text": "Kill criteria not triggered despite MOCKED results, which should invalidate findings"
+    },
+    {
+      "severity": "should_fix",
+      "text": "High-severity risk about channels presented as assumption but treated as fact"
+    },
+    {
+      "severity": "should_fix",
+      "text": "Bilingual support risk marked as assumption but included in high-severity risks"
+    },
+    {
+      "severity": "should_fix",
+      "text": "Mocked data in demand results cited as real behavior in findings"
+    },
+    {
+      "severity": "should_fix",
+      "text": "Assumption about direct sales channels presented as validated risk"
+    }
+  ],
+  "verdict": "revise",
+  "_meta": {
+    "agent": "critic_phase2",
+    "sources": []
+  }
+}
