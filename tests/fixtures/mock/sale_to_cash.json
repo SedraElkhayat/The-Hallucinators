@@ -1,0 +1,7 @@
+{
+  "orders_processed": ["mock_ord_001", "mock_ord_002", "mock_ord_003"],
+  "double_deliveries": 0,
+  "access_after_refund": false,
+  "reconcile_balanced": true,
+  "mocked": true
+}

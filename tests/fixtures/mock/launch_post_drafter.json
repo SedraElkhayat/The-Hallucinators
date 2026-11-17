@@ -1,0 +1,13 @@
+{
+  "posts": [
+    {
+      "channel": "LinkedIn",
+      "text": "DRAFT: prepared for founder review\nFreelance designers: we built a bilingual Notion kit to help you track client revisions and overdue invoices without cluttered tools. Take a look and share your thoughts."
+    },
+    {
+      "channel": "Design Community",
+      "text": "DRAFT: prepared for founder review\nHey designers! Sharing a lightweight template pack for managing freelance design projects in Arabic and English. Feedback welcome!"
+    }
+  ],
+  "mocked": true
+}

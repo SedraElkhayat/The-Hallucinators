@@ -1,0 +1,16 @@
+{
+  "price_usd": 29.0,
+  "range": [19.0, 39.0],
+  "comparable_claims": [
+    {
+      "claim": "MOCKED comparable Notion template for freelancers charges $29",
+      "source_url": "https://example.com/mock/1",
+      "quote": "Freelance designer operating system template costs $29",
+      "verified": null,
+      "assumption": false
+    }
+  ],
+  "is_assumption": false,
+  "rationale": "MOCKED pricing benchmarked against comparable Notion creator kits in the region.",
+  "mocked": true
+}

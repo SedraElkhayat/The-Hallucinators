@@ -1,0 +1,24 @@
+{
+  "tiers": [
+    {
+      "name": "Standard Starter Kit",
+      "price_usd": 29.0,
+      "includes": [
+        "MOCKED Notion client dashboard",
+        "Project status & revision tracker",
+        "Invoice tracking spreadsheet"
+      ]
+    },
+    {
+      "name": "Pro Studio Pack",
+      "price_usd": 49.0,
+      "includes": [
+        "MOCKED Notion client dashboard",
+        "Contract & briefing templates",
+        "Bilingual Arabic/English invoice generator"
+      ]
+    }
+  ],
+  "positioning": "MOCKED honest productivity kit designed specifically for MENA freelance designers.",
+  "mocked": true
+}

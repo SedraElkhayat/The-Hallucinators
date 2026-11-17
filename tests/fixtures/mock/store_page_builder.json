@@ -1,0 +1,12 @@
+{
+  "title": "Freelance Design Operating System",
+  "description": "A streamlined Notion template pack to manage client revisions, project statuses, and invoice tracking in Arabic and English.",
+  "price_usd": 29.0,
+  "bullets": [
+    "Manage all ongoing design clients in one bilingual dashboard",
+    "Track revision limits and deliverables transparently",
+    "Pre-built invoice templates for Notion and Google Sheets",
+    "MOCKED checkout: no real payment required"
+  ],
+  "mocked": true
+}
