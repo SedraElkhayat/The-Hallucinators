@@ -8,6 +8,7 @@ Founder keys used in this phase:
 from __future__ import annotations
 
 from core.contracts import Context
+from agents.m4_common import count_must_fix
 from gates import Check
 
 PHASE = 5
@@ -28,6 +29,7 @@ def gate_checks(ctx: Context) -> list[Check]:
         Check("chk_p5_s2c_passed", "sale_to_cash_passed", ">=", 1.0, "repeat"),
         Check("chk_p5_double_deliv", "double_deliveries", "<=", 0.0, "stop"),
         Check("chk_p5_reconcile", "reconcile_balanced", ">=", 1.0, "stop"),
+        Check("chk_p5_compliance", "compliance_must_fix", "<=", 0.0, "repeat"),
     ]
 
 
@@ -41,7 +43,7 @@ def measure(ctx: Context) -> dict:
         if sp_data.get("released"):
             # check decision log for founder approval of store_page
             approvals = [e for e in ctx.log.entries()
-                         if e.get("agent") == "founder" and "store_page" in str(e.get("action"))]
+                         if e.get("agent") == "founder" and str(e.get("action")) == "approved:store_page"]
             if not approvals:
                 unapproved_released += 1
 
@@ -65,7 +67,12 @@ def measure(ctx: Context) -> dict:
         double_deliveries = int(s2c_data.get("double_deliveries", 0))
         reconcile_balanced = 1 if s2c_data.get("reconcile_balanced") else 0
 
+    compliance_must_fix = 0
+    if ctx.store.has("phase5_step4_launch_review"):
+        compliance_must_fix = count_must_fix(ctx.store.get("phase5_step4_launch_review"))
+
     return {
+        "compliance_must_fix": compliance_must_fix,
         "unapproved_released": unapproved_released,
         "sale_to_cash_passed": sale_to_cash_passed,
         "double_deliveries": double_deliveries,

@@ -5,7 +5,7 @@ Scans offer packaging and policies for banned claims and missing legal review la
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, normalize_critique, _COMPLIANCE_CLAIM_RX, _WINDOW_RX
 from core.contracts import Context
 from core.guardrails import check_output
 
@@ -14,7 +14,7 @@ class ComplianceReviewerPhase4(M4Agent):
     name = "compliance_reviewer_phase4"
     phase = 4
     step = "phase4_step4_compliance_review"
-    inputs = ["phase4_step2_offer", "phase4_step3_policies"]
+    inputs = ["phase4_step1_pricing", "phase4_step2_offer", "phase4_step3_policies"]
     tools = []
     required_keys = ["issues", "verdict"]
     kind = "llm"
@@ -23,26 +23,34 @@ class ComplianceReviewerPhase4(M4Agent):
         pass
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        issues = list(data.get("issues", [])) if isinstance(data.get("issues"), list) else []
-
-        # Code-enforced check on policy documents
+        code_issues: list[str] = []
         if ctx.store.has("phase4_step3_policies"):
-            pdata = ctx.store.get("phase4_step3_policies")
-            docs = pdata.get("documents", [])
-            for doc in docs:
-                if not doc.get("needs_legal_review"):
-                    issues.append(f"Document {doc.get('name')} missing needs_legal_review flag")
-                guard_res = check_output(doc.get("text", ""))
-                if not guard_res.allowed:
-                    issues.append(f"Document {doc.get('name')} contains banned output: {guard_res.findings}")
-
-        # Code-enforced check on offer
+            for doc in ctx.store.get("phase4_step3_policies").get("documents", []):
+                name = doc.get("name")
+                text = str(doc.get("text", ""))
+                if doc.get("needs_legal_review") is not True:
+                    code_issues.append(f"{name}: needs_legal_review must be true")
+                res = check_output(text)
+                if not res.allowed:
+                    code_issues.append(f"{name}: banned content {res.findings}")
+                if _COMPLIANCE_CLAIM_RX.search(text):
+                    code_issues.append(f"{name}: claims legal compliance; only a lawyer can confirm that")
+                if "refund" in str(name).lower() and _WINDOW_RX.search(text):
+                    code_issues.append(f"{name}: states a refund window; the founder sets it ([FOUNDER TO SET: refund window])")
+        else:
+            code_issues.append("phase4_step3_policies is missing")
         if ctx.store.has("phase4_step2_offer"):
-            odata = ctx.store.get("phase4_step2_offer")
-            guard_pos = check_output(odata.get("positioning", ""))
-            if not guard_pos.allowed:
-                issues.append(f"Offer positioning contains banned output: {guard_pos.findings}")
-
-        data["issues"] = issues
-        data["verdict"] = "flagged" if issues else "pass"
+            offer = ctx.store.get("phase4_step2_offer")
+            texts = [str(offer.get("positioning", ""))]
+            texts += [str(i) for t in offer.get("tiers", []) for i in (t.get("includes") or [])]
+            for t in texts:
+                res = check_output(t)
+                if not res.allowed:
+                    code_issues.append(f"phase4_step2_offer: banned content {res.findings} in '{t[:60]}'")
+        if ctx.store.has("phase4_step1_pricing"):
+            pr = ctx.store.get("phase4_step1_pricing")
+            if not pr.get("comparable_claims") and pr.get("is_assumption") is not True:
+                code_issues.append("phase4_step1_pricing: price has no verified comparable and is not labeled an assumption")
+        data = normalize_critique(data, code_issues)
+        data.pop("mocked", None)
         return data

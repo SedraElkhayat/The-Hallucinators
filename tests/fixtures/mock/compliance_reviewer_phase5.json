@@ -1,6 +1,4 @@
 {
   "issues": [],
-  "verdict": "pass",
-  "notes": "MOCKED Phase 5 review: no fake counters, no timers, and all posts are marked drafts.",
-  "mocked": true
+  "verdict": "ok"
 }

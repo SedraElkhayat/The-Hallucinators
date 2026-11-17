@@ -7,7 +7,8 @@ Nothing is ever posted automatically.
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.base import BLOCK_MARK
+from agents.m4_common import M4Agent, launch_copy_violations
 from core.contracts import Context
 from core.guardrails import check_release
 
@@ -35,24 +36,36 @@ class LaunchPostDrafter(M4Agent):
                 channel = str(p.get("channel", "Community"))
                 raw_text = str(p.get("text", ""))
 
-                # Pass through check_release
+                # Code rules first: banned claims, counts, testimonials, income/time-saved numbers, founder signature.
                 guard_res = check_release(raw_text)
+                violations = launch_copy_violations(raw_text)
+                if not guard_res.allowed or violations:
+                    # Blocked drafts never reach the founder's approval queue and are never posted.
+                    processed_posts.append({
+                        "channel": channel,
+                        "text": f"{BLOCK_MARK} {sorted(set(violations + guard_res.findings))}",
+                        "status": "blocked",
+                        "guard_findings": sorted(set(violations + guard_res.findings)),
+                        "posted": False,
+                    })
+                    ctx.log.action(self.name, "launch_post_blocked", outcome="blocked",
+                                   reasons=sorted(set(violations + guard_res.findings)))
+                    continue
                 release_text = guard_res.text
 
-                # Request founder approval for each post draft
-                approved = ctx.approvals.request(
-                    "launch_post",
-                    f"Launch post {idx} for {channel}",
-                    release_text,
-                    self.phase
-                )
+                # Founder approve/reject for each post draft; nothing is ever posted by the system.
+                title = f"Launch post {idx} for {channel}"
+                approved = ctx.approvals.request("launch_post", title, release_text, self.phase)
+                if approved:
+                    # Released = the founder may post it; the system itself never posts.
+                    ctx.approvals.release("launch_post", title, release_text, self.phase)
 
                 processed_posts.append({
                     "channel": channel,
                     "text": release_text,
                     "status": "approved" if approved else "rejected",
-                    "guard_findings": guard_res.findings,
-                    "posted": False,  # Nothing is ever posted
+                    "guard_findings": [],
+                    "posted": False,
                 })
 
         if not processed_posts:

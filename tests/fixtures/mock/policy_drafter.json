@@ -2,19 +2,18 @@
   "documents": [
     {
       "name": "Terms of Service",
-      "text": "MOCKED Terms: Single-user digital license for Notion template pack. Redistribution or resale is prohibited. Provided as-is without warranty.",
+      "text": "MOCKED draft terms: single-user licence for the digital template pack. Redistribution or resale: [FOUNDER TO SET: licence terms]. Provided as-is.",
       "needs_legal_review": true
     },
     {
       "name": "Privacy Policy",
-      "text": "MOCKED Privacy Policy: We do not collect or store client data, personal credentials, or payment details. Only mock order records are retained.",
+      "text": "MOCKED draft privacy policy: the product does not collect client data, passwords or card numbers. Contact: [FOUNDER TO SET: contact email].",
       "needs_legal_review": true
     },
     {
       "name": "Refund Policy",
-      "text": "MOCKED Refund Policy: If the template pack does not meet your workflow needs, contact the founder within 14 days of purchase for a full refund.",
+      "text": "MOCKED draft refund policy: buyers send refund requests to the founder, who reviews each one by hand. Refund window: [FOUNDER TO SET: refund window].",
       "needs_legal_review": true
     }
-  ],
-  "mocked": true
+  ]
 }

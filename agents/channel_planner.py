@@ -5,7 +5,7 @@ Selects 2 to 3 organic launch channels tied to upstream evidence.
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.m4_common import ARTIFACT_STEM_RX, M4Agent, is_paid_channel
 from core.contracts import Context
 
 
@@ -45,5 +45,16 @@ class ChannelPlanner(M4Agent):
                     "first_actions": ["Post short breakdown of invoice management", "Link to project dashboard"],
                 },
             ]
-        data["channels"] = clean_channels[:3]
+        free, dropped = [], []
+        for c in clean_channels:
+            blob = " ".join([c["name"]] + [str(a) for a in c["first_actions"]])
+            if is_paid_channel(blob):
+                dropped.append({"name": c["name"], "reason": "paid channel (ads, sponsored posts or bought followers)"})
+                continue
+            if not ARTIFACT_STEM_RX.search(c["evidence"]):
+                c["evidence"] = "ASSUMPTION (no source artifact named): " + c["evidence"]
+            free.append(c)
+        data["channels"] = free[:3]
+        if dropped:
+            data["dropped_channels"] = dropped
         return data

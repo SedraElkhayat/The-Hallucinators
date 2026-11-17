@@ -1,13 +1,12 @@
 {
   "posts": [
     {
-      "channel": "LinkedIn",
-      "text": "DRAFT: prepared for founder review\nFreelance designers: we built a bilingual Notion kit to help you track client revisions and overdue invoices without cluttered tools. Take a look and share your thoughts."
+      "channel": "MOCKED: founder's own LinkedIn profile",
+      "text": "MOCKED draft: a bilingual Notion kit for freelance designers to track client revisions and invoices. Feedback is welcome."
     },
     {
-      "channel": "Design Community",
-      "text": "DRAFT: prepared for founder review\nHey designers! Sharing a lightweight template pack for managing freelance design projects in Arabic and English. Feedback welcome!"
+      "channel": "MOCKED: designer communities",
+      "text": "MOCKED draft: sharing a template pack for tracking freelance design projects in Arabic and English. What would you change?"
     }
-  ],
-  "mocked": true
+  ]
 }

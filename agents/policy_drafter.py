@@ -6,7 +6,7 @@ Every document must have needs_legal_review: True.
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, _COMPLIANCE_CLAIM_RX, _WINDOW_RX
 from core.contracts import Context
 
 
@@ -47,9 +47,23 @@ class PolicyDrafter(M4Agent):
                 },
                 {
                     "name": "Refund Policy",
-                    "text": "STUBBED default text (the model returned no policy): " + "Refund requests go to the founder, who reviews each one manually.",
+                    "text": "STUBBED default text (the model returned no policy): " + "Refund requests go to the founder, who reviews each one manually. Refund window: [FOUNDER TO SET: refund window].",
                     "needs_legal_review": True,
                 },
             ]
-        data["documents"] = clean_docs
+        data["documents"] = [enforce_policy_rules(d) for d in clean_docs]
         return data
+
+
+def enforce_policy_rules(doc: dict) -> dict:
+    """Terms are the founder's decision: time windows become placeholders; no compliance claims."""
+    text = str(doc.get("text", ""))
+    is_refund = "refund" in str(doc.get("name", "")).lower()
+    placeholder = "[FOUNDER TO SET: refund window]" if is_refund else "[FOUNDER TO SET: time period]"
+    text = _WINDOW_RX.sub(placeholder, text)
+    text = _COMPLIANCE_CLAIM_RX.sub("[needs legal review]", text)
+    if is_refund and "[FOUNDER TO SET" not in text:
+        text += " Refund window: [FOUNDER TO SET: refund window]."
+    doc["text"] = text
+    doc["needs_legal_review"] = True
+    return doc

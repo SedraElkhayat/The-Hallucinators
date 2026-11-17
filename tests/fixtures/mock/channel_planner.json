@@ -1,21 +1,20 @@
 {
   "channels": [
     {
-      "name": "Design Freelancer Communities",
-      "evidence": "MOCKED research: Over 4,000 regional designers active in Behance and Discord freelancer channels.",
+      "name": "MOCKED: designer communities the founder already belongs to",
+      "evidence": "phase1_step5_market: MOCKED designers discuss client tracking in community groups",
       "first_actions": [
-        "Share a free project tracking tip sheet",
-        "Offer template walkthrough video in Arabic"
+        "Share a free checklist and ask for feedback",
+        "Link the waitlist page from phase2_step4_landing_page"
       ]
     },
     {
-      "name": "LinkedIn Organic Content",
-      "evidence": "MOCKED research: Freelancers actively discussing invoice loss and client scope creep on LinkedIn.",
+      "name": "MOCKED: founder's own LinkedIn profile",
+      "evidence": "phase2_step3_demand_test_plan: MOCKED traffic source is the founder's own network",
       "first_actions": [
-        "Post breakdown of common freelance invoicing mistakes",
-        "Invite feedback on prototype workflow"
+        "Draft one post for the founder to review",
+        "Reply to comments personally"
       ]
     }
-  ],
-  "mocked": true
+  ]
 }
