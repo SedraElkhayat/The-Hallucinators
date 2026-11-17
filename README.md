@@ -2,6 +2,11 @@
 
 An open-source team of AI agents that takes a founder's brief toward a validated, sellable **digital** product across six phases (Discover, Validate, Build, Commercial setup, Launch, Operate and learn). Every phase ends with a gate whose criteria are fixed in code before the phase runs, and the system can recommend **STOP**. The founder approves every outward-facing step; payments are **MOCKED**.
 
+- **The problem:** a founder with little money and time needs an honest answer before building: do people want this, can I build it, should I stop? A tool that always says "go" and invents evidence makes that decision worse.
+- **The user:** a solo founder of a small digital product, for example a freelance designer in Egypt with USD 100 and 8 hours a week (`demo/brief_strong.md`).
+- **How it decides:** a claim counts only if code finds its exact quote on the source page, the quote is about this idea and states the claim; gate criteria are fixed and hashed before each phase; the system recommends STOP when the evidence is weak, and the founder decides, with every override logged.
+- **Why open beats closed:** every agent action, source, prompt and gate rule is readable (`decision_log.json`, `prompts/`, `gates.py`); it runs for $0.00 on a free open-weight model with one command, and the founder's data stays on their machine. More: [docs/PITCH.md](docs/PITCH.md).
+
 **Committed demo run** (`outputs/`, `decision_log.json`; real `qwen3:8b` on Ollama, live web search through SearXNG):
 - Strong brief (`demo/brief_strong.md`): all six phases ran. The system's own verdict was **STOP** at Gates 1 and 2; the founder overrode both (scripted demo inputs, labeled `SCRIPTED` and logged with `approved_by: founder` and `system_outcome: stop`), and Gates 3 to 6 were **GO**. The Phase 6 memo still recommends stopping because the demand and sales numbers are `MOCKED`. Summary: `outputs/phase6_gate_final_report.md`.
 - Weak brief (`demo/brief_weak.md`): **STOP** at Gate 1 with no override (0 verified claims, 2 kill criteria triggered). See `outputs/phase1_gate_weak_decision.md`.
@@ -14,7 +19,7 @@ docker compose up
 
 Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox. When Phase 3 has built the founder's website, the run page shows **Preview website** and **Download site folder**; the system never publishes it.
 
-Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Without `make` (for example on Windows): `python orchestrator.py --brief demo/brief_strong.md --through 6 --mock-llm --out runs/demo_mock/outputs --founder-inputs demo/founder_inputs.json`. Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`).
+Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Without `make` (for example on Windows): `python orchestrator.py --brief demo/brief_strong.md --through 6 --mock-llm --out runs/demo_mock/outputs --founder-inputs demo/founder_inputs.json`. Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`); the smoke tests alone (pipeline steps, the gate, nothing released without founder approval): `python -m pytest -q tests/test_smoke.py`.
 
 ## What works and what is mocked
 
