@@ -32,6 +32,8 @@ class IdeaGenerator(Agent):
                        approved_by="founder" if source.startswith("founder") else None)
 
     def run(self, ctx):
+        """Skip if the brief already has an idea; otherwise search, ask the model for up to five candidate ideas
+        (their claims re-checked), and record the founder's pick, own idea, or "no idea" as the idea choice."""
         self.check_inputs(ctx)
         clar = get_artifact(ctx, CLARIFICATION) or {}
         idea = clar.get("idea")

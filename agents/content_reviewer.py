@@ -81,6 +81,9 @@ class ContentReviewer(M3InputsMixin, Agent):
         return {"site_files": read_site_files(ctx)}
 
     def post_process(self, ctx, data: dict) -> dict:
+        """Turn must_fix issues into should_fix when they dispute a rule the website checks already verify in
+        code (sources or ASSUMPTION labels, the SIMULATED label, the product's own description); the reason is
+        recorded on each changed issue."""
         data = normalize_verdict(data)
         site = "\n".join(read_site_files(ctx, limit_each=10 ** 6).values())
         people_counts = signup_number_present(site) or "invented count" in content_violations(site)
@@ -98,7 +101,8 @@ class ContentReviewer(M3InputsMixin, Agent):
         if claim_texts and not any("evidence item" in f for f in failures):
             downgrade_must_fix(
                 data, lambda t: any(c in t for c in claim_texts)
-                and (_SOURCE_COMPLAINT.search(t) or re.search(r"without a source|source link|labeled as an? assumption|not labeled|unlabeled|"
+                and (_SOURCE_COMPLAINT.search(t) or re.search(r"without a source|source link|labeled as an? assumption|"
+                             r"not labeled|unlabeled|"
                              r"without (?:proper |any )?(?:context or |verification)|without (?:proper |any )?(?:context or )?source"
                              r"|not (?:been )?verified|unverified", t))
                 and not any(w in t for w in _FAKE_PROOF),

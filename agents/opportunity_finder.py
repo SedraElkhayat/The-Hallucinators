@@ -1,5 +1,5 @@
 """opportunity_finder: alternative ideas in the same space, with sourced claims (pivot targets)."""
-from agents.m2_common import CLARIFICATION, OPPORTUNITIES, ResearchAgent, as_list, short, topic_queries
+from agents.m2_common import CLARIFICATION, OPPORTUNITIES, ResearchAgent, as_list, topic_queries
 
 
 class OpportunityFinder(ResearchAgent):

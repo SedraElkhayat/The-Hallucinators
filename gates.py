@@ -122,6 +122,10 @@ def _would_change(ctx, phase: int, failed: list[tuple[Check, object]]) -> list[s
 
 
 def evaluate(ctx, phase: int, metrics: dict, attempt: int, max_repeats: int = 1) -> GateResult:
+    """Score the metrics against the checks pre-registered for this phase and return go/repeat/pivot/stop.
+
+    The most severe failed check wins (stop > pivot > repeat); a missing metric fails its check; a repeat at
+    ``attempt >= max_repeats`` becomes stop. Writes phase<N>_gate_decision.md and logs action "gate_<N>"."""
     checks, digest = _load_checks(ctx, phase)
     outcome, reasons, rows, failed = "go", [], [], []
     for c in checks:

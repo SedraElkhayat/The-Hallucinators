@@ -16,6 +16,9 @@ class ValidationSynthesizer(M3InputsMixin, Agent):
     kind = "llm"
 
     def post_process(self, ctx, data: dict) -> dict:
+        """Drop any verdict the model wrote (the gate decides), normalize confidence and lists, label every
+        finding without a claim reference as an assumption, add any missing high risk or triggered kill
+        criterion, and record the verdict inputs taken from artifacts in code."""
         for k in _VERDICT_KEYS:  # the gate decides in code
             data.pop(k, None)
         conf = str(data.get("confidence", "low")).lower()

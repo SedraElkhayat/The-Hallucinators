@@ -39,6 +39,8 @@ class Builder(M3InputsMixin, Agent):
     kind = "llm"
 
     def run(self, ctx):
+        """Get structured page content from the model, then render site_template into phase3_step3_site/ in code
+        (HTML-escaped; the model never writes HTML) and store the publish guide. Nothing is ever published."""
         result = super().run(ctx)  # model call, claim re-check, guardrails, artifact, log entry
         content, dropped = sanitize_content(result.data or {})
 

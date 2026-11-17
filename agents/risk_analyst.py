@@ -6,7 +6,6 @@ appears in the inputs and is not an ASSUMPTION. Otherwise ``triggered`` is set t
 criterion is flagged ``triggered_without_evidence``. The demand rule (ratio below 0.2 of the pre-set
 target) is decided in code from ``phase2_step5_demand_results``.
 """
-import json
 import re
 
 from agents.base import Agent
@@ -25,7 +24,8 @@ _MISSING_EVIDENCE = re.compile(
 # A kill criterion that is itself "no evidence of X" describes absence: only the scorecard's "unknown" can say that.
 _ABSENCE_CRITERION = re.compile(r"^\s*(?:\w+\s+){0,3}?(?:no|lack of|insufficient|not enough|little|limited)\s+"
                                 r"(?:\w+\s+){0,2}(?:evidence|data|signals?|indications?|willingness)\b", re.I)
-_DEMAND_RULE = re.compile(r"(?:ratio|sign-?ups?|demand|target|waitlist).*(?<![\d.])0?\.2(?!\d)|(?<![\d.])0?\.2(?!\d).*(?:ratio|sign-?ups?|demand|target|waitlist)", re.I)
+_DEMAND_RULE = re.compile(r"(?:ratio|sign-?ups?|demand|target|waitlist).*(?<![\d.])0?\.2(?!\d)|"
+                          r"(?<![\d.])0?\.2(?!\d).*(?:ratio|sign-?ups?|demand|target|waitlist)", re.I)
 
 
 def _norm(text) -> str:

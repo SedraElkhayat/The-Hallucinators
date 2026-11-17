@@ -219,6 +219,8 @@ class _SiteScan(HTMLParser):
         self.pings: list[tuple] = []        # every element with a ping attribute: (tag, value)
 
     def handle_starttag(self, tag, attrs):
+        """Record what the website checks need from each opening tag: ids, links, forms, and anything that
+        could send the visitor or the browser elsewhere (base, meta refresh, ping)."""
         a = {k.lower(): (v if v is not None else "") for k, v in attrs}
         self.saw.add(tag)
         if tag == "base":

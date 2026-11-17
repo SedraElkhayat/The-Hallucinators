@@ -50,6 +50,11 @@ class Clarifier(Agent):
                "Answer with the JSON object described in your instructions."
 
     def run(self, ctx):
+        """Ask the founder about missing brief fields, in rounds, until the weighted gap score is small enough.
+
+        Each round the model marks the fields the brief already states and drafts questions; the founder answers
+        through ``ctx.founder.ask`` (a field is asked at most twice, "skip" ends the clarification). Answers pass
+        the input guardrail before they become field values."""
         fields = {f: {"value": "unknown", "status": "unknown", "source": None} for f in FIELDS}
         asked_count = {f: 0 for f in FIELDS}
         log, idea, model, cost, tokens = [], None, None, 0.0, {"tokens_in": 0, "tokens_out": 0}

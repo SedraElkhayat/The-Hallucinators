@@ -1,6 +1,6 @@
 """demand_analyst: behaviour over opinion. Do people already pay for substitutes? Price signals and repeated
 requests, each as a quote-checked claim."""
-from agents.m2_common import DEMAND, ResearchAgent, as_list, short, topic_queries
+from agents.m2_common import DEMAND, ResearchAgent, as_list, topic_queries
 
 
 class DemandAnalyst(ResearchAgent):

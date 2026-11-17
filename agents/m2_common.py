@@ -294,7 +294,8 @@ def norm_claims(claims) -> list[dict]:
 
 
 SPECULATION = re.compile(r"\b(might|may|could|possibly|potentially|perhaps|likely|assumption)\b|قد |ربما", re.I)
-ABSENCE = re.compile(r"\b(no (clear |direct |verified )?evidence|lack of evidence|insufficient evidence|not (yet )?(known|found|confirmed|validated|verified)|unknown|unclear)\b", re.I)
+ABSENCE = re.compile(r"\b(no (clear |direct |verified )?evidence|lack of evidence|insufficient evidence|"
+                     r"not (yet )?(known|found|confirmed|validated|verified)|unknown|unclear)\b", re.I)
 
 
 def norm_risks(data: dict) -> dict:

@@ -30,6 +30,8 @@ class CriticPhase2(M3InputsMixin, Agent):
         return inputs_message(ctx, list(self.inputs) + list(self.optional_inputs))
 
     def post_process(self, ctx, data: dict) -> dict:
+        """Normalize the verdict, then turn must_fix issues that only dispute rules decided in code (demand
+        rating capped for non-REAL results, inputs the critic saw shortened) into should_fix, with the reason."""
         data = normalize_verdict(data)
         results = get_artifact(ctx, P2_RESULTS) or {}
         if results and results.get("provenance") != "REAL":

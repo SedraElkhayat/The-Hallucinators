@@ -42,6 +42,8 @@ class OptionSuggester(Agent):
     kind = "founder"
 
     def run(self, ctx):
+        """For each field the founder left unknown, suggest up to three options (labeled as suggestions, not
+        facts); only an option the founder approves becomes the value. Then re-run the scope check."""
         self.check_inputs(ctx)
         clar = get_artifact(ctx, CLARIFICATION) or {}
         fields = {f: dict(v) for f, v in (clar.get("fields") or {}).items() if isinstance(v, dict)}

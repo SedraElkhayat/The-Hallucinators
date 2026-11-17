@@ -37,7 +37,8 @@ def normalize_acceptance_tests(tests) -> list:
 
 
 # Price and policies only appear from Phase 4 and 5 (CONTEXT 4b), so a Phase 3 page can never pass a test for them.
-_LATER_PHASE = re.compile(r"[$\u20ac\u00a3]|\b(usd|egp|eur|gbp|dollars?|price|prices|pricing|privacy|terms|refund|refunds|policy|policies)\b", re.I)
+_LATER_PHASE = re.compile(r"[$\u20ac\u00a3]|\b(usd|egp|eur|gbp|dollars?|price|prices|pricing|privacy|terms|refund|"
+                          r"refunds|policy|policies)\b", re.I)
 
 
 def drop_later_phase_tests(tests) -> tuple:

@@ -2,7 +2,7 @@
 pages. A competitor's pricing counts as sourced only when a verified claim from its URL backs it."""
 from urllib.parse import urlparse
 
-from agents.m2_common import COMPETITORS, ResearchAgent, as_list, short, topic_queries
+from agents.m2_common import COMPETITORS, ResearchAgent, as_list, topic_queries
 
 
 def _host(url: str) -> str:

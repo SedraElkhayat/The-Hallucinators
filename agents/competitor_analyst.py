@@ -16,6 +16,8 @@ class CompetitorAnalyst(M3InputsMixin, Agent):
     kind = "llm"
 
     def post_process(self, ctx, data: dict) -> dict:
+        """Keep only claim references that match a Phase 1 claim (by text or source URL) and normalize the
+        yes/no/unknown fields."""
         # Index the Phase 1 claims; only refs that match an existing claim are kept.
         known = []
         for stem in (P1_COMPETITORS, P1_MARKET, P1_DEMAND_SIGNALS):
