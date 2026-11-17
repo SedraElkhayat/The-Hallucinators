@@ -15,6 +15,7 @@ class OpportunityScorer(Agent):
     tools: list = []
     required_keys = ["ranked", "chosen"]
     kind = "llm"
+    json_retries = 3  # small local models sometimes run out of tokens on a long ranking; one more try
 
     def build_user_message(self, ctx) -> str:
         return message(ctx, self.inputs + self.optional_inputs, brief=False, compact=True)
