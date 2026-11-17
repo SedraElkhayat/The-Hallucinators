@@ -21,41 +21,10 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "summary": "<at most 5 hedged sentences>",
-  "findings": [
-    {
-      "text": "<finding>",
-      "claim_ids": [
-        "<artifact stem or source_url>"
-      ]
-    },
-    {
-      "text": "<unsupported point>",
-      "assumption": true
-    }
-  ],
-  "assumptions": [
-    "<assumption>"
-  ],
-  "limitations": [
-    "<limitation, including MOCKED or SAMPLE inputs>"
-  ],
-  "confidence": "<low|medium|high>",
-  "verdict_inputs": {
-    "demand_ratio": "<number or null>",
-    "scorecard": {
-      "<dimension>": "<rating>"
-    },
-    "kill_criteria_triggered": [
-      "<text>"
-    ],
-    "untested_high_impact_assumptions": "<integer>"
-  }
-}
+{"summary": "<at most 5 hedged sentences>", "findings": [{"text": "<finding>", "claim_ids": ["<artifact stem or source_url>"]}, {"text": "<unsupported point>", "assumption": true}], "assumptions": ["<assumption>"], "limitations": ["<limitation, including MOCKED or SAMPLE inputs>"], "confidence": "<low|medium|high>", "verdict_inputs": {"demand_ratio": "<number or null>", "scorecard": {"<dimension>": "<rating>"}, "kill_criteria_triggered": ["<text>"], "untested_high_impact_assumptions": "<integer>"}}
 ```
 
 ## Rules
 - Include every high-severity risk and every triggered kill criterion from the Risk Analyst.
 - Never write go, repeat, pivot or stop as a recommendation; the gate decides in code.
-- No praise, no income promises, no new numbers that are not in the inputs.
+- Keep every text value short (one or two sentences); no more than 6 items per list (findings 6; other lists 5).

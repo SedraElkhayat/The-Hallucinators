@@ -18,23 +18,12 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "assumptions": [
-    {
-      "id": "A1",
-      "text": "<assumption>",
-      "source": "<artifact stem and field>",
-      "tested": false,
-      "cheapest_test": "<cheapest legal, unpaid test>",
-      "impact": "<high|medium|low>"
-    }
-  ],
-  "untested_high_impact_count": "<counted in code>"
-}
+{"assumptions": [{"id": "A1", "text": "<assumption>", "source": "<artifact stem and field>", "tested": false, "cheapest_test": "<cheapest legal, unpaid test>", "impact": "<high|medium|low>"}], "untested_high_impact_count": "<counted in code>"}
 ```
 
 ## Rules
 - A result with provenance `MOCKED` does not test anything: mark the related assumption `tested: false`.
 - Interview notes labeled SAMPLE do not test anything either.
 - Tests must be cheap, legal and need no payment or paid ads.
-- Do not add new facts; only list and classify.
+- Only list and classify.
+- Keep every text value short (one or two sentences); no more than 6 items per list.

@@ -24,52 +24,11 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "positioning": [
-    {
-      "competitor": "<competitor name from a Phase 1 claim>",
-      "position": "<how it positions itself> (claim: <claim text>)"
-    }
-  ],
-  "pricing_gaps": [
-    "<gap in what rivals charge or offer> (claim: <claim text>) or ... ASSUMPTION"
-  ],
-  "five_forces": {
-    "rivalry": {
-      "level": "<low|medium|high|unknown>",
-      "reason": "<reason citing a claim, or ... ASSUMPTION>"
-    },
-    "new_entrants": {
-      "level": "<low|medium|high|unknown>",
-      "reason": "<reason citing a claim, or ... ASSUMPTION>"
-    },
-    "substitutes": {
-      "level": "<low|medium|high|unknown>",
-      "reason": "<reason citing a claim, or ... ASSUMPTION>"
-    },
-    "buyer_power": {
-      "level": "<low|medium|high|unknown>",
-      "reason": "<reason citing a claim, or ... ASSUMPTION>"
-    },
-    "supplier_power": {
-      "level": "<low|medium|high|unknown>",
-      "reason": "<reason citing a claim, or ... ASSUMPTION>"
-    }
-  },
-  "differentiation_possible": "<yes|no|unknown>",
-  "differentiation_reason": "<reason citing a claim, or ... ASSUMPTION>",
-  "claim_refs": [
-    {
-      "claim": "<exact claim text from Phase 1>",
-      "source_url": "<its exact source_url>"
-    }
-  ],
-  "insufficient_evidence": false
-}
+{"positioning": [{"competitor": "<competitor name from a Phase 1 claim>", "position": "<how it positions itself> (claim: <claim text>)"}], "pricing_gaps": ["<gap in what rivals charge or offer> (claim: <claim text>) or ... ASSUMPTION"], "five_forces": {"rivalry": {"level": "<low|medium|high|unknown>", "reason": "<reason citing a claim, or ... ASSUMPTION>"}, "new_entrants": {"level": "<low|medium|high|unknown>", "reason": "<reason citing a claim, or ... ASSUMPTION>"}, "substitutes": {"level": "<low|medium|high|unknown>", "reason": "<reason citing a claim, or ... ASSUMPTION>"}, "buyer_power": {"level": "<low|medium|high|unknown>", "reason": "<reason citing a claim, or ... ASSUMPTION>"}, "supplier_power": {"level": "<low|medium|high|unknown>", "reason": "<reason citing a claim, or ... ASSUMPTION>"}}, "differentiation_possible": "<yes|no|unknown>", "differentiation_reason": "<reason citing a claim, or ... ASSUMPTION>", "claim_refs": [{"claim": "<exact claim text from Phase 1>", "source_url": "<its exact source_url>"}], "insufficient_evidence": false}
 ```
 
 ## Rules
 - Make no new factual claim: no new names, prices, numbers or URLs that are not in the Phase 1 claims.
 - `claim_refs` entries must copy the `claim` text and `source_url` of existing Phase 1 claims exactly.
-- When the evidence is thin, say `unknown`; do not guess a level.
-- Do not praise the idea or the founder.
+- Thin evidence: level `unknown`; never guess a level.
+- Keep every text value short (one or two sentences); no more than 6 items per list.

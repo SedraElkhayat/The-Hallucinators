@@ -18,18 +18,10 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "title": "<guide title>",
-  "sections": [
-    {
-      "heading": "<heading>",
-      "text": "<instructions about a built file>"
-    }
-  ]
-}
+{"title": "<guide title>", "sections": [{"heading": "<heading>", "text": "<instructions about a built file>"}]}
 ```
 
 ## Rules
 - Mention only files and sections that exist.
-- No promises of results, no invented numbers, no reviews.
-- Plain, short instructions.
+- Plain instructions.
+- Keep every text value short (one or two sentences); no more than 5 items per list.

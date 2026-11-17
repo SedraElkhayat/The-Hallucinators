@@ -17,18 +17,11 @@ JSON object with exactly these keys:
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
-{
-  "issues": [
-    {
-      "severity": "<must_fix|should_fix>",
-      "text": "<what is wrong and where>"
-    }
-  ],
-  "verdict": "<ok|revise>"
-}
+{"issues": [{"severity": "<must_fix|should_fix>", "text": "<what is wrong and where>"}], "verdict": "<ok|revise>"}
 ```
 
 ## Rules
 - Unsupported factual statements, flattery, income promises and MOCKED data presented as real are always `must_fix`.
 - Any `must_fix` issue means `verdict` is `revise`. With no issues, return an empty list and `ok`.
 - Do not rewrite the report yourself; only list issues.
+- Keep every text value short (one or two sentences); no more than 6 items per list.
