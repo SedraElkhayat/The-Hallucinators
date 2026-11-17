@@ -22,7 +22,9 @@ services:
         condition: service_healthy
     environment:
       OLLAMA_HOST: ollama:11434
-    entrypoint: ["/bin/sh", "-c", "ollama pull ${LLM_MODEL:-qwen3:8b}"]
+    # the local open-weight model to download; separate from LLM_MODEL so a hosted free-tier model
+    # name in .env does not break the download (the app then waits for a pull that cannot succeed)
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${OLLAMA_MODEL:-qwen3:8b}"]
     restart: "no"
 
   app:
