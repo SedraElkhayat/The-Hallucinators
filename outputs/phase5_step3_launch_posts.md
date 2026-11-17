@@ -1,0 +1,33 @@
+# phase5_step3_launch_posts (launch_post_drafter)
+
+## posts
+
+```json
+[
+  {
+    "channel": "Notion Community",
+    "text": "DRAFT: prepared for founder review\nI'm developing a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd love to hear your thoughts and suggestions on how to improve this tool.",
+    "status": "approved",
+    "guard_findings": [],
+    "posted": false
+  },
+  {
+    "channel": "Facebook Groups for Freelance Designers",
+    "text": "DRAFT: prepared for founder review\nI'm working on a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd appreciate your feedback and suggestions on how to make this tool more useful.",
+    "status": "approved",
+    "guard_findings": [],
+    "posted": false
+  },
+  {
+    "channel": "LinkedIn Groups for Freelance Designers",
+    "text": "DRAFT: prepared for founder review\nI'm developing a digital template pack for freelance graphic designers in Egypt and the MENA region. The pack includes Notion and Google Sheets templates to help track client projects, invoices sent, and revision rounds. I'd love to hear your thoughts and suggestions on how to improve this tool.",
+    "status": "approved",
+    "guard_findings": [],
+    "posted": false
+  }
+]
+```
+
+## posted
+
+False

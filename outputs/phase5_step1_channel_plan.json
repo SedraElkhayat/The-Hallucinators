@@ -1,0 +1,32 @@
+{
+  "channels": [
+    {
+      "name": "Notion Community",
+      "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in communities like Notion.",
+      "first_actions": [
+        "Join the Notion Community for freelance designers and post a request for feedback on the template pack.",
+        "Engage with users by commenting on their posts and offering to help them with project tracking."
+      ]
+    },
+    {
+      "name": "Facebook Groups for Freelance Designers",
+      "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in Facebook groups.",
+      "first_actions": [
+        "Join relevant Facebook groups for freelance designers in Egypt and the MENA region.",
+        "Post a message introducing the template pack and ask for feedback or suggestions."
+      ]
+    },
+    {
+      "name": "LinkedIn Groups for Freelance Designers",
+      "evidence": "phase1_step5_market>: 90% of graphic designers choose the freelance path, and 49% work as freelancers, indicating that freelance designers are active in LinkedIn groups.",
+      "first_actions": [
+        "Join LinkedIn groups for freelance designers in Egypt and the MENA region.",
+        "Post a message introducing the template pack and ask for feedback or suggestions."
+      ]
+    }
+  ],
+  "_meta": {
+    "agent": "channel_planner",
+    "sources": []
+  }
+}

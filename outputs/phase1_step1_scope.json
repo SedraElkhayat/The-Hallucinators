@@ -1,0 +1,11 @@
+{
+  "is_digital": true,
+  "product_type": "A digital template pack (Notion and Google Sheets)",
+  "excluded_reason": null,
+  "reasoning": "The product is a digital template pack (Notion and Google Sheets), which is clearly a digital product.",
+  "rechecked_after": "clarification and options",
+  "_meta": {
+    "agent": "scope_classifier",
+    "sources": []
+  }
+}

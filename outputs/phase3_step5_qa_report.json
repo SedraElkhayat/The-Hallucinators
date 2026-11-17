@@ -1,0 +1,60 @@
+{
+  "results": [
+    {
+      "id": "AT1",
+      "passed": true,
+      "detail": "file_exists index.html: found"
+    },
+    {
+      "id": "AT2",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"value-proposition\"'"
+    },
+    {
+      "id": "AT3",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"features\"'"
+    },
+    {
+      "id": "AT4",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"evidence\"'"
+    },
+    {
+      "id": "AT5",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"price\"'"
+    },
+    {
+      "id": "AT6",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"faq\"'"
+    },
+    {
+      "id": "AT7",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"policies\"'"
+    },
+    {
+      "id": "AT8",
+      "passed": true,
+      "detail": "text_contains index.html: found 'id=\"signup\"'"
+    },
+    {
+      "id": "AT9",
+      "passed": true,
+      "detail": "text_contains index.html: found 'Demo only: nothing is sent or stored'"
+    }
+  ],
+  "pass_ratio": 1.0,
+  "total": 9,
+  "passed": 9,
+  "site_checks": {
+    "passed": true,
+    "failures": []
+  },
+  "_meta": {
+    "agent": "qa_agent",
+    "sources": []
+  }
+}

@@ -1,0 +1,32 @@
+# phase5_step4_launch_review (compliance_reviewer_phase5)
+
+## issues
+
+```json
+[
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): DRAFT marker: The draft should not be marked as DRAFT in the final content.",
+    "quote": "DRAFT: prepared for founder review"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Posted status: All launch posts are marked as posted: false, which is correct as they are not yet posted.",
+    "quote": "posted: false"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Checkout label: The checkout label is correctly marked as MOCKED.",
+    "quote": "MOCKED: no real payment"
+  },
+  {
+    "severity": "should_fix",
+    "text": "UNVERIFIED model finding (its quote is not in the drafts, or it objects to a required label): Price: The price is not set, which is a must-fix issue as it is required for the store page.",
+    "quote": "price_usd: null"
+  }
+]
+```
+
+## verdict
+
+ok

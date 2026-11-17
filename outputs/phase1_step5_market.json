@@ -1,0 +1,75 @@
+{
+  "market_definition": {
+    "segment": "Freelance graphic designers in Egypt and the wider MENA region who work with several clients at once",
+    "size_note": "unknown"
+  },
+  "claims": [
+    {
+      "claim": "90% of graphic designers choose the freelance path.",
+      "source_url": "https://artaux.substack.com/p/90-of-graphic-designers-freelance",
+      "quote": "Explore the thriving world of graphic design, where 90% of designers choose the freelance path.",
+      "verified": true,
+      "assumption": false,
+      "check": "quote found on the source page",
+      "topic_terms": [
+        "desig",
+        "freel",
+        "graph"
+      ]
+    },
+    {
+      "claim": "The global graphic design market reached $55.1 billion in 2025.",
+      "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
+      "quote": "The global graphic design market reached $55.1 billion in 2025",
+      "verified": true,
+      "assumption": false,
+      "check": "quote found on the source page",
+      "topic_terms": [
+        "desig",
+        "graph"
+      ]
+    },
+    {
+      "claim": "49% of graphic designers work as freelancers.",
+      "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
+      "quote": "49% of graphic designers work as freelancers — making this one of the most freelance-heavy professions",
+      "verified": true,
+      "assumption": false,
+      "check": "quote found on the source page",
+      "topic_terms": [
+        "desig",
+        "freel",
+        "graph"
+      ]
+    },
+    {
+      "claim": "75% of designers now use AI tools in their workflow.",
+      "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
+      "quote": "75% of designers now use AI tools in their workflow, up from 35% in 2023",
+      "verified": false,
+      "assumption": true,
+      "check": "off-topic: the quote is on the page but does not mention this idea's customer, problem or product"
+    },
+    {
+      "claim": "Freelance graphic designers in the U.S. have a median annual wage of $61,300.",
+      "source_url": "https://www.einvoicegenerator.com/blog/graphic-design-statistics",
+      "quote": "Median graphic designer salary: $61,300 per year (BLS, May 2024)",
+      "verified": true,
+      "assumption": false,
+      "check": "quote found on the source page",
+      "topic_terms": [
+        "desig",
+        "graph"
+      ]
+    }
+  ],
+  "insufficient_evidence": false,
+  "verified_claim_count": 4,
+  "_meta": {
+    "agent": "market_scout",
+    "sources": [
+      "https://artaux.substack.com/p/90-of-graphic-designers-freelance",
+      "https://www.einvoicegenerator.com/blog/graphic-design-statistics"
+    ]
+  }
+}

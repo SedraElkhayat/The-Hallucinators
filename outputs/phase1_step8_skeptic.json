@@ -1,0 +1,46 @@
+{
+  "risks": [
+    {
+      "text": "The founder's assumption that freelance designers will pay USD 100 for a template pack is not supported by evidence, as no interviewees have shown willingness to pay.",
+      "severity": "high"
+    },
+    {
+      "text": "The market size for freelance designers in Egypt and the MENA region is unknown, which limits the ability to validate the opportunity.",
+      "severity": "medium"
+    },
+    {
+      "text": "Competitors like Notion Freelance Templates and Sync2Sheets already offer similar tools, which may reduce the uniqueness and demand for the proposed solution.",
+      "severity": "medium"
+    },
+    {
+      "text": "The founder's current solutions (e.g., WhatsApp, notebooks, Trello) are not effective, but there is no clear evidence that the proposed template pack will solve these issues.",
+      "severity": "medium"
+    }
+  ],
+  "kill_criteria": [
+    {
+      "text": "No evidence of willingness to pay for the template pack.",
+      "triggered": true,
+      "evidence": "Interviewees have expressed no willingness to pay for a template pack, with one stating, 'Have never paid for a template.'"
+    },
+    {
+      "text": "The market size for freelance designers in Egypt and the MENA region is unknown.",
+      "triggered": false,
+      "evidence": ""
+    },
+    {
+      "text": "Competitors offer similar tools with better positioning or pricing.",
+      "triggered": false,
+      "evidence": ""
+    }
+  ],
+  "would_change_mind": [
+    "Evidence that interviewees are willing to pay for a bilingual template pack.",
+    "Clear data on the market size for freelance designers in Egypt and the MENA region.",
+    "Competitors offering similar tools with worse positioning or pricing."
+  ],
+  "_meta": {
+    "agent": "skeptic",
+    "sources": []
+  }
+}

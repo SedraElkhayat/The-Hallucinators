@@ -1,0 +1,42 @@
+{
+  "phase": 5,
+  "checks": [
+    {
+      "id": "chk_p5_unapproved",
+      "metric": "unapproved_released",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "stop"
+    },
+    {
+      "id": "chk_p5_s2c_passed",
+      "metric": "sale_to_cash_passed",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p5_double_deliv",
+      "metric": "double_deliveries",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "stop"
+    },
+    {
+      "id": "chk_p5_reconcile",
+      "metric": "reconcile_balanced",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p5_compliance",
+      "metric": "compliance_must_fix",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "repeat"
+    }
+  ],
+  "sha256": "6ce24bfcf5b8fed227fa4136935662384523aa7a2849722330152c21c15df59c",
+  "note": "Written before the phase ran. The gate applies exactly these checks."
+}

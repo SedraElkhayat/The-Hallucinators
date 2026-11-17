@@ -1,0 +1,35 @@
+{
+  "phase": 3,
+  "checks": [
+    {
+      "id": "acceptance_pass_ratio",
+      "metric": "acceptance_pass_ratio",
+      "op": ">=",
+      "value": 0.8,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "no_honesty_must_fix",
+      "metric": "honesty_must_fix",
+      "op": "==",
+      "value": 0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "site_checks",
+      "metric": "site_checks_passed",
+      "op": "==",
+      "value": 1,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "nothing_deployed",
+      "metric": "deployed",
+      "op": "==",
+      "value": 0,
+      "on_fail": "stop"
+    }
+  ],
+  "sha256": "5e47067a81b1d4df04d7d6d597eb94e7216d29125e7cc77c2ccb9c19280c4801",
+  "note": "Written before the phase ran. The gate applies exactly these checks."
+}

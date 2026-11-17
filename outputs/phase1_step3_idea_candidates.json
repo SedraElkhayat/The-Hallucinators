@@ -1,0 +1,10 @@
+{
+  "skipped": true,
+  "candidates": [],
+  "chosen": null,
+  "reason": "The founder's brief already contains an idea.",
+  "_meta": {
+    "agent": "idea_generator",
+    "sources": []
+  }
+}

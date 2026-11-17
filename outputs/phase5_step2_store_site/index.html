@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Track Projects, Invoices, and Revisions with Ease</title>
+  <style>
+    :root { --ink: #1f2933; --muted: #52606d; --line: #d9e2ec; --accent: #1f4e79; --soft: #f0f4f8; --warn: #fff4d6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink);
+           line-height: 1.55; font-size: 1rem; }
+    header, main, footer { max-width: 46rem; margin: 0 auto; padding: 0 1rem; }
+    header { padding-top: 1.5rem; }
+    nav { display: flex; flex-wrap: wrap; gap: .25rem .9rem; font-size: .92rem; margin: .5rem 0 1rem; }
+    nav a { color: var(--accent); }
+    h1 { font-size: clamp(1.6rem, 6vw, 2.3rem); line-height: 1.2; margin: .5rem 0; }
+    h2 { font-size: 1.25rem; margin: 0 0 .5rem; }
+    section { padding: 1.1rem 0; border-top: 1px solid var(--line); }
+    ul { padding-left: 1.2rem; }
+    li { margin: .35rem 0; }
+    .lead { font-size: 1.1rem; color: var(--muted); }
+    .label { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .02em; padding: 0 .35rem;
+             border-radius: 3px; background: var(--warn); }
+    .source { font-size: .88rem; overflow-wrap: anywhere; }
+    .box { background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; }
+    dt { font-weight: 700; margin-top: .7rem; }
+    dd { margin: .2rem 0 0; }
+    input, button { font: inherit; padding: .55rem .7rem; border-radius: 4px; border: 1px solid var(--line);
+                    width: 100%; max-width: 22rem; margin: .3rem 0; }
+    button { background: var(--accent); color: #fff; border: 0; }
+    button[disabled], input[disabled] { opacity: .65; }
+    footer { padding: 1.5rem 1rem 2.5rem; font-size: .85rem; color: var(--muted); border-top: 1px solid var(--line); }
+  </style>
+</head>
+<body>
+  <header>
+    <nav aria-label="Sections">
+      <a href="#value-proposition">Overview</a>
+      <a href="#features">Features</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#price">Price</a>
+      <a href="#faq">FAQ</a>
+      <a href="#policies">Policies</a>
+      <a href="#signup">Sign up</a>
+    </nav>
+  </header>
+  <main>
+    <section id="value-proposition">
+      <h1>Track Projects, Invoices, and Revisions with Ease</h1>
+      <p class="lead">A bilingual (Arabic and English) digital template pack built for local freelancing habits, with no subscriptions and no client data collection.</p>
+    </section>
+    <section id="features">
+      <h2>Features</h2>
+      <ul>
+        <li>Track client projects, invoices, and revision rounds using Notion and Google Sheets</li>
+        <li>Bilingual support for Arabic and English to work with local and international clients</li>
+        <li>No subscriptions, no client data collection, and no user accounts</li>
+        <li>Simple templates for easy use without complex setup</li>
+        <li>Helps manage multiple clients without stress</li>
+      </ul>
+    </section>
+    <section id="evidence">
+      <h2>Evidence</h2>
+      <p>Statements with a source link were checked against that source. Statements marked
+        <span class="label">ASSUMPTION</span> have not been checked.</p>
+      <ul>
+        <li class="claim fact">Notion Freelance Templates are designed for independent professionals, including freelancers, with tools for project proposals, client management, invoice tracking, and time management. <a class="source" href="https://www.notion.com/templates/category/freelance" rel="noopener noreferrer">source</a></li>
+        <li class="claim fact">Notion Project Management Templates include options for solo users, freelancers with clients, and Agile teams. <a class="source" href="https://sync2sheets.com/blog/notion-project-management-templates/" rel="noopener noreferrer">source</a></li>
+        <li class="claim fact">The global graphic design market reached $55.1 billion in 2025. <a class="source" href="https://www.einvoicegenerator.com/blog/graphic-design-statistics" rel="noopener noreferrer">source</a></li>
+      </ul>
+    </section>
+    <section id="price">
+      <h2>Price</h2>
+      <p>Price: set by the founder. Purchasing opens when the founder is ready to sell.</p>
+    </section>
+    <section id="faq">
+      <h2>FAQ</h2>
+      <dl>
+        <dt>What is included in the template pack?</dt>
+        <dd>The template pack includes Notion and Google Sheets templates for tracking client projects, invoices sent, and revision rounds.</dd>
+        <dt>Can I use the templates in Arabic and English?</dt>
+        <dd>Yes, the templates are bilingual and support both Arabic and English for seamless use with local and international clients.</dd>
+        <dt>Does the product collect client data?</dt>
+        <dd>No, the product does not collect any client data. It is designed to help you manage your projects without storing sensitive information.</dd>
+        <dt>Are there any subscriptions involved?</dt>
+        <dd>No, there are no subscriptions. The template pack is a one-time purchase with no recurring fees.</dd>
+        <dt>What file formats are the templates available in?</dt>
+        <dd>The templates are available in Notion and Google Sheets formats for easy access and use.</dd>
+      </dl>
+    </section>
+    <section id="policies">
+      <h2>Policies</h2>
+      <ul>
+        <li><a href="policies/terms-of-service.html">Terms of Service (draft, needs legal review)</a></li>
+        <li><a href="policies/privacy-policy.html">Privacy Policy (draft, needs legal review)</a></li>
+        <li><a href="policies/refund-policy.html">Refund Policy (draft, needs legal review)</a></li>
+      </ul>
+    </section>
+    <section id="signup">
+      <h2>Sign up</h2>
+      <div class="box">
+        <form aria-label="Demo sign-up box">
+          <p><span class="label">Demo only: nothing is sent or stored</span></p>
+          <input type="email" placeholder="you@example.com" aria-label="Email address (demo)" disabled>
+          <button type="button" disabled>Join the waitlist</button>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <p>Draft website for the founder to review and publish. This page sends no data and takes no payments.</p>
+  </footer>
+</body>
+</html>
