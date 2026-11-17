@@ -11,6 +11,7 @@ if [ "$branch" = "main" ]; then echo "STOP: run this from your own branch, not m
 if git ls-files --error-unmatch CONTEXT.md >/dev/null 2>&1; then
   echo "STOP: CONTEXT.md is tracked. Run: git rm --cached CONTEXT.md, commit, then run this again."; exit 1
 fi
+git update-index -q --refresh >/dev/null 2>&1 || true
 if ! git diff-index --quiet HEAD --; then
   echo "STOP: you have uncommitted changes. Commit them (or stash them), then run this again."; exit 1
 fi
