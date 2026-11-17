@@ -3,7 +3,9 @@
 
 index.html plus one page per policy (policies/<slug>.html, each marked "needs legal review").
 Code renders everything with HTML escaping; the model never writes HTML. Inline CSS, no <script>,
-no form that sends anything, no checkout: mocked sale to cash never appears on the website.
+no form that sends anything, and no buy button or payment UI of any kind (the founder publishes this
+site; mocked sale to cash never appears on it). The single-page draft phase5_step2_store_page.html keeps
+its labeled "MOCKED checkout" button.
 
 INTERIM: until M3's site_template/index.html and website checks are on main, this module renders
 its own static page and runs basic checks. When they land, render_store_site() fills M3's template
@@ -63,8 +65,7 @@ def render_store_site(data: dict, documents: list[dict], is_assumption: bool) ->
         f"<p>{html.escape(str(data.get('description', '')))}</p>\n"
         f'<h2 id="features">Features</h2>\n<ul>\n{bullets}\n</ul>\n'
         f'<h2 id="price">Price</h2>\n<p class="price">{html.escape(price_text(data.get("price_usd"), is_assumption))}</p>\n'
-        '<p class="note">Buying is not set up on this page. The founder connects a checkout of their own choice '
-        "after reviewing this draft; this system never takes payments.</p>\n"
+        '<p class="note">Purchasing opens when the founder sets up checkout.</p>\n'
         f'<h2 id="policies">Policies</h2>\n<ul>\n{links}\n</ul>\n'
         "<footer>This page is a draft. The founder decides whether and where to publish it; "
         "this system never publishes.</footer>"
