@@ -259,14 +259,14 @@ This table states the current state of the code and is updated as components are
 | Part | Status |
 |---|---|
 | Orchestrator (stages, parallel stages, revise loops, repeat, pivot, stop), approval, decision log | Working |
-| Gates: pre-registered criteria, evaluation, decision files | Working (minimal version; per-phase checks being added) |
+| Gates: criteria pre-registered for all six phases, evaluation, decision files | Working |
 | Founder UI (web) and CLI, scripted demo inputs (labeled SCRIPTED) | Working |
 | Founder website: template, builder filling, website checks in Gate 3, Phase 5 store version | In progress |
 | Founder website preview and download in the UI (local only, never published) | Working |
-| Guardrails (output and input checks) | Working (minimal rule set; being extended) |
-| Search and fetch (free public sources, cached) and claim re-checking | Working (code); not yet exercised in a real demo run |
-| Phase 1 to 6 agents | In progress: phases without agents yet are STUBBED and logged as `phase_stubbed` in every run |
-| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |
+| Guardrails (input, output and release checks) and red-team evals in `evals/` | Working |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code); first real-model run in progress |
+| Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED); first real-model run in progress |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results in the demo run | MOCKED input (labeled) |
 | Mom Test interview notes in the demo run | SAMPLE input (labeled) |
 | Phase 6 inputs (support questions, results) | SAMPLE input (labeled) |

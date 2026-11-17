@@ -56,8 +56,18 @@ class RealClient(LLMClient):
         self.api_key = api_key or os.getenv("LLM_API_KEY", "ollama")
         self.timeout = int(os.getenv("LLM_TIMEOUT", timeout))
         self.max_tokens = int(os.getenv("LLM_MAX_TOKENS", "1500"))
+        # qwen3 "thinks" before answering by default; the thinking can use the whole token budget
+        # and leave no JSON. "auto" turns thinking off for qwen3 models with the documented /no_think switch.
+        self.no_think = os.getenv("LLM_NO_THINK", "auto").strip().lower()
+
+    def thinking_off(self) -> bool:
+        if self.no_think in ("1", "true", "yes", "on"):
+            return True
+        return self.no_think == "auto" and "qwen3" in self.model.lower()
 
     def chat(self, system: str, user: str, agent: str, json_mode: bool = True) -> LLMResponse:
+        if self.thinking_off():
+            system = f"{system}\n\n/no_think"
         body = {
             "model": self.model,
             "messages": [{"role": "system", "content": system},
