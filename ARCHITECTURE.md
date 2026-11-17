@@ -264,7 +264,7 @@ This table states the current state of the code and is updated as components are
 | Founder website: template, builder filling, website checks in Gate 3, Phase 5 store version | In progress |
 | Founder website preview and download in the UI (local only, never published) | Working |
 | Guardrails (input, output and release checks) and red-team evals in `evals/` | Working |
-| Search and fetch (free public sources, cached) and claim re-checking | Working (code); first real-model run in progress |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code): local SearXNG container, then Bing, Hacker News API, DuckDuckGo as fallbacks; a blocked search is an error, never a silent 0 results. Live check: `python -m scripts.check_search` |
 | Phase 1 to 6 agents | Working offline with MockLLM (every output labeled MOCKED); first real-model run in progress |
 | Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results in the demo run | MOCKED input (labeled) |

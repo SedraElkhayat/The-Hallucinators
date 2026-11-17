@@ -154,6 +154,9 @@ def run(ctx: Context, through: int = 6, start: int = 1) -> dict:
             outcome = "stop"
             break
         ctx.extra.pop("halt_phase", None)
+        # fresh tool budget per gate attempt: a REPEAT round must be able to search again
+        if hasattr(ctx.tools, "reset_budget"):
+            ctx.tools.reset_budget(f"phase {phase} attempt {attempt}")
         gates.preregister(ctx, phase, mod.gate_checks(ctx))
         if not mod.STAGES:
             ctx.log.action("orchestrator", "phase_stubbed", phase=phase, note="STUBBED: no agents yet")

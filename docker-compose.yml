@@ -27,9 +27,23 @@ services:
     entrypoint: ["/bin/sh", "-c", "ollama pull ${OLLAMA_MODEL:-qwen3:8b}"]
     restart: "no"
 
+  # free local metasearch for the agents' web search (core/tools.py); DuckDuckGo blocks scripts
+  searxng:
+    image: searxng/searxng:latest
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+    environment:
+      SEARXNG_BASE_URL: http://localhost:8888/
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-local-placeholder-change-me}
+    ports:
+      - "127.0.0.1:8888:8080"   # also usable from scripts on this machine: SEARXNG_URL=http://localhost:8888
+    restart: unless-stopped
+
   app:
     build: .
     depends_on:
+      searxng:
+        condition: service_started
       ollama:
         condition: service_healthy
       ollama-pull:
@@ -48,6 +62,10 @@ services:
       ORCH_CONCURRENCY: ${ORCH_CONCURRENCY:-1}
       FOUNDER_MODE: ${FOUNDER_MODE:-web}
       APP_PORT: ${APP_PORT:-8000}
+      # web search: backends tried in order until 3 results; searxng only when SEARXNG_URL is set
+      SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
+      SEARCH_BACKENDS: ${SEARCH_BACKENDS:-searxng,bing,hn,duckduckgo}
+      TOOL_BUDGET: ${TOOL_BUDGET:-8}
     ports:
       - "8000:8000"
     volumes:
