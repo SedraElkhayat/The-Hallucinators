@@ -254,6 +254,7 @@ def test_TC_BUG11_a_scripted_default_is_logged_as_a_default_not_as_a_founder_cho
     assert alternatives.offer(ctx, 1, ["why"]) is None
     entry = [e for e in ctx.log.entries() if e["action"] == "stop_alternative_1"][0]
     assert entry["provenance"] == "SCRIPTED_DEFAULT" and entry["approved_by"] is None
+    assert entry["asked"] is False                              # nobody was asked: the demo file has no answer
     md = (ctx.out_dir / "phase1_gate_alternatives.md").read_text(encoding="utf-8")
     assert "the scripted demo file has no answer for this question" in md
 

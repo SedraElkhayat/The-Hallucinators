@@ -108,7 +108,7 @@ def offer(ctx, phase: int, reasons: list[str], can_restart: bool = True) -> dict
     picked, provenance, asked = None, "", False
     if names and can_restart:
         answer, provenance = _ask(ctx, phase, data)
-        asked = True
+        asked = provenance != "SCRIPTED_DEFAULT"  # a demo file with no answer means nobody was asked
         idx = match_alternative(answer, names)
         if idx is None and answer.strip().lower() not in STOP_WORDS and not provenance.startswith("SCRIPTED"):
             answer, provenance = _ask(ctx, phase, data, retry=answer)
