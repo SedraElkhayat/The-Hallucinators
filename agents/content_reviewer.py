@@ -7,9 +7,9 @@ finds no sign-up, waitlist or user number on the site: the label has nothing to 
 import re
 
 from agents.base import Agent
-from agents.m3_common import (DEMO_FORM_LABEL, M3InputsMixin, P3_BUILD, P3_COPY, P3_DOCS, P3_REVIEW, content_violations,
-                              downgrade_must_fix, get_artifact, normalize_verdict, read_site_files,
-                              signup_number_present, site_dir)
+from agents.m3_common import (DEMO_FORM_LABEL, M3InputsMixin, P1_CLARIFICATION, P1_IDEA_CARD, P3_BUILD, P3_COPY, P3_DOCS,
+                              P3_REVIEW, P3_SPEC, content_violations, downgrade_must_fix, get_artifact,
+                              normalize_verdict, read_site_files, shared_key_words, signup_number_present, site_dir)
 from agents.m3_site import check_site_dir
 
 
@@ -22,6 +22,50 @@ def asks_for_simulated_label(text: str) -> bool:
     t = text.lower()
     asks = "simulated" in t and ("label" in t or "add" in t or "not real users" in t)
     return asks and not any(word in t for word in _FAKE_PROOF)
+
+
+# The product describing itself is the founder's design (spec, idea card, stated values), not a market claim.
+# A "missing source or ASSUMPTION label" issue about it is downgraded; numbers, prices, reviews, counts and promises
+# and statements about the market stay must_fix.
+_SOURCE_COMPLAINT = re.compile(
+    r"(?:without|lacks?|lacking|missing|no|not (?:have|has|cited|sourced|labeled|labelled)|unsourced|unlabeled|unlabelled)"
+    r"[^.]{0,60}(?:source|assumption)|source link|labeled as an? assumption|presented as (?:a )?fact", re.I)
+_ABOUT_THE_PRODUCT = re.compile(r"\bproduct\b|template pack|\bthe (?:tool|template|kit)\b", re.I)
+_NOT_DESCRIPTION = re.compile(
+    r"\d|%|\$|\b(?:price|pricing|usd|egp|review|testimonial|rating|sign-?ups?|waitlist|promise|guarantee|income|earn\w*|"
+    r"revenue|percent|competitors?|demand|survey|study|studies|research|statistics?|fake|invented|fabricated)\b"
+    r"|\b(?:number|count|amount) of (?:users|customers|designers|people)\b", re.I)
+MIN_SHARED_WORDS = 2
+
+
+def _strings(obj, key=""):
+    """Yield (key, text) for every string inside nested dicts and lists."""
+    if isinstance(obj, str):
+        yield key, obj
+    elif isinstance(obj, dict):
+        for k, v in obj.items():
+            yield from _strings(v, str(k))
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _strings(v, key)
+
+
+def founder_design_text(ctx) -> str:
+    """The product as the founder defined it: the spec, the idea card (customer, solution, value proposition) and the
+    founder's stated values and differentiation."""
+    parts = [t for _, t in _strings(get_artifact(ctx, P3_SPEC) or {})]
+    card = get_artifact(ctx, P1_IDEA_CARD) or {}
+    parts += [str(card.get(k, "")) for k in ("customer", "solution", "value_proposition")]
+    parts += [t for k, t in _strings(get_artifact(ctx, P1_CLARIFICATION) or {})
+              if re.search(r"values|differentiation|product|idea", k, re.I)]
+    return " ".join(parts)
+
+
+def describes_the_product_itself(issue: str, design: str) -> bool:
+    """True for a missing-source issue about the product's own description (lower-cased issue text)."""
+    return bool(_SOURCE_COMPLAINT.search(issue) and _ABOUT_THE_PRODUCT.search(issue)
+                and not _NOT_DESCRIPTION.search(issue)
+                and shared_key_words(issue, design) >= MIN_SHARED_WORDS)
 
 
 class ContentReviewer(M3InputsMixin, Agent):
@@ -60,6 +104,10 @@ class ContentReviewer(M3InputsMixin, Agent):
                 and not any(w in t for w in _FAKE_PROOF),
                 "rule applied in code: every claim on the page has a source link or the ASSUMPTION label "
                 "(checked in the website checks)")
+        design = founder_design_text(ctx)
+        downgrade_must_fix(data, lambda t: describes_the_product_itself(t, design),
+                           "rule applied in code: the issue is about the product's own description (the founder's design "
+                           "in the spec, the idea card or the stated values), which needs no source or ASSUMPTION label")
         if DEMO_FORM_LABEL.lower() in low_site:
             downgrade_must_fix(data, lambda t: "demo" in t and "label" in t,
                                f'rule applied in code: the sign-up box shows the label "{DEMO_FORM_LABEL}" '

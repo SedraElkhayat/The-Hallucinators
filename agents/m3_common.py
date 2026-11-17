@@ -281,6 +281,11 @@ def _key_tokens(text: str) -> set:
     return out
 
 
+def shared_key_words(a: str, b: str) -> int:
+    """How many key words (stemmed, without stop words) the two texts have in common."""
+    return len(_key_tokens(a) & _key_tokens(b))
+
+
 def claim_support(claim: str, quote: str) -> float:
     """Share of the claim's key words that appear in the quote (0.0 to 1.0)."""
     ct, qt = _key_tokens(claim), _key_tokens(quote)
