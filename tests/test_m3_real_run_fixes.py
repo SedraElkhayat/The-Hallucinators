@@ -440,3 +440,33 @@ def test_TC_M3_real_reviewer_downgrades_without_proper_context_or_source_when_th
                                              "source, even though it is labeled as a fact.", "file": "index.html"}
     ctx.llm = ScriptedLLM({"content_reviewer": {"issues": [issue], "verdict": "revise"}})
     assert _review_issues(ctx)["issues"][0]["severity"] == "should_fix"
+
+
+# ---------------------------------------------------------------- full six-phase real run: price slot, "verified as false"
+
+def test_TC_M3_real_reviewer_downgrades_a_price_complaint_when_the_amount_is_not_on_the_page(tmp_path):
+    ctx = _phase3_without_review(tmp_path, [])
+    issue = {"severity": "must_fix", "text": "The 'Price section' mentions a USD 100 one-time purchase, which is a promise "
+                                             "of a price without any evidence or source.", "file": "index.html"}
+    ctx.llm = ScriptedLLM({"content_reviewer": {"issues": [issue], "verdict": "revise"}})
+    data = _review_issues(ctx)
+    assert data["issues"][0]["severity"] == "should_fix" and data["verdict"] == "ok"
+
+
+def test_TC_M3_real_reviewer_keeps_a_price_complaint_when_the_amount_is_really_on_the_page(tmp_path):
+    ctx = _phase3_without_review(tmp_path, [])
+    path = tmp_path / "outputs" / "phase3_step3_site" / "index.html"
+    path.write_text(path.read_text(encoding="utf-8").replace("Join the waitlist", "Buy now for USD 100"),
+                    encoding="utf-8")
+    issue = {"severity": "must_fix", "text": "The page promises a USD 100 price without any evidence.", "file": "index.html"}
+    ctx.llm = ScriptedLLM({"content_reviewer": {"issues": [issue], "verdict": "revise"}})
+    assert _review_issues(ctx)["issues"][0]["severity"] == "must_fix"
+
+
+def test_TC_M3_real_critic_downgrades_verified_as_false_without_source_but_not_other_missing_sources(tmp_path):
+    flagged = ("The market claim that designers will pay USD 100 is verified as false, but no source is provided for "
+               "this claim.")
+    other = "The report states a competitor price without a source."
+    data = _critic(tmp_path, [flagged, other])
+    sev = {i["text"]: i["severity"] for i in data["issues"]}
+    assert sev[flagged] == "should_fix" and sev[other] == "must_fix"

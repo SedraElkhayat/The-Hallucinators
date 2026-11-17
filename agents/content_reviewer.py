@@ -64,6 +64,18 @@ class ContentReviewer(M3InputsMixin, Agent):
             downgrade_must_fix(data, lambda t: "demo" in t and "label" in t,
                                f'rule applied in code: the sign-up box shows the label "{DEMO_FORM_LABEL}" '
                                "(checked in the website checks)")
+        visible = re.sub(r"<style.*?</style>", " ", site, flags=re.S | re.I)   # CSS has numbers ("100%") that are not text
+        low_visible = " ".join(re.sub(r"<[^>]+>", " ", visible).split()).lower()
+
+        def price_not_on_page(t):  # the price slot is filled by code ("Price: set in Phase 4"); check the amount
+            if "price" not in t:
+                return False
+            amounts = re.findall(r"\d[\d,.]*", t)
+            return bool(amounts) and not any(a.strip(",.") in low_visible for a in amounts)
+
+        downgrade_must_fix(data, price_not_on_page,
+                           "rule applied in code: the website's price slot is filled by code (\"Price: set in Phase 4\") "
+                           "and the amount in the issue does not appear on the page")
         found = content_violations(site)
         if not any(w in found for w in ("urgency", "scarcity", "countdown")):
             downgrade_must_fix(data, lambda t: ("urgency" in t or "scarcity" in t)

@@ -85,6 +85,10 @@ class CriticPhase2(M3InputsMixin, Agent):
                                and re.search(r"fails? to mention|does not mention|not mention|omits?|missing", t),
                                "rule applied in code: every high risk of the Risk Analyst is in the report (the "
                                "validation_synthesizer adds any that is missing)")
+        downgrade_must_fix(data, lambda t: re.search(r"verified (?:as )?false|not verified|unverified", t)
+                           and re.search(r"no source|without (?:a )?source|not cited", t) and "kill criteri" not in t,
+                           "rule applied in code: a claim whose quote the checker did not find is flagged "
+                           "assumption=true by code, so it is not presented as a verified fact")
         # Two more points that code decides, whatever the provenance of the demand data:
         # - a scorecard rating without evidence_refs counts as "unknown" in the gate (phases/phase2.effective_ratings),
         #   so a rating cannot overstate its evidence;
