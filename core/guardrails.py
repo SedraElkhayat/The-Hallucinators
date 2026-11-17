@@ -147,7 +147,12 @@ _SECRET_PATTERNS = [
     re.compile(r"\b(xox[abpr]-[A-Za-z0-9-]{10,})\b"),
     re.compile(r"(?i)\b(?:password|passwd|pwd|secret|api[_ -]?key|access[_ -]?token|token|cvv|cvc|pin)\s*(?:is\s*)?[:=]\s*([^\s,;]+)"),
     re.compile(r"(?i)\b(?:cvv|cvc)\s*(?:code\s*)?\d{3,4}\b"),
-    re.compile(r"(?:كلمه\s*(?:السر|المرور)|الباسورد)\s*(?:هي\s*)?[:=]?\s*\S+"),
+    re.compile(r"(?:كلم[ةه]\s*(?:ال)?(?:سر|مرور)|الباسورد)\s*(?:هي\s*)?[:=]\s*\S+"),
+    # "the password is pass123456" (no colon): the value must contain a digit, so "the token is revoked" is kept.
+    re.compile(r"(?i)\b(?:password|passwd|secret|api[_ -]?key|access[_ -]?token|pin)\s+(?:is|was|=)\s+"
+               r"((?=[^\s,;]*\d)[^\s,;]{6,})"),
+    # Arabic with a word between: "كلمة المرور السرية هي pass123456" (a real-model run repeated this password).
+    re.compile(r"(?:كلم[ةه]\s*(?:ال)?(?:سر|مرور)|الباسورد)(?:\s+\S+){0,2}?\s+(?:هي\s+)?[:=]?\s*((?=\S*\d)[^\s,;.]{4,})"),
 ]
 
 
@@ -407,6 +412,8 @@ def check_output(text: str) -> GuardResult:
                     continue
                 findings.append(name)
                 break
+    # A draft must never repeat a card number or a credential (a real-model run echoed the test card and a password).
+    findings += [f for f in _redact(raw)[1] if f not in findings]
     return GuardResult(allowed=not findings, text=raw, findings=findings)
 
 

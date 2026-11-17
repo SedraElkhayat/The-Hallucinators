@@ -74,8 +74,10 @@ def normalize_critique(data: dict, code_issues: list[str]) -> dict:
         if not isinstance(i, dict):
             continue
         sev = str(i.get("severity", "should_fix")).lower().replace("-", "_").replace(" ", "_")
-        issues.append({"severity": "must_fix" if sev == "must_fix" else "should_fix",
-                       "text": str(i.get("text", ""))})
+        issue = {"severity": "must_fix" if sev == "must_fix" else "should_fix", "text": str(i.get("text", ""))}
+        if i.get("quote"):
+            issue["quote"] = str(i["quote"])
+        issues.append(issue)
     issues += [{"severity": "must_fix", "text": t} for t in code_issues]
     verdict = str(data.get("verdict", "ok")).lower()
     if any(i["severity"] == "must_fix" for i in issues):
@@ -109,8 +111,8 @@ def verify_model_issues(data: dict, reviewed_text: str) -> dict:
         quote = " ".join(str(i.get("quote") or "").split())
         text = str(i.get("text", ""))
         if sev == "must_fix":
-            stripped = _REQUIRED_LABEL_RX.sub("", quote).strip(" .,:;-[]()\"'")
-            if len(quote) < 4 or quote.lower() not in hay or len(stripped) < 4:
+            # A quote that contains a required label or placeholder objects to the label itself: never must_fix.
+            if len(quote) < 4 or quote.lower() not in hay or _REQUIRED_LABEL_RX.search(quote):
                 sev = "should_fix"
                 text = UNVERIFIED_PREFIX + text
                 downgraded += 1
@@ -240,3 +242,24 @@ def artifact_text(ctx: Context, *steps: str) -> str:
         if ctx.store.has(s):
             parts.append(_json.dumps(ctx.store.get(s), ensure_ascii=False, default=str))
     return "\n".join(parts)
+
+
+def draft_strings(ctx: Context, *steps: str) -> str:
+    """Only the text values of the drafts (no JSON keys, flags or numbers), for checking a reviewer's quotes."""
+    vals: list[str] = []
+
+    def walk(v, key=""):
+        if str(key).startswith("_"):
+            return
+        if isinstance(v, str):
+            vals.append(v)
+        elif isinstance(v, dict):
+            for k, x in v.items():
+                walk(x, k)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x, key)
+    for step in steps:
+        if ctx.store.has(step):
+            walk(ctx.store.get(step))
+    return "\n".join(vals)

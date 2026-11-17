@@ -39,12 +39,14 @@ class PricingAnalyst(M4Agent):
         budget = brief_budget(ctx.brief)
         if budget is not None:
             # The brief's budget is what the founder can spend, not what a customer pays (a real run mixed them up).
-            if data["price_usd"] == budget:
-                data["price_usd"] = None
-                data["budget_not_price"] = f"The model used the brief's budget (USD {budget:g}) as the price; removed."
-            elif _mentions_amount(str(data.get("rationale", "")), budget):
-                data["budget_not_price"] = (f"Note: USD {budget:g} in the brief is the founder's budget, "
-                                            "not a price customers have said they will pay.")
+            if data["price_usd"] == budget or _mentions_amount(str(data.get("rationale", "")), budget):
+                if data["price_usd"] == budget:
+                    data["price_usd"] = None
+                # A rationale built on the budget is wrong, so it is replaced, not kept beside a note.
+                data["rationale"] = (f"ASSUMPTION: no verified comparable price. USD {budget:g} in the brief is the "
+                                     "founder's budget, not a price customers have said they will pay; the founder "
+                                     "sets the price.")
+                data["budget_not_price"] = f"The model treated the brief's budget (USD {budget:g}) as a price; removed."
         if data["price_usd"] is None:
             # No invented number: the founder sets the price; labeled as an open assumption.
             data["is_assumption"] = True

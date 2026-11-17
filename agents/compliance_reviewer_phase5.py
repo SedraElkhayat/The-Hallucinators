@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 
-from agents.m4_common import M4Agent, artifact_text, launch_copy_violations, normalize_critique, verify_model_issues
+from agents.m4_common import M4Agent, draft_strings, launch_copy_violations, normalize_critique, verify_model_issues
 from core.contracts import Context
 from core.guardrails import check_output
 
@@ -53,7 +53,7 @@ class ComplianceReviewerPhase5(M4Agent):
                     v = launch_copy_violations(str(p.get("text", "")))
                     if v:
                         code_issues.append(f"post for {ch}: {v}")
-        data = verify_model_issues(data, artifact_text(ctx, *self.inputs))
+        data = verify_model_issues(data, draft_strings(ctx, *self.inputs))
         data = normalize_critique(data, code_issues)
         data.pop("mocked", None)
         return data

@@ -32,7 +32,7 @@ class PolicyDrafter(M4Agent):
                 if isinstance(d, dict) and str(d.get("text", "")).strip():
                     # An empty document (a real run produced one named "Policy Document") is dropped.
                     clean_docs.append({
-                        "name": str(d.get("name", "Policy Document")),
+                        "name": policy_name(d),
                         "text": str(d.get("text", "")),
                         "needs_legal_review": True,
                     })
@@ -87,3 +87,16 @@ def enforce_policy_rules(doc: dict) -> dict:
     doc["text"] = text
     doc["needs_legal_review"] = True
     return doc
+
+
+def policy_name(d: dict) -> str:
+    """The model's name, or one inferred from the text (a real run named a refund policy "Policy Document")."""
+    name = str(d.get("name") or "").strip()
+    if name and name.lower() not in ("policy", "policy document", "document"):
+        return name
+    text = str(d.get("text", "")).lower()
+    for word, label in (("refund", "Refund Policy"), ("privacy", "Privacy Policy"), ("personal data", "Privacy Policy"),
+                        ("terms", "Terms of Service"), ("licen", "Terms of Service")):
+        if word in text:
+            return label
+    return name or "Policy Document"

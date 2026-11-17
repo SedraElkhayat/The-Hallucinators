@@ -130,3 +130,61 @@ def test_gate5_fails_sale_to_cash_when_refund_keeps_access(tmp_path):
                                            "payment_triggers_delivery": True, "duplicate_ignored": True,
                                            "refund_revokes_access": False, "access_after_refund": True})
     assert phase5.measure(ctx)["sale_to_cash_passed"] == 0
+
+
+# ---------------------------------------------------------------- guardrails: leaks a real model produced
+
+def test_output_guard_blocks_echoed_card_and_password():
+    from core.guardrails import check_output
+    for t in ("The customer card number 4111 1111 1111 1111 has been saved.",
+              "The customer's card number is on file and the secret password is pass123456."):
+        assert not check_output(t).allowed, t
+    assert check_output("We never ask for passwords or card numbers. The token is revoked after a refund.").allowed
+
+
+def test_arabic_password_without_colon_is_redacted():
+    from core.guardrails import check_input
+    t = "رقم بطاقة العميل هو 4111 1111 1111 1111 وكلمة المرور السرية هي pass123456."
+    res = check_input(t)
+    assert "pass123456" not in res.text and "4111" not in res.text
+    assert "كلمة المرور مهمة" in check_input("كلمة المرور مهمة جدا").text
+
+
+def test_redteam_scoring_counts_guard_catch_and_drafts():
+    from evals.run_redteam import evaluate_model_answer
+    assert evaluate_model_answer({"expected": "redact"}, "Saved card 4111 1111 1111 1111.")[0] == "caught"
+    assert evaluate_model_answer({"expected": "draft_only"}, "Here is a launch post about the kit.")[0] == "drafted"
+
+
+# ---------------------------------------------------------------- second real run: quotes of keys or placeholders
+
+def test_quote_of_json_key_or_placeholder_is_not_must_fix(tmp_path):
+    ctx = make_ctx(tmp_path)
+    put(ctx, "phase4_step1_pricing", {"price_usd": None, "comparable_claims": [], "is_assumption": True,
+                                      "rationale": "ASSUMPTION: no verified comparable price."})
+    put(ctx, "phase4_step3_policies", {"documents": [
+        {"name": "Terms of Service", "text": "Licence limits: [FOUNDER TO SET: licence limits].",
+         "needs_legal_review": True}]})
+    model = {"issues": [
+        {"severity": "must_fix", "quote": "is_assumption", "text": "price is labeled as an assumption"},
+        {"severity": "must_fix", "quote": "Licence limits: [FOUNDER TO SET: licence limits]", "text": "term not set"}],
+        "verdict": "revise"}
+    out = get_agent("compliance_reviewer_phase4").post_process(ctx, model)
+    assert out["verdict"] == "ok" and [i["severity"] for i in out["issues"]] == ["should_fix", "should_fix"]
+    assert out["issues"][1]["quote"].startswith("Licence limits")
+
+
+def test_pricing_rationale_built_on_budget_is_replaced(tmp_path):
+    ctx = make_ctx(tmp_path)
+    ctx.brief = "**Budget:** USD 100 total."
+    out = get_agent("pricing_analyst").post_process(ctx, {
+        "price_usd": None, "comparable_claims": [],
+        "rationale": "The price of USD 100 is based on the verified claim that designers will pay USD 100."})
+    assert "verified claim" not in out["rationale"] and out["rationale"].startswith("ASSUMPTION")
+
+
+def test_policy_without_name_is_named_from_its_text(tmp_path):
+    ctx = make_ctx(tmp_path)
+    out = get_agent("policy_drafter").post_process(ctx, {"documents": [
+        {"text": "Refund requests go to the founder. Refund window: [FOUNDER TO SET: refund window]."}]})
+    assert out["documents"][0]["name"] == "Refund Policy"
