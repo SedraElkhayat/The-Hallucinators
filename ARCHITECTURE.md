@@ -21,6 +21,14 @@ flowchart LR
 
 **Models.** One open-weight model served by Ollama (default `qwen3:8b`, configurable, for example `gpt-oss:20b`). No paid API is required. Cost per run is measured from token counts.
 
+**How the run adapts to each founder** (all in code, not in prompts):
+- **Asks only what is missing.** The clarifier (`agents/clarifier.py`) reads the brief, marks the fields it already states, and asks the founder only about the rest, most important first. An "I don't know" becomes up to three labeled suggestions (`agents/option_suggester.py`); only one the founder approves becomes a fact.
+- **Decides on the founder's own numbers.** Founder hours are computed from the brief in code (`agents/m2_common.founder_time`) for the skeptic and the feasibility rating. The brief's budget is what the founder can spend, and code keeps it from being shown as a price or as willingness to pay in the Discover report, the Phase 2 competitor analysis, Phase 4 pricing and the Phase 5 store page.
+- **Evidence about this idea, not about anything.** A claim counts only if its quote is on the fetched page, mentions this idea's customer, problem or product, and states what the claim says; otherwise it becomes `ASSUMPTION` and the downgrade is logged.
+- **Explains every verdict.** Each gate file lists the failed checks and "what would change this verdict", including the skeptic's open questions for this idea.
+- **A STOP is not a dead end.** After a STOP the founder sees the next-best ideas that the Phase 1 scorer already ranked from the evidence, with their scores and reasons (`core/alternatives.py`), and may restart from Phase 1 with one of them (at most once) or stop. A gate `pivot` writes `pivot_notes` with the next-best alternative, and the idea sharpener rebuilds the idea card around it.
+- **The founder has the last word, on the record.** The founder can accept or override any gate verdict; an override is logged with `approved_by: founder` next to the system's own `system_outcome`, and the gate file keeps the system's verdict unchanged.
+
 ## Phases
 
 All agents are files in `agents/<role>.py` with a matching prompt in `prompts/<role>.md`. Each writes one artifact named `outputs/phase<N>_step<M>_<name>` (`.json` for code, `.md` for people). Agents inside one **parallel stage** run together; stages run in order. `kind` is `llm` (model call), `code` (no model) or `founder` (waits for the founder).
