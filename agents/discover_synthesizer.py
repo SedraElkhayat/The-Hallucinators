@@ -2,7 +2,7 @@
 claims index built in code) or is marked as an assumption. It never chooses the gate verdict. On a revision
 round it reads ``ctx.extra["critique"]``."""
 from agents.base import Agent
-from agents.m2_common import (COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
+from agents.m2_common import (founder_budget, COMPETITORS, DEMAND, FEASIBILITY, FOUNDER_FIT, IDEA_CARD, INTERVIEWS, MARKET,
                               OPPORTUNITIES, REPORT, SCOPE, SCORES, SKEPTIC, as_list, claims_index, id_list, message)
 
 
@@ -18,7 +18,7 @@ class DiscoverSynthesizer(Agent):
     kind = "llm"
 
     def build_user_message(self, ctx) -> str:
-        extra = {"claims_index": claims_index(ctx)}
+        extra = {"claims_index": claims_index(ctx), "founder_budget": founder_budget(ctx.brief)}
         if ctx.extra.get("critique"):
             extra["critique"] = ctx.extra["critique"]
         return message(ctx, self.inputs + self.optional_inputs, extra, brief=False, compact=True)

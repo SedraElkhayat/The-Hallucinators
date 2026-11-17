@@ -139,6 +139,17 @@ def founder_time(brief: str) -> Optional[dict]:
     return out
 
 
+_BUDGET = re.compile(r"budget\W{0,6}(?:is\s+|of\s+)?(?:usd|us\$|\$|egp)?\s?(\d[\d,]*(?:\.\d+)?)\s*(usd|egp|dollars)?", re.I)
+
+
+def founder_budget(brief: str) -> Optional[dict]:
+    """The founder's budget from the brief, labelled so a model never mistakes it for a price."""
+    m = _BUDGET.search(brief or "")
+    if not m:
+        return None
+    return {"amount": m.group(1), "note": "Budget the founder can spend to build and launch. NOT the product price."}
+
+
 def load_prompt(name: str) -> str:
     own = (PROMPT_DIR / f"{name}.md").read_text(encoding="utf-8")
     common = PROMPT_DIR / "_common.md"
@@ -492,6 +503,55 @@ def check_on_topic(ctx, data: dict, card: dict, agent: str) -> None:
                        "quote does not support the claim")
 
 
+SUPPORT_SYSTEM = (
+    "You check evidence. For each numbered pair, decide whether the QUOTE, read on its own, states what the CLAIM "
+    "says. 'supported' is true only if the quote says the same thing (same subject, same number or fact). It is "
+    "false if the quote is about something else, only mentions the topic, or the claim adds a number, place, "
+    "group or conclusion the quote does not state. Answer in JSON only: "
+    '{"results": [{"i": 1, "supported": true}, ...]} with one entry per pair.')
+
+
+def check_support(ctx, data: dict, agent: str) -> None:
+    """Model check that each verified quote really states its claim. Exact-quote matching only proves the quote
+    is on the page; a real run "verified" claims whose quotes said something else. Only a clear "no" from the
+    model downgrades a claim; a failed or unclear answer changes nothing (this check never adds evidence).
+    Skipped offline (mock model). One batched call per research agent, logged with its tokens."""
+    if getattr(ctx, "mock", False) or getattr(ctx.llm, "model", "") == "mock-llm":
+        return
+    pairs = [c for c in data.get("claims") or [] if isinstance(c, dict) and c.get("verified") is True]
+    if not pairs:
+        return
+    body = "\n".join(f"{n}. CLAIM: {str(c.get('claim', ''))[:300]}\n   QUOTE: {str(c.get('quote', ''))[:400]}"
+                     for n, c in enumerate(pairs, 1))
+    try:
+        resp = ctx.llm.chat(SUPPORT_SYSTEM, f"<data>\n{body}\n</data>", agent="claim_support_check", json_mode=True)
+    except Exception as e:  # noqa: BLE001 - no answer means no change
+        ctx.log.action("claim_checker", "claim_support_check_failed", for_agent=agent, error=str(e)[:200])
+        return
+    results = (resp.data or {}).get("results") if isinstance(resp.data, dict) else None
+    verdicts = {}
+    for r in results if isinstance(results, list) else []:
+        if isinstance(r, dict):
+            try:
+                verdicts[int(r.get("i"))] = r.get("supported")
+            except (TypeError, ValueError):
+                continue
+    dropped = 0
+    for n, c in enumerate(pairs, 1):
+        if verdicts.get(n) is False:
+            c["verified"], c["assumption"] = False, True
+            c["check"] = "quote does not state the claim (model support check)"
+            dropped += 1
+            ctx.log.action("claim_checker", "claim_downgraded", sources=[c.get("source_url", "")],
+                           reason="quote does not support the claim", claim=str(c.get("claim", ""))[:200],
+                           for_agent=agent)
+        elif verdicts.get(n) is True:
+            c["support_checked"] = True
+    ctx.log.action("claim_checker", "claim_support_check", sources=[c.get("source_url", "") for c in pairs],
+                   model=resp.model, cost=resp.cost, tokens_in=resp.tokens_in, tokens_out=resp.tokens_out,
+                   for_agent=agent, checked=len(pairs), downgraded=dropped)
+
+
 class ResearchAgent(Agent):
     """Base for the web research agents. Searches, fetches a few pages, hands them to the model as
     untrusted data, and asks for claims with exact quotes that core.claims re-checks.
@@ -549,6 +609,7 @@ class ResearchAgent(Agent):
             from core.claims import verify_claims
             data = verify_claims(ctx, data)
         check_on_topic(ctx, data, get_artifact(ctx, IDEA_CARD) or {}, self.name)
+        check_support(ctx, data, self.name)
         verified = [c for c in data["claims"] if c.get("verified") is True]
         # Computed in code: the model's own opinion of the evidence does not count.
         data["insufficient_evidence"] = len(verified) == 0

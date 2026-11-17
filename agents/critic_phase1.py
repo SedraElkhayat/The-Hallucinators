@@ -35,6 +35,21 @@ def only_untriggered_kill(text: str, hit: list[str], quiet: list[str]) -> bool:
     return any(q in t for q in quiet) and not any(h in t for h in hit)
 
 
+CLAIM_ID = re.compile(r"\bC(\d+)\b")
+SOURCE_COMPLAINT = re.compile(r"without (?:providing |citing |giving )?(?:a |any )?(?:source|citation|link)|"
+                              r"no source|not sourced|unsourced|missing (?:a )?source|"
+                              r"inconsistent with the claim'?s? source", re.I)
+
+
+def cited_claims_verified(text: str, verified_ids: set) -> bool:
+    """True if the issue only complains about a missing source for a finding whose cited claims are all verified.
+    A real run's critic raised four must_fix issues like "The finding '49% of graphic designers work as
+    freelancers.' cites claim_id C4, which is verified. However, the report mentions this claim without
+    providing a source": citing a verified claim id IS the report's source (the .md report links it)."""
+    ids = {f"C{n}" for n in CLAIM_ID.findall(text)}
+    return bool(ids) and ids <= verified_ids and bool(SOURCE_COMPLAINT.search(text))
+
+
 class CriticPhase1(Agent):
     name = "critic_phase1"
     phase = 1
@@ -52,11 +67,14 @@ class CriticPhase1(Agent):
     def post_process(self, ctx, data: dict) -> dict:
         issues = []
         hit, quiet = kill_texts(get_artifact(ctx, SKEPTIC) or {})
+        verified_ids = {c["id"] for c in claims_index(ctx) if c["verified"]}
         for i in as_list(data.get("issues")):
             if isinstance(i, str):
                 i = {"severity": "should_fix", "text": i}
             if isinstance(i, dict) and str(i.get("text", "")).strip():
                 i["severity"] = norm_severity(i.get("severity"))
+                if i["severity"] == "must_fix" and cited_claims_verified(str(i["text"]), verified_ids):
+                    i["severity"], i["downgraded_in_code"] = "should_fix", "the cited claims are verified, so the finding has its source"
                 if i["severity"] == "must_fix" and LABELLED_ASSUMPTION.search(str(i["text"])):
                     # The finding it quotes is already labelled ASSUMPTION, which is what the rules ask for.
                     i["severity"], i["downgraded_in_code"] = "should_fix", "finding already labelled ASSUMPTION"
