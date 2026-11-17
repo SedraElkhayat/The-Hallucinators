@@ -1,0 +1,14 @@
+{
+  "comparison": {
+    "waitlist_target": 100,
+    "waitlist_actual": 140,
+    "target_status": "exceeded",
+    "mock_sales": 9,
+    "mock_refunds": 1
+  },
+  "provenance": "SAMPLE",
+  "gaps": [
+    "Conversion from initial waitlist to store page visits requires deeper attribution tracking."
+  ],
+  "mocked": true
+}

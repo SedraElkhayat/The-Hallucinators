@@ -1,0 +1,20 @@
+{
+  "replies": [
+    {
+      "question": "Can I use the template in Arabic?",
+      "reply": "Yes, all project boards, invoice formulas, and guide documents are fully translated into Arabic and English.",
+      "escalate": false
+    },
+    {
+      "question": "I bought it twice by mistake, can I get my money back?",
+      "reply": "I am escalating this refund request directly to the founder for processing.",
+      "escalate": true
+    },
+    {
+      "question": "Does it work on the Notion free plan?",
+      "reply": "Yes, the template pack works smoothly on the standard Notion free plan without any paid upgrades required.",
+      "escalate": false
+    }
+  ],
+  "mocked": true
+}
