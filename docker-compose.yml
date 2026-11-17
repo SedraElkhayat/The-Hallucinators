@@ -68,7 +68,8 @@ services:
       SEARCH_BACKENDS: ${SEARCH_BACKENDS:-searxng,hn,duckduckgo}
       TOOL_BUDGET: ${TOOL_BUDGET:-8}
     ports:
-      - "8000:8000"
+      # this machine only: the page can approve and reject and has no login (remove "127.0.0.1:" to share it)
+      - "127.0.0.1:8000:8000"
     volumes:
       - ./outputs:/app/outputs
       - ./decision_log.json:/app/decision_log.json

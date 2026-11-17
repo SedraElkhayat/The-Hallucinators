@@ -20,6 +20,7 @@ class Approvals:
         self.mode, self.log, self.scripted = mode, log, scripted
         self.inbox = inbox or INBOX
         self.input_fn = input_fn
+        self.run_id = None  # set by the web app: every approval this opens is tagged with its run
         self.records: list[dict] = []
         self._lock = threading.Lock()
 
@@ -30,7 +31,8 @@ class Approvals:
         if self.mode == "cli":
             print(f"\n===== APPROVAL NEEDED (phase {phase}, {kind}) =====\n{title}\n\n{content[:3000]}\n")
             return self.input_fn("[FOUNDER] approve or reject? > ").strip(), "CLI"
-        item = self.inbox.open("approval", kind, title, ["approve", "reject"], content=content, phase=phase)
+        item = self.inbox.open("approval", kind, title, ["approve", "reject"], content=content, phase=phase,
+                               run=self.run_id)
         return self.inbox.wait(item), "WEB"
 
     def request(self, kind: str, title: str, content: str, phase: int, outcome: Optional[str] = None) -> bool:

@@ -12,7 +12,7 @@ An open-source team of AI agents that takes a founder's brief toward a validated
 docker compose up
 ```
 
-Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Answer questions and approve or reject items in the founder inbox. When Phase 3 has built the founder's website, the run page shows **Preview website** and **Download site folder**; the system never publishes it.
+Then open http://localhost:8000, pick a demo brief (or paste your own), and press **Start run**. The first start downloads the open-weight model (`qwen3:8b`, about 5 GB). Without an NVIDIA GPU the real model is slow (minutes per answer): tick **Offline demo** on the start page to see the whole flow in seconds with a mock model (every answer labeled `MOCKED`), or read the committed run in `outputs/`. Answer questions and approve or reject items in the founder inbox. When Phase 3 has built the founder's website, the run page shows **Preview website** and **Download site folder**; the system never publishes it.
 
 Offline, without Docker or a model: `pip install -r requirements.txt && make demo-mock` (writes to `runs/demo_mock`, every output labeled `MOCKED`). Without `make` (for example on Windows): `python orchestrator.py --brief demo/brief_strong.md --through 6 --mock-llm --out runs/demo_mock/outputs --founder-inputs demo/founder_inputs.json`. Tests: `python -m pip install -r requirements.txt` once, then `python -m pytest -q` (same as `make test`).
 

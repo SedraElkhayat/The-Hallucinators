@@ -81,7 +81,7 @@
       <ul class="runs">
         {% for r in all_runs %}
         <li><a href="/run/{{ r.id }}" class="{{ 'on' if run is defined and run.id == r.id }}">{{ r.brief or "Untitled idea" }}
-          <span class="meta">{% if r.result %}Ended with {{ r.result.outcome }} at gate {{ r.result.phase }}{% elif r.status == 'running' %}In progress{% else %}{{ r.status }}{% endif %}{% if r.mock %} <span class="tag mock">MOCKED</span>{% endif %}</span></a></li>
+          <span class="meta">{% if r.result %}Ended with {{ r.result.outcome }} at checkpoint {{ r.result.phase }}{% elif r.status == 'running' %}In progress{% else %}{{ r.status }}{% endif %}{% if r.mock %} <span class="tag mock">MOCKED</span>{% endif %}</span></a></li>
         {% endfor %}
       </ul>
       {% else %}<p class="muted">No runs yet.</p>{% endif %}

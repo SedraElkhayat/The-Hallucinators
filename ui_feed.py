@@ -199,10 +199,13 @@ def build_feed(run: dict, answers: dict[str, str]) -> list[dict]:
         m = re.match(r"gate_override_(\d+)$", a)
         if m and agent == "founder":
             close()
-            blocks.append({"type": "note", "tone": "founder",
-                           "text": f"You overrode Gate {m.group(1)}: the system said "
-                                   f"“{OUTCOME_WORDS.get(e.get('system_outcome'), e.get('system_outcome'))}”, "
-                                   f"you chose “{OUTCOME_WORDS.get(e.get('outcome'), e.get('outcome'))}”. This is logged."})
+            advised = OUTCOME_WORDS.get(e.get("system_outcome"), e.get("system_outcome"))
+            chosen = OUTCOME_WORDS.get(e.get("outcome"), e.get("outcome"))
+            text = (f"At checkpoint {m.group(1)} you chose “{chosen}”, the same as the system's advice. This is logged."
+                    if e.get("outcome") == e.get("system_outcome") else
+                    f"At checkpoint {m.group(1)} you disagreed: the system advised “{advised}” and you chose "
+                    f"“{chosen}”. This is logged.")
+            blocks.append({"type": "note", "tone": "founder", "text": text})
             continue
         m = re.match(r"(approved|rejected):(\w+)$", a)
         if m and agent == "founder":

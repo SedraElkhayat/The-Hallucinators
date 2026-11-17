@@ -68,7 +68,7 @@
     <div class="finished">
       <p class="say">{% if b.outcome == 'go' %}All six phases passed their rules. You have a tested website, a price, draft policies and launch drafts, ready for you to review and publish yourself.
       {% elif b.outcome == 'stop' %}I suggest pausing at checkpoint {{ b.phase }}. The evidence did not reach the targets set in advance. The explanation above lists what would change that, and the file phase{{ b.phase }}_gate_alternatives lists other directions you could try from the same research.
-      {% else %}The run ended at gate {{ b.phase }} with “{{ b.outcome }}”.{% endif %}</p>
+      {% else %}The run ended at checkpoint {{ b.phase }} with “{{ b.outcome }}”.{% endif %}</p>
       <p class="muted">{{ b.tokens }} tokens, about ${{ '%.2f'|format(b.cost) }}. <a href="/run/{{ run.id }}/audit">Audit trail</a></p>
     </div>
   {% endif %}

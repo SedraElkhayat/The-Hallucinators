@@ -1,5 +1,6 @@
 {% for it in items %}
 <div class="ask" id="ask-{{ it.id }}">
+  {% if run is not defined and it.run_title %}<div class="muted" style="margin-bottom: 6px">From the run “{{ it.run_title }}”</div>{% endif %}
   {% if it.kind == "approval" and it.key == "gate" %}
     {% set word = it.prompt.split(': ', 1)[-1]|lower %}
     <div class="what">Your decision: should this idea move on after phase {{ it.phase }}?</div>
@@ -28,12 +29,13 @@
     {% if it.options %}
     <form method="post" action="/approvals/{{ it.id }}" class="choices" data-ask>
       <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
-      {% for o in it.options %}<button class="btn" name="decision" value="{{ o }}">{{ o }}</button>{% endfor %}
+      {% for o in it.options %}<button class="btn" name="decision" value="{{ o }}">{{ ({'go': 'Go on to the next phase', 'repeat': 'Run this phase again', 'pivot': 'Step back and rethink', 'stop': 'Stop here'}.get(o, o)) if it.key.startswith('gate_override') else o }}</button>{% endfor %}
     </form>
     {% endif %}
     <form method="post" action="/approvals/{{ it.id }}" class="free" data-ask>
       <input type="hidden" name="next" value="{{ '/run/' ~ run.id if run is defined else '' }}">
-      <textarea name="answer" aria-label="Your answer" placeholder="Type your answer here. Not sure? Type “I don't know” and I will suggest options{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %}. Label made-up data as SAMPLE or MOCKED{% endif %}"></textarea>
+      {% if it.key.startswith('clarify_') %}{% set hint = "Type your answer here. Not sure? Type “I don't know” and I will suggest options" %}{% elif it.options %}{% set hint = "Or type your own answer here" %}{% else %}{% set hint = "Type your answer here" %}{% endif %}
+      <textarea name="answer" aria-label="Your answer" placeholder="{{ hint|safe }}{% if it.key in ['interview_notes', 'demand_results', 'support_questions', 'phase6_results'] %}. Label made-up data as SAMPLE or MOCKED{% endif %}"></textarea>
       <div class="acts"><button class="btn primary" type="submit">Send</button></div>
     </form>
   {% endif %}

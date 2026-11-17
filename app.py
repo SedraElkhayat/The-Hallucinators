@@ -50,6 +50,8 @@ def start_run(brief: str, mock: bool, through: int = 6) -> str:
     out_dir = RUNS_DIR / rid / "outputs"
     ctx = orchestrator.build_context(brief, out_dir, out_dir.parent / "decision_log.json", mock=mock,
                                      founder_mode="web", founder_inputs=None)
+    ctx.founder.run_id = rid      # every question and approval of this run is tagged with it,
+    ctx.approvals.run_id = rid    # so a run page shows only its own and an answer reaches the right run
     run = {"id": rid, "status": "running", "mock": mock, "result": None, "ctx": ctx, "through": through,
            "brief": ui_feed.brief_title(brief), "error": None}
     with _lock:
@@ -160,9 +162,9 @@ def _sidebar():
     return {"all_runs": runs, "pending": len(INBOX.pending()), "model": os.getenv("LLM_MODEL", "qwen3:8b")}
 
 
-def _answers() -> dict[str, str]:
+def _answers(rid: str | None = None) -> dict[str, str]:
     """The founder's own answers by input key (web mode), so the conversation can show them."""
-    return {it["key"]: it["answer"] for it in INBOX.all() if it["kind"] == "input" and it["status"] == "answered"}
+    return {it["key"]: it["answer"] for it in INBOX.all(rid) if it["kind"] == "input" and it["status"] == "answered"}
 
 
 def _is_html(text: str) -> bool:
@@ -170,11 +172,14 @@ def _is_html(text: str) -> bool:
     return t.startswith("<!doctype") or t.startswith("<html") or ("<body" in t and "</" in t)
 
 
-def _pending_items() -> list[dict]:
-    items = INBOX.pending()
+def _pending_items(rid: str | None = None) -> list[dict]:
+    """Open questions: one run's own (its page) or everyone's (the inbox page, each marked with its run)."""
+    items = INBOX.pending(rid)
     for it in items:
         it["is_html"] = _is_html(it.get("content", ""))
         it["label"] = ui_feed.humanize_key(it["key"])
+        owner = RUNS.get(it.get("run") or "")
+        it["run_title"] = owner["brief"] if owner else ""
     return items
 
 
@@ -182,8 +187,8 @@ def _run_view(rid: str) -> dict:
     run = RUNS.get(rid)
     if not run:
         abort(404)
-    return {"run": run, "blocks": ui_feed.build_feed(run, _answers()), "site": site_dir(rid),
-            "activity": ui_feed.current_activity(run), "items": _pending_items()}
+    return {"run": run, "blocks": ui_feed.build_feed(run, _answers(rid)), "site": site_dir(rid),
+            "activity": ui_feed.current_activity(run), "items": _pending_items(rid)}
 
 
 @app.get("/")
@@ -204,7 +209,10 @@ def start():
             brief = p.read_text(encoding="utf-8")
     if not brief:
         abort(400, "A brief is required.")
-    through = max(1, min(6, int(request.form.get("through", 6) or 6)))
+    try:
+        through = max(1, min(6, int(request.form.get("through", 6) or 6)))
+    except ValueError:
+        abort(400, "The phase to stop after must be a number from 1 to 6.")
     rid = start_run(brief, mock=request.form.get("mock") == "on", through=through)
     return redirect(url_for("run_page", rid=rid))
 
@@ -230,7 +238,7 @@ def run_state(rid):
     if not run:
         abort(404)
     return {"status": run["status"], "events": len(run["ctx"].log.entries()),
-            "pending": [it["id"] for it in INBOX.pending()], "activity": ui_feed.current_activity(run)}
+            "pending": [it["id"] for it in INBOX.pending(rid)], "activity": ui_feed.current_activity(run)}
 
 
 @app.get("/run/<rid>/audit")

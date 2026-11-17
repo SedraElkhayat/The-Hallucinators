@@ -1,0 +1,15 @@
+# keep the image small and keep local files out of it
+.git
+.github
+.env
+.env.*
+!.env.example
+runs
+__pycache__
+*.pyc
+.pytest_cache
+.cache
+venv
+.venv
+CONTEXT.md
+PROGRESS_*.md

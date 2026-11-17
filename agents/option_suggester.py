@@ -53,8 +53,14 @@ class OptionSuggester(Agent):
         decisions, model, cost = [], None, 0.0
         tokens = {"tokens_in": 0, "tokens_out": 0}
         known = {f: v.get("value") for f, v in fields.items() if v.get("status") == "answered"}
+        stopped = bool(clar.get("stopped_by_founder"))  # the founder typed "skip": ask nothing more
         for f, v in fields.items():
             if v.get("status") == "answered":
+                continue
+            if stopped:
+                decisions.append({"field": f, "options": [], "status": "unknown_confirmed", "value": "unknown",
+                                  "note": "the founder stopped the questions"})
+                fields[f] = {"value": "unknown", "status": "unknown_confirmed", "source": None}
                 continue
             options, m, c, tk = self._suggest(ctx, f, known, [])
             model = m or model
@@ -65,19 +71,21 @@ class OptionSuggester(Agent):
                                   "note": "no options could be suggested"})
                 fields[f] = {"value": "unknown", "status": "unknown_confirmed", "source": None}
                 continue
-            shown, extra = list(options), 0
+            shown, extra, note = list(options), 0, ""
             while True:
-                raw = ctx.founder.ask(f"option_{f}", self._question(f, options, extra),
-                                      options=options + ([MORE] if extra < MAX_EXTRA_ROUNDS else []) + [NONE])
-                if (raw or "").strip().lower() != MORE or extra >= MAX_EXTRA_ROUNDS:
+                can_more = extra < MAX_EXTRA_ROUNDS and not note
+                raw = ctx.founder.ask(f"option_{f}", self._question(f, options, extra, note),
+                                      options=options + ([MORE] if can_more else []) + [NONE])
+                if (raw or "").strip().lower() != MORE or not can_more:
                     break
                 extra += 1
                 more, m, c, tk = self._suggest(ctx, f, known, shown)
                 model = m or model
                 cost += c
                 tokens = {k: tokens[k] + tk.get(k, 0) for k in tokens}
-                if not more:
-                    break
+                if not more:  # nothing new: say so and ask again, never move on silently
+                    note = "I could not think of different ideas, so here are the same ones again. "
+                    continue
                 options = more
                 shown += more
             answer, _ = redact_input(raw)
@@ -104,11 +112,11 @@ class OptionSuggester(Agent):
         return self.save(ctx, data, markdown=banner(mocked) + "\n".join(md) + "\n", sources=[], model=model,
                          cost=cost, mocked=mocked, **tokens)
 
-    def _question(self, field: str, options: list[str], extra: int) -> str:
+    def _question(self, field: str, options: list[str], extra: int, note: str = "") -> str:
         """Friendly wording: what the founder did not know, the ideas, and what they can do next."""
         listing = "; ".join(f"{i}) {o}" for i, o in enumerate(options, 1))
         again = " (new ideas)" if extra else ""
-        return (f"You were not sure about {FIELD_LABELS.get(field, field)}. Here are some ideas{again}. They are "
+        return (f"{note}You were not sure about {FIELD_LABELS.get(field, field)}. Here are some ideas{again}. They are "
                 f"suggestions, not facts: {listing}. Choose one, type your own answer, ask for "
                 f"'{MORE}', or answer '{NONE}' to leave it open.")
 

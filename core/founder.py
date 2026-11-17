@@ -17,11 +17,11 @@ class Inbox:
         self._ids = itertools.count(1)
         self.items: dict[int, dict] = {}
 
-    def open(self, kind: str, key: str, prompt: str, options=None, content: str = "", phase=None) -> dict:
+    def open(self, kind: str, key: str, prompt: str, options=None, content: str = "", phase=None, run=None) -> dict:
         with self._lock:
             i = next(self._ids)
             item = {"id": i, "kind": kind, "key": key, "prompt": prompt, "options": options or [],
-                    "content": content, "phase": phase, "status": "pending", "answer": None,
+                    "content": content, "phase": phase, "run": run, "status": "pending", "answer": None,
                     "_event": threading.Event()}
             self.items[i] = item
         return item
@@ -39,14 +39,17 @@ class Inbox:
             raise TimeoutError(f"no founder answer for {item['key']}")
         return item["answer"]
 
-    def pending(self) -> list[dict]:
+    def pending(self, run=None) -> list[dict]:
+        """Open items. With ``run`` only that run's own items (a run page must not show another run's questions)."""
         with self._lock:
             return [{k: v for k, v in it.items() if k != "_event"}
-                    for it in self.items.values() if it["status"] == "pending"]
+                    for it in self.items.values()
+                    if it["status"] == "pending" and (run is None or it.get("run") == run)]
 
-    def all(self) -> list[dict]:
+    def all(self, run=None) -> list[dict]:
         with self._lock:
-            return [{k: v for k, v in it.items() if k != "_event"} for it in self.items.values()]
+            return [{k: v for k, v in it.items() if k != "_event"} for it in self.items.values()
+                    if run is None or it.get("run") == run]
 
 
 INBOX = Inbox()
@@ -91,6 +94,7 @@ class FounderInput:
         self.mode, self.log, self.scripted = mode, log, scripted
         self.inbox = inbox or INBOX
         self.input_fn = input_fn
+        self.run_id = None  # set by the web app: every question this founder input opens is tagged with its run
 
     def _get(self, key: str, prompt: str, options=None) -> str:
         if self.mode == "scripted":
@@ -101,7 +105,7 @@ class FounderInput:
             value = self.input_fn(f"\n[FOUNDER] {prompt}{opts}\n> ").strip()
             label = "CLI"
         else:
-            item = self.inbox.open("input", key, prompt, options)
+            item = self.inbox.open("input", key, prompt, options, run=self.run_id)
             value = self.inbox.wait(item)
             label = "WEB"
         if isinstance(value, (dict, list)):

@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -113,21 +114,48 @@ def gate_summary(phase: int, res: gates.GateResult) -> str:
     return "\n".join(lines)
 
 
+OVERRIDE_WORDS = {"go": "go", "go on": "go", "continue": "go", "carry on": "go", "next": "go", "next phase": "go",
+                  "repeat": "repeat", "again": "repeat", "redo": "repeat", "run again": "repeat",
+                  "pivot": "pivot", "rethink": "pivot", "change course": "pivot",
+                  "stop": "stop", "stop here": "stop", "end": "stop", "end here": "stop", "quit": "stop"}
+MAX_OVERRIDE_ASKS = 3
+OVERRIDE_PROMPT = ("You disagreed with the system's advice at checkpoint {phase} ('{outcome}'). What should happen "
+                   "instead? go = continue to the next phase, repeat = run this phase again, "
+                   "pivot = step back and rethink the idea, stop = end here.")
+
+
+def parse_override(text) -> str | None:
+    """Map what the founder typed or clicked to go, repeat, pivot or stop; None when it is none of them."""
+    return OVERRIDE_WORDS.get(" ".join(re.sub(r"[^a-z ]+", " ", str(text).lower()).split()))
+
+
+def ask_override(ctx: Context, phase: int, outcome: str) -> tuple[str, str]:
+    """Ask what should happen instead of the system's advice; returns (choice, what the founder answered).
+
+    An answer that is not go, repeat, pivot or stop is asked again (at most twice, never for a scripted founder).
+    If it is still not understood the run stops, the safe choice, and the log records the unrecognized answer.
+    """
+    base = OVERRIDE_PROMPT.format(phase=phase, outcome=outcome)
+    prompt, raw = base, ""
+    for _ in range(MAX_OVERRIDE_ASKS):
+        raw = ctx.founder.ask(f"gate_override_{phase}", prompt, ["go", "repeat", "pivot", "stop"])
+        choice = parse_override(raw)
+        if choice or getattr(ctx.founder, "mode", "") == "scripted":
+            return choice or "stop", raw
+        prompt = f"I did not understand “{str(raw).strip()[:40]}”. Please choose go, repeat, pivot or stop. " + base
+    return "stop", raw
+
+
 def founder_gate(ctx: Context, phase: int, res: gates.GateResult) -> str:
     approved = ctx.approvals.request("gate", f"Gate {phase}: {res.outcome}", gate_summary(phase, res), phase,
                                      outcome=res.outcome)
     if approved:
         return res.outcome
-    choice = ctx.founder.ask(f"gate_override_{phase}",
-                             f"You disagreed with the system's advice at checkpoint {phase} ('{res.outcome}'). What should happen "
-                             f"instead? go = continue to the next phase, repeat = run this phase again, "
-                             f"pivot = step back and rethink the idea, stop = end here.",
-                             ["go", "repeat", "pivot", "stop"]).strip().lower()
-    if choice not in gates.SEVERITY:
-        choice = "stop"
+    choice, raw = ask_override(ctx, phase, res.outcome)
     provenance = {"scripted": "SCRIPTED", "cli": "CLI", "web": "WEB"}.get(getattr(ctx.founder, "mode", ""), "")
+    unclear = {} if parse_override(raw) else {"unrecognized_answer": str(raw).strip()[:80]}
     ctx.log.action("founder", f"gate_override_{phase}", approved_by="founder", outcome=choice,
-                   system_outcome=res.outcome, provenance=provenance)
+                   system_outcome=res.outcome, provenance=provenance, **unclear)
     write_override(ctx, phase, res, choice)
     return choice
 
@@ -207,10 +235,10 @@ def run(ctx: Context, through: int = 6, start: int = 1) -> dict:
                 attempts.pop(p, None)
             phase = target
         else:
-            picked = alternatives.offer(ctx, phase, res.reasons)
-            if picked and restarts < alternatives.MAX_RESTARTS:
+            picked = alternatives.offer(ctx, phase, res.reasons, can_restart=restarts < alternatives.MAX_RESTARTS)
+            if picked:
                 restarts += 1
-                ctx.brief = (f"{ctx.brief}\n\nDirection chosen by the founder after a STOP at Gate {phase}: "
+                ctx.brief = (f"{ctx.brief}\n\nDirection chosen by the founder after a STOP at checkpoint {phase}: "
                              f"{picked['name']}")
                 ctx.log.action("orchestrator", "restart_with_alternative", phase=phase, alternative=picked["name"])
                 attempts.clear()
