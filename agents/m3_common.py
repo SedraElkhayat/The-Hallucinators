@@ -6,12 +6,13 @@ from __future__ import annotations
 
 import json
 import re
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
 ROOT = Path(__file__).resolve().parent.parent
 PROMPTS_DIR = ROOT / "prompts"
-BUILD_DIRNAME = "phase3_build"
+SITE_DIRNAME = "phase3_step3_site"  # outputs/ folder of the founder website (phase<N>_step<M>_<name>/)
 MAX_ARTIFACT_CHARS = 6000
 
 # Artifact stems used by Phase 2 and 3 (CONTEXT.md section 5).
@@ -43,6 +44,7 @@ P3_BUILD = "phase3_step3_build"
 P3_DOCS = "phase3_step4_user_docs"
 P3_QA = "phase3_step5_qa_report"
 P3_REVIEW = "phase3_step6_content_review"
+P3_PUBLISH_GUIDE = "phase3_step7_publish_guide"
 
 DEFAULT_TARGET = 100
 DEFAULT_WINDOW_DAYS = 14
@@ -140,14 +142,13 @@ def guardrail_findings(text: str) -> list[str]:
     return [str(f) for f in findings] or ["blocked by guardrails"]
 
 
-# Honesty and safety patterns checked in code for pages and built files.
+# Honesty and safety patterns checked in code for pages and the founder website.
 BLOCK_MARK = "[BLOCKED by guardrails]"  # what agents/base.py writes in place of a blocked string
 
 # Markup and tracking markers: always a violation, even after "no" (a <script> tag is a script).
 _MARKUP_SUBSTRINGS = {
     BLOCK_MARK.lower(): "blocked by guardrails",
     "<script": "script tag",
-    "<form": "form element",
     "<iframe": "iframe",
     "javascript:": "javascript URL",
     "googletagmanager": "tracking",
@@ -207,6 +208,17 @@ def _negated(text: str, start: int) -> bool:
     return bool(_NEGATION.search(window))
 
 
+SIMULATED_LABEL = "SIMULATED, not real users"
+DEMO_FORM_LABEL = "Demo only: nothing is sent or stored"
+SIMULATED_WINDOW = 100
+
+
+def _simulated(text: str, start: int, end: int) -> bool:
+    """A count is allowed when it is labeled SIMULATED within 100 characters around it."""
+    around = text[max(0, start - SIMULATED_WINDOW):end + SIMULATED_WINDOW]
+    return SIMULATED_LABEL.lower() in " ".join(around.split()).lower()
+
+
 def content_violations(text: str) -> list[str]:
     """Code-found honesty/safety violations in a piece of page or build content."""
     text = text or ""
@@ -214,9 +226,116 @@ def content_violations(text: str) -> list[str]:
     found = [label for needle, label in _MARKUP_SUBSTRINGS.items() if needle in low]
     found += [label for rx, label in _MARKUP_REGEXES if rx.search(text)]
     for rx, label in _WORD_REGEXES:
-        if any(not _negated(text, m.start()) for m in rx.finditer(text)):
+        for m in rx.finditer(text):
+            if _negated(text, m.start()):
+                continue
+            if label == "invented count" and _simulated(text, m.start(), m.end()):
+                continue
             found.append(label)
+            break
+    if "<form" in low or "</form" in low:
+        if form_problems(text):
+            found.append("form element")
     return sorted(set(found))
+
+
+# ---------------------------------------------------------------- the one allowed form (demo sign-up box)
+
+_SENSITIVE_INPUT = re.compile(r"card|cc-|cc_|ccnum|cvc|cvv|password|passwd|iban|\bpin\b|security.?code|expir", re.I)
+
+
+class _FormScan(HTMLParser):
+    """Collects every form (attributes, controls, visible text) in a piece of HTML."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.forms: list[dict] = []
+        self.current = None
+        self.depth = 0
+        self.stray: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        a = {k.lower(): (v if v is not None else "") for k, v in attrs}
+        if tag == "form":
+            if self.current is not None:
+                self.current["nested"] = True
+                return
+            self.current = {"attrs": a, "controls": [], "text": []}
+            self.forms.append(self.current)
+            return
+        if tag in ("button", "input", "select", "textarea"):
+            if self.current is None:
+                self.stray.append(tag)
+            else:
+                self.current["controls"].append((tag, a))
+
+    def handle_endtag(self, tag):
+        if tag == "form":
+            if self.current is not None:
+                self.current["closed"] = True
+            self.current = None
+
+    def handle_data(self, data):
+        if self.current is not None:
+            self.current["text"].append(data)
+
+
+def scan_forms(html_text: str) -> list[dict]:
+    p = _FormScan()
+    try:
+        p.feed(html_text or "")
+        p.close()
+    except Exception:  # noqa: BLE001 - unparsable markup is reported by the caller
+        return [{"attrs": {}, "controls": [], "text": [], "unparsable": True}]
+    return p.forms
+
+
+def form_problems(html_text: str) -> list[str]:
+    """Problems with the forms in this HTML. Exactly one labeled demo form is allowed:
+    no action or method, no submit control (buttons are type="button" or disabled), no password, card or
+    CVC fields, the visible label "Demo only: nothing is sent or stored". Anything else is a problem."""
+    forms = scan_forms(html_text)
+    problems = []
+    if len(forms) > 1:
+        problems.append(f"{len(forms)} forms found; only one demo sign-up form is allowed")
+    for n, f in enumerate(forms, 1):
+        tag = f"form {n}"
+        if f.get("unparsable"):
+            problems.append(f"{tag}: markup could not be parsed")
+            continue
+        attrs = f["attrs"]
+        for bad in ("action", "method", "target", "enctype"):
+            if bad in attrs:
+                problems.append(f"{tag}: has the {bad} attribute")
+        if f.get("nested"):
+            problems.append(f"{tag}: nested form")
+        if not f.get("closed"):
+            problems.append(f"{tag}: not closed")
+        text = " ".join("".join(f["text"]).split())
+        if DEMO_FORM_LABEL.lower() not in text.lower():
+            problems.append(f'{tag}: missing the visible label "{DEMO_FORM_LABEL}"')
+        for ctag, a in f["controls"]:
+            ctype = a.get("type", "").strip().lower()
+            if "formaction" in a or "formmethod" in a:
+                problems.append(f"{tag}: {ctag} with formaction or formmethod")
+            if ctag == "button":
+                if ctype == "submit" or ctype == "reset":
+                    problems.append(f'{tag}: button of type="{ctype}"')
+                elif ctype != "button" and "disabled" not in a:
+                    problems.append(f'{tag}: button without type="button" or disabled (it would submit)')
+            if ctag == "input":
+                if ctype in ("submit", "image", "reset"):
+                    problems.append(f'{tag}: input of type="{ctype}"')
+                if ctype in ("password", "file", "hidden"):
+                    problems.append(f'{tag}: {ctype} input')
+                if ctype not in ("button", "submit", "image", "reset") and "disabled" not in a \
+                        and "readonly" not in a:
+                    # Pressing Enter in a live field would submit the form to the page's own address.
+                    problems.append(f"{tag}: input that can be filled in (it must be disabled or readonly)")
+            ident = " ".join(a.get(k, "") for k in ("name", "id", "autocomplete", "placeholder", "aria-label"))
+            if _SENSITIVE_INPUT.search(ident):
+                problems.append(f"{tag}: password or payment field ({ident.strip()})")
+    return problems
 
 
 def network_code_present(text: str) -> bool:
@@ -268,19 +387,19 @@ def plan_target(ctx) -> tuple[int, int]:
             positive_int(plan.get("window_days")) or DEFAULT_WINDOW_DAYS)
 
 
-def build_dir(ctx) -> Path:
-    return Path(ctx.out_dir) / BUILD_DIRNAME
+def site_dir(ctx) -> Path:
+    return Path(ctx.out_dir) / SITE_DIRNAME
 
 
 def safe_rel_path(path: Any) -> Optional[str]:
-    """Normalized relative path inside the build folder, or None if unsafe."""
+    """Normalized relative path inside the site folder, or None if unsafe."""
     if not isinstance(path, str):
         return None
     p = path.strip().replace("\\", "/")
     while p.startswith("./"):
         p = p[2:]
-    if p.startswith(BUILD_DIRNAME + "/"):
-        p = p[len(BUILD_DIRNAME) + 1:]
+    if p.startswith(SITE_DIRNAME + "/"):
+        p = p[len(SITE_DIRNAME) + 1:]
     if not p or p.startswith("/") or re.match(r"^[a-zA-Z]:", p) or "\x00" in p:
         return None
     parts = p.split("/")
@@ -289,10 +408,10 @@ def safe_rel_path(path: Any) -> Optional[str]:
     return p
 
 
-def read_build_files(ctx, limit_each: int = 4000) -> dict:
-    """Contents of the built files (for reviewers), truncated."""
+def read_site_files(ctx, limit_each: int = 4000) -> dict:
+    """Contents of the website files (for reviewers), truncated."""
     out = {}
-    root = build_dir(ctx)
+    root = site_dir(ctx)
     if not root.is_dir():
         return out
     for f in sorted(root.rglob("*")):

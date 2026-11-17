@@ -1,17 +1,17 @@
 {
-  "title": "MOCKED: Using the client onboarding kit",
+  "title": "MOCKED: Using your website",
   "sections": [
     {
-      "heading": "MOCKED: what is included",
-      "text": "MOCKED: index.html, onboarding_checklist.md, intake_questionnaire.md and welcome_message.txt."
+      "heading": "MOCKED: Opening the website",
+      "text": "MOCKED: open phase3_step3_site/index.html in a browser; it needs no build step."
     },
     {
-      "heading": "MOCKED: how to use the checklist",
-      "text": "MOCKED: open onboarding_checklist.md in any text editor and copy it for each new client."
+      "heading": "MOCKED: Placeholders",
+      "text": "MOCKED: the price and policies are set in Phase 4; the sign-up box is a demo that sends nothing."
     },
     {
-      "heading": "MOCKED: what the kit does not do",
-      "text": "MOCKED: it does not send messages, store client data or take payments."
+      "heading": "MOCKED: Publishing",
+      "text": "MOCKED: you publish the folder yourself following the publish guide; the system never publishes it."
     }
   ]
 }

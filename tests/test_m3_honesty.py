@@ -48,3 +48,40 @@ def test_network_code_is_only_real_calls():
     assert network_code_present("fetch('https://example.com')")
     assert network_code_present("import requests")
     assert network_code_present("new WebSocket('wss://x')")
+
+
+DEMO_FORM = ('<form aria-label="Demo sign-up box"><p>Demo only: nothing is sent or stored</p>'
+             '<input type="email" placeholder="you@example.com" disabled>'
+             '<button type="button" disabled>Join the waitlist</button></form>')
+
+
+def test_exactly_the_labeled_demo_form_is_allowed():
+    assert content_violations(DEMO_FORM) == []
+    assert content_violations(DEMO_FORM.replace('<button type="button" disabled>', "<button disabled>")) == []
+
+
+@pytest.mark.parametrize("form", [
+    DEMO_FORM.replace("<form ", '<form action="/subscribe" '),
+    DEMO_FORM.replace("<form ", '<form method="post" '),
+    DEMO_FORM.replace('type="button" disabled', 'type="submit"'),
+    DEMO_FORM.replace('<input type="email"', '<input type="password"'),
+    DEMO_FORM.replace('placeholder="you@example.com"', 'name="cardnumber"'),
+    DEMO_FORM.replace('placeholder="you@example.com"', 'name="cvc"'),
+    DEMO_FORM.replace("Demo only: nothing is sent or stored", ""),
+    DEMO_FORM + DEMO_FORM,
+    "<form><input></form>",
+    "<form>",
+])
+def test_every_other_form_is_a_violation(form):
+    assert "form element" in content_violations(form)
+
+
+def test_labeled_demo_form_does_not_excuse_a_script_or_network_call():
+    assert "script tag" in content_violations(DEMO_FORM + "<script>alert(1)</script>")
+    assert network_code_present(DEMO_FORM + "<script>fetch('https://x.example')</script>")
+
+
+def test_simulated_counts_need_the_label():
+    assert "invented count" in content_violations("Join 40 designers on the waitlist")
+    assert content_violations("Join 40 designers on the waitlist (SIMULATED, not real users)") == []
+    assert "invented count" in content_violations("Join 40 designers. " + "x" * 120 + " SIMULATED, not real users")

@@ -1,6 +1,6 @@
 """user_docs_writer: user guide for the files that were actually built."""
 from agents.base import Agent
-from agents.m3_common import M3InputsMixin, P3_BUILD, P3_COPY, P3_DOCS, P3_SPEC, get_artifact, read_build_files
+from agents.m3_common import M3InputsMixin, P3_BUILD, P3_COPY, P3_DOCS, P3_SPEC, get_artifact, read_site_files
 
 
 class UserDocsWriter(M3InputsMixin, Agent):
@@ -14,7 +14,7 @@ class UserDocsWriter(M3InputsMixin, Agent):
     kind = "llm"
 
     def extra_payload(self, ctx) -> dict:
-        return {"build_files": read_build_files(ctx, limit_each=2000)}
+        return {"site_files": read_site_files(ctx, limit_each=2000)}
 
     def post_process(self, ctx, data: dict) -> dict:
         sections = []

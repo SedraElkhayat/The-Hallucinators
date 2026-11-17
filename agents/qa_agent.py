@@ -1,22 +1,24 @@
-"""qa_agent (code kind): runs each acceptance check from the spec against the built files."""
+"""qa_agent (code kind): runs each acceptance check from the spec against the website folder, and the
+website checks (agents/m3_site.check_site_dir). Every result comes from a check that ran in code."""
 from pathlib import Path
 
 from agents.base import Agent
-from agents.m3_common import P3_BUILD, P3_QA, P3_SPEC, build_dir, get_artifact, safe_rel_path
+from agents.m3_common import P3_BUILD, P3_QA, P3_SPEC, get_artifact, safe_rel_path, site_dir
+from agents.m3_site import check_site_dir
 
 
 def run_check(root: Path, check: dict) -> tuple:
-    """Run one check against the build folder. Returns (passed, detail)."""
+    """Run one check against the site folder. Returns (passed, detail)."""
     if not isinstance(check, dict):
         return False, "check missing"
     ctype = str(check.get("type", ""))
     raw = check.get("path", "")
     rel = safe_rel_path(raw)
     if rel is None:
-        return False, f"{ctype} {raw!r}: path is not a safe relative path inside the build folder"
+        return False, f"{ctype} {raw!r}: path is not a safe relative path inside the site folder"
     target = (root / rel).resolve()
     if root.resolve() not in target.parents:
-        return False, f"{ctype} {rel}: path leaves the build folder"
+        return False, f"{ctype} {rel}: path leaves the site folder"
     if ctype == "file_exists":
         return (True, f"file_exists {rel}: found") if target.is_file() else (False, f"file_exists {rel}: not found")
     if ctype == "text_contains":
@@ -37,13 +39,13 @@ class QaAgent(Agent):
     step = P3_QA
     inputs = [P3_SPEC, P3_BUILD]
     tools = []
-    required_keys = ["results", "pass_ratio"]
+    required_keys = ["results", "pass_ratio", "site_checks"]
     kind = "code"
 
     def run(self, ctx):
         self.check_inputs(ctx)
         spec = get_artifact(ctx, P3_SPEC) or {}
-        root = build_dir(ctx)
+        root = site_dir(ctx)
         results = []
         for n, t in enumerate(spec.get("acceptance_tests") or [], 1):
             tid = str(t.get("id") or f"AT{n}") if isinstance(t, dict) else f"AT{n}"
@@ -51,14 +53,18 @@ class QaAgent(Agent):
             results.append({"id": tid, "passed": bool(passed), "detail": detail})
         total = len(results)
         passed = sum(1 for r in results if r["passed"])
+        site_checks = check_site_dir(root, phase=3)
         data = {"results": results, "pass_ratio": round(passed / total, 4) if total else 0.0,
-                "total": total, "passed": passed}
+                "total": total, "passed": passed, "site_checks": site_checks}
         lines = [f"# QA report\n\nAcceptance checks run in code against `{root.name}/`: "
                  f"{passed} of {total} passed (pass ratio {data['pass_ratio']}).\n",
                  "| Test | Result | Detail |", "|---|---|---|"]
         lines += [f"| {r['id']} | {'PASS' if r['passed'] else 'FAIL'} | {r['detail']} |" for r in results]
         if not total:
             lines.append("\nNo acceptance tests were found in the spec, so nothing passed.")
+        lines.append(f"\n## Website checks: {'PASS' if site_checks['passed'] else 'FAIL'}\n")
+        lines += [f"- {f}" for f in site_checks["failures"]] or ["- every website check passed"]
         md = "\n".join(lines) + "\n"
         return self.save(ctx, data, markdown=md, sources=[], model=None, cost=0.0, mocked=False,
-                         action="run_acceptance_tests", passed_count=passed, total_count=total)
+                         action="run_acceptance_tests", passed_count=passed, total_count=total,
+                         site_checks_passed=site_checks["passed"])

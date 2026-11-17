@@ -1,21 +1,33 @@
 {
-  "files": [
+  "headline": "MOCKED: Client onboarding templates for solo designers",
+  "value_proposition": "MOCKED: a checklist, an intake questionnaire and a welcome message you adapt for each new client, so onboarding is not redone by hand.",
+  "features": [
+    "MOCKED: Onboarding checklist for every new client",
+    "MOCKED: Intake questionnaire to send before the first call",
+    "MOCKED: Welcome message template you can edit"
+  ],
+  "faq": [
     {
-      "path": "index.html",
-      "content": "<!DOCTYPE html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><title>Onboarding kit (MOCKED)</title></head>\n<body><h1>MOCKED: Client onboarding templates for solo designers</h1>\n<ul><li>Onboarding checklist</li><li>Intake questionnaire</li><li>Welcome message template</li></ul>\n<p>MOCKED draft product page. No purchase is possible here.</p></body></html>\n"
+      "q": "MOCKED: What do I get?",
+      "a": "MOCKED: Markdown and plain-text templates you open in any editor."
     },
     {
-      "path": "onboarding_checklist.md",
-      "content": "# Onboarding checklist (MOCKED)\n\n## Before the first call\n- Send the intake questionnaire\n\n## First call\n- Confirm scope, timeline and how feedback is given\n\n## After the call\n- Send the welcome message\n"
-    },
-    {
-      "path": "intake_questionnaire.md",
-      "content": "# Intake questionnaire (MOCKED)\n\n1. What is the project about?\n   - SAMPLE answer: a logo refresh for a local bakery\n2. Who decides on the final design?\n3. What is your preferred way to give feedback?\n"
-    },
-    {
-      "path": "welcome_message.txt",
-      "content": "MOCKED welcome message template\n\nHi [client name],\nThanks for choosing to work together. Here is what happens next: [steps].\n"
+      "q": "MOCKED: Does the kit send messages for me?",
+      "a": "MOCKED: No. You copy the templates and send them yourself."
     }
   ],
-  "notes": "MOCKED: four static files built; the founder adds their own details before use."
+  "claims": [
+    {
+      "claim": "MOCKED Rival Kit A sells onboarding templates for agencies",
+      "source_url": "https://example.com/mock/1"
+    },
+    {
+      "claim": "MOCKED free onboarding checklists are common",
+      "source_url": "https://example.com/mock/2"
+    },
+    {
+      "claim": "MOCKED: solo designers would rather buy a kit than write their own"
+    }
+  ],
+  "cta": "Join the waitlist (MOCKED)"
 }

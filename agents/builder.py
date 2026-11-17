@@ -1,58 +1,20 @@
-"""builder: the model writes the files of a small static product; code validates and saves them.
+"""builder: the founder's website, built from the ready-made template.
 
-Files are written ONLY inside <ctx.out_dir>/phase3_build/. Nothing is deployed and no network
-connection is opened. Rejected files get one rewrite chance, then they are dropped and recorded.
+The model returns structured content only (headline, value proposition, features, FAQ, claims); it never
+writes HTML. Code cleans that content, fills ``site_template/index.html`` with every value HTML-escaped
+(agents/m3_site.py) and writes ``<ctx.out_dir>/phase3_step3_site/index.html``. Claims are re-checked by
+core.claims (in the base run) before they are shown; only ``verified: true`` claims with an https source
+appear as facts, everything else is labeled ASSUMPTION. The builder also writes the publish guide
+(``phase3_step7_publish_guide``): the founder publishes the site, the system never does.
+Nothing is deployed and no network connection is opened.
 """
-import json
 import shutil
-from pathlib import Path
 
 from agents.base import Agent
-from agents.m3_common import (BUILD_DIRNAME, M3InputsMixin, P3_BUILD, P3_COPY, P3_SPEC, build_dir,
-                              content_violations, guardrail_findings, log_action,
-                              network_code_present, safe_rel_path)
-
-ALLOWED_EXTENSIONS = (".html", ".md", ".txt", ".csv", ".json")
-MAX_FILES = 6
-MAX_CHARS = 20000
-
-
-def check_file(path, content) -> tuple:
-    """Return (normalized_path, reasons). Empty reasons means the file is accepted."""
-    reasons = []
-    rel = safe_rel_path(path)
-    if rel is None:
-        reasons.append(f"unsafe path {path!r} (relative paths only, no '..')")
-    elif not rel.lower().endswith(ALLOWED_EXTENSIONS):
-        reasons.append(f"extension not allowed for {rel} (allowed: {', '.join(ALLOWED_EXTENSIONS)})")
-    if not isinstance(content, str) or not content.strip():
-        reasons.append("empty content")
-        return rel, reasons
-    if len(content) > MAX_CHARS:
-        reasons.append(f"content longer than {MAX_CHARS} characters")
-    reasons += content_violations(content)
-    if network_code_present(content):
-        reasons.append("network code")
-    reasons += [f"guardrails: {f}" for f in guardrail_findings(content)]
-    return rel, sorted(set(reasons))
-
-
-def validate_files(files) -> tuple:
-    """Split model output into accepted [{path, content}] and rejected [{path, reasons, content}]."""
-    accepted, rejected, seen = [], [], set()
-    for f in files or []:
-        if not isinstance(f, dict):
-            rejected.append({"path": str(f)[:80], "reasons": ["not an object with path and content"], "content": ""})
-            continue
-        rel, reasons = check_file(f.get("path"), f.get("content"))
-        if not reasons and rel in seen:
-            reasons = ["duplicate path"]
-        if reasons:
-            rejected.append({"path": str(f.get("path")), "reasons": reasons, "content": f.get("content") or ""})
-        else:
-            seen.add(rel)
-            accepted.append({"path": rel, "content": f["content"]})
-    return accepted, rejected
+from agents.m3_common import (M3InputsMixin, P1_COMPETITORS, P1_DEMAND_SIGNALS, P1_IDEA_CARD, P1_MARKET,
+                              P2_CANVAS, P2_COMPETITOR_ANALYSIS, P3_BUILD, P3_COPY, P3_PUBLISH_GUIDE, P3_SPEC,
+                              SITE_DIRNAME, site_dir)
+from agents.m3_site import TEMPLATE_PATH, fill_template, publish_guide, sanitize_content
 
 
 class Builder(M3InputsMixin, Agent):
@@ -60,76 +22,58 @@ class Builder(M3InputsMixin, Agent):
     phase = 3
     step = P3_BUILD
     inputs = [P3_SPEC, P3_COPY]
+    optional_inputs = [P1_IDEA_CARD, P2_CANVAS, P2_COMPETITOR_ANALYSIS, P1_MARKET, P1_DEMAND_SIGNALS, P1_COMPETITORS]
     tools = []
-    required_keys = ["files", "notes"]
+    required_keys = ["headline", "value_proposition", "features", "faq", "claims"]
     kind = "llm"
 
-    def _rewrite(self, ctx, rejected) -> list:
-        request = [{"path": r["path"], "reasons": r["reasons"]} for r in rejected]
-        user = self.build_user_message(ctx) + "\n<data>\n" + json.dumps(
-            {"rewrite_request": request}, ensure_ascii=False) + "\n</data>\nRewrite only these files so they follow every rule."
-        try:
-            resp = ctx.llm.chat(self.system_prompt(), user, agent=self.name, json_mode=True)
-        except Exception as exc:  # noqa: BLE001 - a failed rewrite leaves the files dropped
-            log_action(ctx, self.name, "rewrite_rejected_files", error=str(exc)[:200])
-            return []
-        log_action(ctx, self.name, "rewrite_rejected_files", model=getattr(resp, "model", None),
-                   cost=getattr(resp, "cost", 0.0) or 0.0, files=[r["path"] for r in request])
-        data = resp.data if isinstance(getattr(resp, "data", None), dict) else {}
-        wanted = {safe_rel_path(r["path"]) or r["path"] for r in rejected}
-        return [f for f in data.get("files") or []
-                if isinstance(f, dict) and (safe_rel_path(f.get("path")) or f.get("path")) in wanted]
-
     def run(self, ctx):
-        result = super().run(ctx)  # model call, required keys, guardrails, artifact, log entry
-        data = result.data or {}
-        accepted, rejected = validate_files(data.get("files"))
-        dropped = []
-        if rejected:
-            retry_ok, retry_bad = validate_files(self._rewrite(ctx, rejected))
-            fixed = {f["path"] for f in retry_ok}
-            have = {f["path"] for f in accepted}
-            accepted += [f for f in retry_ok if f["path"] not in have]
-            retried_bad = {safe_rel_path(r["path"]) or r["path"] for r in retry_bad}
-            for r in rejected:
-                key = safe_rel_path(r["path"]) or r["path"]
-                if key not in fixed and key not in retried_bad:
-                    dropped.append({"path": r["path"], "reasons": r["reasons"]})
-            for r in retry_bad:
-                dropped.append({"path": r["path"], "reasons": ["after rewrite: " + "; ".join(r["reasons"])]})
-        if len(accepted) > MAX_FILES:
-            dropped += [{"path": f["path"], "reasons": [f"more than {MAX_FILES} files"]} for f in accepted[MAX_FILES:]]
-            accepted = accepted[:MAX_FILES]
+        result = super().run(ctx)  # model call, claim re-check, guardrails, artifact, log entry
+        content, dropped = sanitize_content(result.data or {})
 
-        root = build_dir(ctx)
-        if root.exists():  # a repeat round starts from a clean sandbox folder
+        root = site_dir(ctx)
+        if root.exists():  # a repeat round starts from a clean folder
             shutil.rmtree(root)
-        root.mkdir(parents=True, exist_ok=True)
-        base = root.resolve()
-        written = []
-        for f in accepted:
-            target = (root / f["path"]).resolve()
-            if base not in target.parents:  # defence in depth; safe_rel_path already checked
-                dropped.append({"path": f["path"], "reasons": ["resolved outside the build folder"]})
-                continue
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(f["content"], encoding="utf-8")
-            written.append({"path": f["path"], "chars": len(f["content"])})
+        error, files = None, []
+        try:
+            page = fill_template(content, phase=3)
+        except FileNotFoundError as exc:
+            error = str(exc)
+            ctx.log.action(self.name, "site_template_missing", error=error)
+        else:
+            root.mkdir(parents=True, exist_ok=True)
+            (root / "index.html").write_text(page, encoding="utf-8")
+            files = [{"path": "index.html", "chars": len(page)}]
 
+        guide, guide_md = publish_guide(SITE_DIRNAME)
+        ctx.store.put(P3_PUBLISH_GUIDE, guide, guide_md, self.name, [])
+        ctx.log.action(self.name, "write_publish_guide", step=P3_PUBLISH_GUIDE)
+
+        facts = sum(1 for c in content["claims"] if c["shown_as"] == "fact")
         manifest = {
-            "build_dir": BUILD_DIRNAME,
-            "files": written,
-            "notes": str(data.get("notes", "")),
+            **content,  # headline, value_proposition, features, faq, claims, cta: as shown on the page
+            "site_dir": SITE_DIRNAME,
+            "template": TEMPLATE_PATH.relative_to(TEMPLATE_PATH.parent.parent).as_posix(),
+            "files": files,
             "dropped": dropped,
+            "claims_shown_as_fact": facts,
+            "claims_shown_as_assumption": len(content["claims"]) - facts,
+            "publish_guide": P3_PUBLISH_GUIDE,
             "deployed": False,
         }
-        md = [f"# Build manifest\n\nFiles written to `{BUILD_DIRNAME}/` (sandbox folder; nothing deployed).\n"]
-        md += [f"- `{w['path']}` ({w['chars']} characters)" for w in written] or ["- (no files)"]
+        if error:
+            manifest["error"] = error
+        if result.mocked:
+            manifest["mocked"] = True
+        md = [f"# Website build\n\nWebsite folder: `{SITE_DIRNAME}/` (not published; the founder publishes it "
+              f"following `{P3_PUBLISH_GUIDE}.md`).\n"]
+        md += [f"- `{f['path']}` ({f['chars']} characters)" for f in files] or [f"- No website written: {error}"]
+        md.append(f"\nClaims shown as fact (verified, with source link): {facts}; "
+                  f"shown as ASSUMPTION: {manifest['claims_shown_as_assumption']}.")
         if dropped:
-            md.append("\n## Dropped files\n")
-            md += [f"- `{d['path']}`: {'; '.join(d['reasons'])}" for d in dropped]
-        md.append(f"\n## Notes\n\n{manifest['notes']}\n")
-        markdown = "\n".join(md)
+            md.append("\n## Removed by code checks\n")
+            md += [f"- {d['field']}: {d['text']!r} ({'; '.join(d['reasons'])})" for d in dropped]
+        markdown = "\n".join(md) + "\n"
         ctx.store.put(self.step, manifest, markdown, self.name, list(result.sources or []))
         result.data, result.markdown = manifest, markdown
         return result

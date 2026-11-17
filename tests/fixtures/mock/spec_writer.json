@@ -1,9 +1,8 @@
 {
   "mvp_scope": [
-    "MOCKED: index.html product page",
-    "MOCKED: onboarding_checklist.md",
-    "MOCKED: intake_questionnaire.md",
-    "MOCKED: welcome_message.txt"
+    "MOCKED: index.html value proposition and features",
+    "MOCKED: index.html evidence with sources or ASSUMPTION labels",
+    "MOCKED: index.html demo sign-up box"
   ],
   "user_stories": [
     "MOCKED: as a solo designer, I want a checklist for each new client, so that I do not forget a step",
@@ -12,7 +11,7 @@
   "acceptance_tests": [
     {
       "id": "AT1",
-      "description": "MOCKED: the product page exists",
+      "description": "MOCKED: the website page exists",
       "check": {
         "type": "file_exists",
         "path": "index.html",
@@ -21,29 +20,29 @@
     },
     {
       "id": "AT2",
-      "description": "MOCKED: the checklist has a first-call section",
+      "description": "MOCKED: the page lists the onboarding checklist",
       "check": {
         "type": "text_contains",
-        "path": "onboarding_checklist.md",
-        "text": "First call"
+        "path": "index.html",
+        "text": "Onboarding checklist"
       }
     },
     {
       "id": "AT3",
-      "description": "MOCKED: the questionnaire marks example answers as SAMPLE",
+      "description": "MOCKED: the sign-up box is labeled as a demo",
       "check": {
         "type": "text_contains",
-        "path": "intake_questionnaire.md",
-        "text": "SAMPLE"
+        "path": "index.html",
+        "text": "Demo only: nothing is sent or stored"
       }
     },
     {
       "id": "AT4",
-      "description": "MOCKED: the welcome message template exists",
+      "description": "MOCKED: the price waits for Phase 4",
       "check": {
-        "type": "file_exists",
-        "path": "welcome_message.txt",
-        "text": ""
+        "type": "text_contains",
+        "path": "index.html",
+        "text": "Price: set in Phase 4"
       }
     }
   ],

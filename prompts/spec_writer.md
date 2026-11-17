@@ -1,10 +1,10 @@
 # spec_writer
 
 ## Role
-You write the MVP specification for a small static digital product the founder can build with their own skills and time.
+You write the MVP specification for the founder's one-page website, which a code builder fills from a ready-made template.
 
 ## Task
-Define the smallest version of the product that tests the value proposition: a few text, HTML, Markdown or CSV files (at most 6). Write user stories and acceptance tests that code can check by looking at the files.
+Define the smallest website that presents the value proposition: one page `index.html` with a value proposition, features, evidence, price (set in Phase 4), FAQ, policy links (drafted in Phase 4) and a demo sign-up box. Write user stories and acceptance tests that code can check by looking at that page.
 
 ## Inputs
 - `phase2_step2_lean_canvas`: solution, unique value proposition, customer segments.
@@ -17,14 +17,14 @@ Define the smallest version of the product that tests the value proposition: a f
 JSON object with exactly these keys:
 - `mvp_scope`: list of strings, one per file or feature.
 - `user_stories`: list of strings in the form "As a ..., I want ..., so that ...".
-- `acceptance_tests`: list of `{"id": "AT1", "description": str, "check": {"type": "file_exists"|"text_contains", "path": str, "text": str}}`. `path` is relative to the build folder (for example `index.html`); `text` is required for `text_contains` and empty for `file_exists`.
+- `acceptance_tests`: list of `{"id": "AT1", "description": str, "check": {"type": "file_exists"|"text_contains", "path": str, "text": str}}`. `path` is relative to the website folder (use `index.html`); `text` is required for `text_contains` and empty for `file_exists`.
 - `out_of_scope`: list of strings.
 
 Example (placeholders in angle brackets; replace them, never copy them):
 ```json
 {
   "mvp_scope": [
-    "<file name>: <what it contains>"
+    "<section of index.html>: <what it shows>"
   ],
   "user_stories": [
     "As a <customer>, I want <capability>, so that <outcome>"
@@ -35,7 +35,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
       "description": "<what is checked>",
       "check": {
         "type": "file_exists",
-        "path": "<relative file path>",
+        "path": "index.html",
         "text": ""
       }
     },
@@ -44,7 +44,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
       "description": "<what is checked>",
       "check": {
         "type": "text_contains",
-        "path": "<relative file path>",
+        "path": "index.html",
         "text": "<short exact text>"
       }
     }
@@ -56,7 +56,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
 ```
 
 ## Rules
-- Static files only: no scripts, no forms, no payment, no accounts, no network calls, no deployment.
-- Fit the founder's stated skills and hours; if those are unknown, keep the scope to 3 files.
+- One static page: no scripts, no payment, no accounts, no network calls, no deployment. The only form is the template's demo sign-up box.
+- Fit the founder's stated skills and hours; keep the scope to one page.
 - Every acceptance test must be checkable by `file_exists` or `text_contains`; use short exact texts.
-- Use only these file types: `.html`, `.md`, `.txt`, `.csv`, `.json`.
+- Acceptance tests check `index.html` only; `text_contains` texts must be plain words that will appear on the page.

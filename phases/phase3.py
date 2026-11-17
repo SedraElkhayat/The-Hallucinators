@@ -1,17 +1,19 @@
 # OWNER: M3
-"""Phase 3: Build (spec, page copy, static build in a sandbox folder, user docs, QA, honesty review).
+"""Phase 3: Build ONE founder website (spec, page copy, website from the template, user docs, QA, honesty review).
 
-Founder input keys used in this phase: none. Nothing is deployed or published: the builder writes
-files only inside ``<out_dir>/phase3_build/`` and no agent in this phase opens a network connection.
+Founder input keys used in this phase: none. Nothing is deployed or published: the builder writes the
+website only to ``<out_dir>/phase3_step3_site/index.html`` (filled from ``site_template/index.html``),
+plus the publish guide ``phase3_step7_publish_guide`` for the founder. No agent opens a network connection.
 
-Gate 3 metrics (CONTEXT.md section 6), computed in code by ``measure()``:
+Gate 3 metrics (CONTEXT.md section 6 and the website contract), computed in code by ``measure()``:
 - ``acceptance_pass_ratio``: passed / total from the QA report (checks run in code).
+- ``site_checks_passed``: 1 if the QA report's website checks passed, else 0 (missing QA report = 0).
 - ``honesty_must_fix``: must_fix issues from the content review plus violations that code finds in
-  the build files (fake proof, scripts, forms, payment words, tracking, guardrail blocks, network calls).
-  These fail the gate with ``repeat``.
-- ``deployed``: 1 only for an unsafe path (a manifest file outside ``phase3_build``) or a real network call
-  in a built file (fetch, XMLHttpRequest, WebSocket, sendBeacon, requests/urllib/socket, curl/wget).
-  A ``<script>`` or ``<form>`` without a network call is an honesty violation, not a deployment.
+  the website files (fake proof, scripts, forms other than the labeled demo form, payment words, tracking,
+  guardrail blocks, network calls). These fail the gate with ``repeat``.
+- ``deployed``: 1 only for an unsafe path (a manifest file outside ``phase3_step3_site``) or a real network
+  call in a website file (fetch, XMLHttpRequest, WebSocket, sendBeacon, requests/urllib/socket, curl/wget).
+  A ``<script>`` or a non-demo ``<form>`` without a network call is an honesty violation, not a deployment.
 """
 from pathlib import Path
 
@@ -24,13 +26,14 @@ PIVOT_TO = 2
 BUILD = "phase3_step3_build"
 QA = "phase3_step5_qa_report"
 REVIEW = "phase3_step6_content_review"
-BUILD_DIRNAME = "phase3_build"
+SITE_DIRNAME = "phase3_step3_site"
 
 
 def gate_checks(ctx) -> list:
     return [
         Check("acceptance_pass_ratio", "acceptance_pass_ratio", ">=", 0.8, "repeat"),
         Check("no_honesty_must_fix", "honesty_must_fix", "==", 0, "repeat"),
+        Check("site_checks", "site_checks_passed", "==", 1, "repeat"),
         Check("nothing_deployed", "deployed", "==", 0, "stop"),
     ]
 
@@ -45,10 +48,10 @@ def _get(ctx, step):
     return data if isinstance(data, dict) else None
 
 
-def build_file_violations(ctx) -> list:
-    """Code-found problems in every file of the build folder: [(path, finding)]."""
+def site_file_violations(ctx) -> list:
+    """Code-found problems in every file of the website folder: [(path, finding)]."""
     from agents.m3_common import content_violations, guardrail_findings, network_code_present
-    root = Path(ctx.out_dir) / BUILD_DIRNAME
+    root = Path(ctx.out_dir) / SITE_DIRNAME
     found = []
     if not root.is_dir():
         return found
@@ -65,9 +68,9 @@ def build_file_violations(ctx) -> list:
 
 
 def _deployed(ctx, manifest: dict) -> int:
-    """1 if a manifest path leaves the build folder or a built file makes a real network call."""
+    """1 if a manifest path leaves the site folder or a website file makes a real network call."""
     from agents.m3_common import network_code_present, safe_rel_path
-    root = (Path(ctx.out_dir) / BUILD_DIRNAME).resolve()
+    root = (Path(ctx.out_dir) / SITE_DIRNAME).resolve()
     if manifest.get("deployed"):
         return 1
     for f in manifest.get("files") or []:
@@ -88,11 +91,12 @@ def measure(ctx) -> dict:
         results = [r for r in qa.get("results") or [] if isinstance(r, dict)]
         m["acceptance_pass_ratio"] = round(sum(1 for r in results if r.get("passed") is True) / len(results), 4) \
             if results else 0.0
+    m["site_checks_passed"] = 1 if qa is not None and (qa.get("site_checks") or {}).get("passed") is True else 0
     review = _get(ctx, REVIEW)
     if review is not None:
         llm_must_fix = sum(1 for i in review.get("issues") or []
                            if isinstance(i, dict) and str(i.get("severity", "")).lower() == "must_fix")
-        m["honesty_must_fix"] = llm_must_fix + len(build_file_violations(ctx))
+        m["honesty_must_fix"] = llm_must_fix + len(site_file_violations(ctx))
     manifest = _get(ctx, BUILD)
     if manifest is not None:
         m["deployed"] = _deployed(ctx, manifest)
