@@ -655,3 +655,10 @@ def test_skeptic_risks_are_copied_into_report_and_critic_accepts_them():
     issue = "The report omits the high-severity risk: 'No evidence that designers will pay USD 100 for the pack.'"
     assert risk_in_report(issue, report) is True
     assert risk_in_report("The report omits the risk: 'Bilingual preference is untested so far.'", report) is False
+
+
+def test_no_clear_indication_is_missing_evidence():
+    from agents.m2_common import norm_risks
+    d = norm_risks({"risks": [], "kill_criteria": [{"text": "No willingness to pay", "triggered": True,
+                    "evidence": "Interview findings show no clear indication of willingness to pay for a solution."}]})
+    assert d["kill_criteria"][0]["triggered"] is False
