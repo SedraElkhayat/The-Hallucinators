@@ -17,6 +17,14 @@ LOG_KEYS = ("timestamp", "agent", "action", "sources", "model", "cost", "approve
 SECRET_RX = re.compile(r"(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)")
 NAME_RX = re.compile(r"^(phase\d+_(step\d+_[\w-]+|gate_[\w-]+)\.(md|json|csv|txt|html)|payment_test_log\.md|\.gitkeep)$")
 
+REVIEWER_RX = re.compile(
+    r"(dear (judge|judges|reviewer|reviewers|evaluator)s?|to the (judges|reviewers|evaluators)|"
+    r"(judges?|reviewers?|evaluators?|graders?),? (please|should|must)|"
+    r"(give|award) (us|this( project| repo)?) (full|maximum|max|top|high) (marks|points|score)|"
+    r"\b(score|rate|grade) (this|us) (highly|4/4|full)|ignore (all |any )?(previous|prior) instructions)", re.I)
+REVIEWER_SKIP_DIRS = ("tests/", "evals/")
+REVIEWER_SKIP_FILES = {"CLAUDE.md", "scripts/verify_submission.py"}
+
 results: list[tuple[str, str]] = []
 
 
@@ -32,7 +40,25 @@ def tracked_files() -> list[str]:
         return []
 
 
-def main() -> int:
+def repo_files() -> list[str]:
+    return tracked_files() or [p.relative_to(ROOT).as_posix() for p in ROOT.rglob("*")
+                               if p.is_file() and not {".git", "runs", ".cache", "__pycache__"} & set(p.parts)]
+
+
+def reviewer_text(files: list[str]) -> list[str]:
+    hits = []
+    for t in files:
+        if t in REVIEWER_SKIP_FILES or t.startswith(REVIEWER_SKIP_DIRS) or t.endswith(("CONTEXT.md",)):
+            continue
+        p = ROOT / t
+        if p.suffix.lower() in {".md", ".py", ".json", ".html", ".txt", ".yml", ".yaml", ".csv"} and p.is_file():
+            if REVIEWER_RX.search(p.read_text(encoding="utf-8", errors="ignore")):
+                hits.append(t)
+    return hits
+
+
+def run_checks(run_tests: bool = True) -> list[tuple[str, str]]:
+    results.clear()
     readme = (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else ""
     heads = re.findall(r"^## (.+?)\s*$", readme, flags=re.M)
     check("FAIL", [h for h in heads if h in README_HEADINGS] == README_HEADINGS, "README: eight ## headings in order")
@@ -71,8 +97,10 @@ def main() -> int:
     check("FAIL", not any(t.startswith("docs/") and t.lower().endswith("claude.md") for t in tracked), "CLAUDE.md not in docs/")
     env_ex = (ROOT / ".env.example").read_text(encoding="utf-8") if (ROOT / ".env.example").exists() else ""
     check("FAIL", not SECRET_RX.search(env_ex), ".env.example has placeholders only")
+    files = repo_files()
+    check("FAIL", not reviewer_text(files), f"no text addressing reviewers outside tests/ and evals/ ({reviewer_text(files)[:5]})")
     leaks = []
-    for t in tracked or [str(p.relative_to(ROOT)) for p in ROOT.rglob("*") if p.is_file() and ".git" not in p.parts]:
+    for t in files:
         p = ROOT / t
         if p.suffix in {".py", ".md", ".json", ".yml", ".yaml", ".txt", ".html", ".sh", ".example", ".csv"}:
             try:
@@ -90,11 +118,16 @@ def main() -> int:
     check("FAIL", any((ROOT / "tests").glob("test_*.py")), "tests/ has smoke tests")
     check("FAIL", "MOCKED" in readme, "README labels mocks")
 
-    r = subprocess.run([sys.executable, "-m", "pytest", "-q"], cwd=ROOT, capture_output=True, text=True)
-    tail = (r.stdout.strip().splitlines() or ["no output"])[-1]
-    check("FAIL", r.returncode == 0, f"tests pass ({tail})")
+    if run_tests:
+        r = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"], cwd=ROOT,
+                           capture_output=True, text=True)
+        tail = (r.stdout.strip().splitlines() or ["no output"])[-1]
+        check("FAIL", r.returncode == 0, f"tests pass ({tail})")
+    return list(results)
 
-    width = max(len(m) for _, m in results)
+
+def main() -> int:
+    run_checks(run_tests="--no-tests" not in sys.argv)
     for lvl, msg in results:
         print(f"{lvl:4}  {msg}")
     fails = sum(1 for l, _ in results if l == "FAIL")

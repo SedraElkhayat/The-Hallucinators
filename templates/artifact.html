@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ step }}{% endblock %}
+{% block body %}
+<p class="muted">{% if rid %}<a href="/run/{{ rid }}">← run {{ rid }}</a>{% else %}Committed demo run (outputs/){% endif %}</p>
+<h2>{{ step }} {% if mocked %}<span class="badge mocked">MOCKED</span>{% endif %}</h2>
+{% if html_src %}
+  <p class="muted">Draft page, shown in a sandbox. Not published: only the founder publishes.</p>
+  <iframe sandbox srcdoc="{{ html_src }}" style="width:100%;height:520px;border:1px solid #ddd;border-radius:6px"></iframe>
+{% endif %}
+{% if body %}<div class="card">{{ body }}</div>{% endif %}
+{% if raw %}<details><summary>JSON</summary><pre>{{ raw }}</pre></details>{% endif %}
+{% endblock %}
