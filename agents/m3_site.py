@@ -120,7 +120,11 @@ def sanitize_content(data: dict) -> tuple[dict, list]:
         url = c.get("source_url")
         is_fact = c.get("verified") is True and valid_https_url(url)
         claims.append({"claim": text, "source_url": url if valid_https_url(url) else None,
-                       "verified": c.get("verified") is True, "shown_as": "fact" if is_fact else "ASSUMPTION"})
+                       "quote": " ".join(str(c.get("quote") or "").split())[:LIMITS["text"]],
+                       "verified": c.get("verified") is True,
+                       # The audit and the gates read "assumption"; "shown_as" says how the page shows it.
+                       "assumption": not is_fact,
+                       "shown_as": "fact" if is_fact else "ASSUMPTION"})
     content["claims"] = claims
     return content, dropped
 

@@ -19,11 +19,13 @@
   "claims": [
     {
       "claim": "MOCKED Rival Kit A sells onboarding templates for agencies",
-      "source_url": "https://example.com/mock/1"
+      "source_url": "https://example.com/mock/1",
+      "quote": "MOCKED quote: Rival Kit A offers an onboarding template bundle for design agencies"
     },
     {
       "claim": "MOCKED free onboarding checklists are common",
-      "source_url": "https://example.com/mock/2"
+      "source_url": "https://example.com/mock/2",
+      "quote": "MOCKED quote: free onboarding checklists are easy to find on design blogs"
     },
     {
       "claim": "MOCKED: solo designers would rather buy a kit than write their own"

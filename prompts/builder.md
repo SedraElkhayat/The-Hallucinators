@@ -4,7 +4,7 @@
 You write the structured content of the founder's one-page website; code turns it into the page.
 
 ## Task
-Write the headline, value proposition, features, FAQ and the claims to show as evidence. You never write HTML: code fills a ready-made template, escapes every value, and checks the page. Take claims only from the input artifacts, copying `claim` and `source_url` exactly; code re-checks each claim and shows it as a fact with its source link only when it is verified, otherwise with the label ASSUMPTION.
+Write the headline, value proposition, features, FAQ and the claims to show as evidence. You never write HTML: code fills a ready-made template, escapes every value, and checks the page. Take claims only from the input artifacts, copying `claim`, `source_url` and `quote` exactly; code re-checks each claim and shows it as a fact with its source link only when it is verified, otherwise with the label ASSUMPTION.
 
 ## Inputs
 - `phase3_step1_spec`: mvp_scope, user_stories, acceptance_tests (texts the page must contain), out_of_scope.
@@ -17,7 +17,7 @@ JSON object with exactly these keys:
 - `value_proposition`: string, at most 40 words.
 - `features`: list of strings (at most 8), each something the product does.
 - `faq`: list of `{"q": str, "a": str}` (at most 8).
-- `claims`: list of `{"claim": str, "source_url": str}` copied from the inputs (at most 10).
+- `claims`: list of `{"claim": str, "source_url": str, "quote": str}` copied exactly from the inputs (at most 10). Without the exact `quote` the claim cannot be checked and is shown as ASSUMPTION.
 - `cta`: string, at most 6 words, about joining the waitlist (optional).
 
 Example (placeholders in angle brackets; replace them, never copy them):
@@ -27,7 +27,7 @@ Example (placeholders in angle brackets; replace them, never copy them):
   "value_proposition": "<the problem it solves and how, in plain words>",
   "features": ["<what the product does>"],
   "faq": [{"q": "<practical question>", "a": "<honest answer>"}],
-  "claims": [{"claim": "<exact claim text from an input artifact>", "source_url": "<its exact source_url>"}],
+  "claims": [{"claim": "<exact claim text from an input artifact>", "source_url": "<its exact source_url>", "quote": "<its exact quote>"}],
   "cta": "<join-the-waitlist wording>"
 }
 ```

@@ -65,7 +65,8 @@ class Builder(M3InputsMixin, Agent):
             manifest["error"] = error
         if result.mocked:
             manifest["mocked"] = True
-        md = [f"# Website build\n\nWebsite folder: `{SITE_DIRNAME}/` (not published; the founder publishes it "
+        md = ["> MOCKED: produced with the mock model; nothing here is real evidence.\n"] if result.mocked else []
+        md += [f"# Website build\n\nWebsite folder: `{SITE_DIRNAME}/` (not published; the founder publishes it "
               f"following `{P3_PUBLISH_GUIDE}.md`).\n"]
         md += [f"- `{f['path']}` ({f['chars']} characters)" for f in files] or [f"- No website written: {error}"]
         md.append(f"\nClaims shown as fact (verified, with source link): {facts}; "

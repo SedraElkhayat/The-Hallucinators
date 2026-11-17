@@ -426,3 +426,71 @@ def test_TC_M3_site_harmless_meta_tags_still_pass(tmp_path):
     extra = _in_head(page, '<meta name="description" content="Onboarding kit">\n  <meta http-equiv="content-type" '
                            'content="text/html; charset=utf-8">')
     assert _site(tmp_path, extra) == {"passed": True, "failures": []}
+
+
+# ---------------------------------------------------------------- the evidence audit passes on Phase 3 outputs
+
+def _phase3_with_m1_helpers(tmp_path, builder_resp=None):
+    """Mocked Phase 3 run on M1's offline Context (tests/helpers.make_ctx), Phase 1-2 inputs seeded."""
+    from tests import helpers
+    from tests.test_m3_helpers import seed_data
+    ctx = helpers.make_ctx(tmp_path)
+    if builder_resp is not None:
+        ctx.llm = ScriptedLLM({"builder": builder_resp})
+    for step in ("phase1_step2_clarification", "phase1_step4_idea_card", "phase2_step2_lean_canvas",
+                 "phase2_step3_demand_test_plan", "phase2_step4_landing_page", "phase2_step9_validation_report"):
+        put(ctx, step, seed_data(step))
+    for stage in phase3.STAGES:
+        for name in stage:
+            get_agent(name).run(ctx)
+    return ctx
+
+
+def _phase3_audit_problems(out_dir):
+    from scripts.audit_outputs import audit
+    return {name: msgs for name, msgs in audit(Path(out_dir)).items() if name.startswith("phase3_")}
+
+
+def test_TC_M3_audit_mocked_phase3_outputs_pass_the_evidence_audit(tmp_path):
+    ctx = _phase3_with_m1_helpers(tmp_path)
+    assert _phase3_audit_problems(ctx.out_dir) == {}
+    build = json.loads((Path(ctx.out_dir) / "phase3_step3_build.json").read_text(encoding="utf-8"))
+    md = (Path(ctx.out_dir) / "phase3_step3_build.md").read_text(encoding="utf-8")
+    assert build["mocked"] is True and "MOCKED" in md
+    facts = [c for c in build["claims"] if c["shown_as"] == "fact"]
+    assert facts and all(c["assumption"] is False and c["verified"] is True for c in facts)
+
+
+def test_TC_M3_audit_claim_without_source_is_an_assumption(tmp_path):
+    resp = dict(fixture("builder"), claims=[{"claim": "MOCKED: designers prefer kits", "quote": "MOCKED quote text here"}])
+    ctx = _phase3_with_m1_helpers(tmp_path, resp)
+    claim = json.loads((Path(ctx.out_dir) / "phase3_step3_build.json").read_text(encoding="utf-8"))["claims"][0]
+    assert claim["source_url"] is None and claim["assumption"] is True and claim["shown_as"] == "ASSUMPTION"
+    assert _phase3_audit_problems(ctx.out_dir) == {}
+    page = (Path(ctx.out_dir) / SITE / "index.html").read_text(encoding="utf-8")
+    line = [l for l in page.splitlines() if "designers prefer kits" in l][0]
+    assert "ASSUMPTION" in line and "href" not in line
+
+
+def test_TC_M3_audit_unverified_claim_is_an_assumption(tmp_path):
+    # A mock source without a quote cannot be checked, so the claim checker marks it verified false.
+    resp = dict(fixture("builder"), claims=[{"claim": "MOCKED: rival kits cost more",
+                                             "source_url": "https://example.com/mock/9", "verified": True}])
+    ctx = _phase3_with_m1_helpers(tmp_path, resp)
+    claim = json.loads((Path(ctx.out_dir) / "phase3_step3_build.json").read_text(encoding="utf-8"))["claims"][0]
+    assert claim["verified"] is False and claim["assumption"] is True and claim["shown_as"] == "ASSUMPTION"
+    assert claim["source_url"] == "https://example.com/mock/9"
+    assert _phase3_audit_problems(ctx.out_dir) == {}
+
+
+def test_sanitize_content_sets_assumption_for_every_claim():
+    content, _ = sanitize_content(_content(claims=[
+        {"claim": "fact", "source_url": "https://example.com/a", "verified": True, "quote": "q"},
+        {"claim": "unverified", "source_url": "https://example.com/b", "verified": False},
+        {"claim": "no source", "verified": True},
+        {"claim": "http source", "source_url": "http://example.com/c", "verified": True}]))
+    got = [(c["claim"], c["assumption"], c["shown_as"], c["source_url"]) for c in content["claims"]]
+    assert got == [("fact", False, "fact", "https://example.com/a"),
+                   ("unverified", True, "ASSUMPTION", "https://example.com/b"),
+                   ("no source", True, "ASSUMPTION", None),
+                   ("http source", True, "ASSUMPTION", None)]
