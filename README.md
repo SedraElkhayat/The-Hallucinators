@@ -16,13 +16,14 @@ Offline, without Docker or a model: `pip install -r requirements.txt && make dem
 
 | Step | Status |
 |---|---|
-| Orchestrator, gates (pre-registered), founder approval, decision log | Working |
+| Orchestrator, gates (criteria pre-registered for all six phases), founder approval, decision log | Working |
 | Founder UI (web) and CLI | Working |
+| Phase 1 to 6 agents (one file and one prompt each) | Working offline with MockLLM (outputs labeled MOCKED); first real-model run in progress |
+| Search and fetch (free public sources, cached) and claim re-checking | Working (code); first real-model run in progress |
+| Guardrails and red-team evals (`python evals/run_redteam.py`) | Working |
 | Founder website (Phase 3 build, Phase 5 store version, website checks in Gate 3) | In progress |
 | Preview website and Download site folder buttons (local only; the system never publishes) | Working |
-| Search and fetch (free public sources, cached) | Working |
-| Phase 1 to 6 agents | In progress (STUBBED phases are labeled in the run) |
-| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED by design; currently STUBBED (functions not yet implemented) |
+| Sale to cash: payments, webhooks, delivery, refunds, reconciliation | MOCKED (runs in code: no money moves, no payment provider is called) |
 | Demand-test results and interview notes in the demo run | MOCKED / SAMPLE inputs (labeled) |
 | Publishing pages, sending posts or emails | Not implemented by design (the founder does it) |
 | Real payment provider | STUBBED (roadmap) |
