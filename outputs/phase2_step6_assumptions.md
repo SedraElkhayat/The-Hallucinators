@@ -1,0 +1,60 @@
+# phase2_step6_assumptions (assumption_auditor)
+
+## assumptions
+
+```json
+[
+  {
+    "id": "A1",
+    "text": "Freelance graphic designers in Egypt and the MENA region need a way to track client projects, invoices sent, and revision rounds.",
+    "source": "phase1_step9_discover_report",
+    "tested": false,
+    "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their current workflow and whether they need a tool for tracking.",
+    "impact": "high"
+  },
+  {
+    "id": "A2",
+    "text": "There is no clear evidence of willingness to pay for a bilingual template pack priced at USD 100.",
+    "source": "phase1_step9_discover_report",
+    "tested": false,
+    "cheapest_test": "Create a landing page with a one-time purchase link and track how many clicks and sign-ups occur within a week.",
+    "impact": "high"
+  },
+  {
+    "id": "A3",
+    "text": "A custom Notion Templates - Upwork is priced at USD 100.",
+    "source": "phase2_step1_competitor_analysis",
+    "tested": false,
+    "cheapest_test": "Search for pricing information on Upwork and verify the price of a custom Notion Templates.",
+    "impact": "medium"
+  },
+  {
+    "id": "A4",
+    "text": "Sync2Sheets offers a 7-day free trial with no credit card required.",
+    "source": "phase2_step1_competitor_analysis",
+    "tested": false,
+    "cheapest_test": "Visit the Sync2Sheets website and check the pricing and trial options.",
+    "impact": "medium"
+  },
+  {
+    "id": "A5",
+    "text": "Freelance graphic designers in Egypt and the MENA region will prefer a bilingual (Arabic and English) template pack over one that is only in English.",
+    "source": "phase1_step4_idea_card",
+    "tested": false,
+    "cheapest_test": "Create two versions of the template pack—one in Arabic and one in English—and ask 10 freelance designers in Egypt and the MENA region to choose their preferred version.",
+    "impact": "medium"
+  },
+  {
+    "id": "A6",
+    "text": "Freelance graphic designers in Egypt and the MENA region will not collect client data when using the template pack.",
+    "source": "phase1_step4_idea_card",
+    "tested": false,
+    "cheapest_test": "Survey 10 freelance designers in Egypt and the MENA region to understand their data privacy concerns and whether they would use a template pack that does not collect client data.",
+    "impact": "medium"
+  }
+]
+```
+
+## untested_high_impact_count
+
+2

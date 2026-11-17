@@ -1,0 +1,74 @@
+{
+  "fields": {
+    "target_customer": {
+      "value": "Freelance designers in Egypt and the wider MENA region who work with several clients at once",
+      "status": "answered",
+      "source": "brief"
+    },
+    "problem": {
+      "value": "Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds.",
+      "status": "answered",
+      "source": "brief"
+    },
+    "product_type": {
+      "value": "A digital template pack (Notion and Google Sheets)",
+      "status": "answered",
+      "source": "brief"
+    },
+    "budget": {
+      "value": "USD 100 total",
+      "status": "answered",
+      "source": "brief"
+    },
+    "time_per_week": {
+      "value": "8 hours per week for 3 months",
+      "status": "answered",
+      "source": "brief"
+    },
+    "founder_skills": {
+      "value": "4 years as a freelance designer; comfortable with Notion, Google Sheets and Canva; no coding",
+      "status": "answered",
+      "source": "brief"
+    },
+    "monetization_idea": {
+      "value": "One-time purchase",
+      "status": "answered",
+      "source": "founder"
+    },
+    "distribution_channel": {
+      "value": "Sell through a website with a one-time purchase link",
+      "status": "suggested_approved",
+      "source": "founder_approved_suggestion"
+    },
+    "differentiation": {
+      "value": "Bilingual Arabic and English, built for local freelancing habits",
+      "status": "answered",
+      "source": "founder"
+    },
+    "values_and_limits": {
+      "value": "Bilingual (Arabic and English). No subscriptions that lock users in. Will not collect client data",
+      "status": "answered",
+      "source": "brief"
+    }
+  },
+  "decisions": [
+    {
+      "field": "distribution_channel",
+      "options": [
+        "Sell through a website with a one-time purchase link",
+        "Offer via social media groups in Arabic and English",
+        "Partner with local design communities for distribution"
+      ],
+      "status": "suggested_approved",
+      "value": "Sell through a website with a one-time purchase link"
+    }
+  ],
+  "scope_after_options": {
+    "is_digital": true,
+    "excluded_reason": null
+  },
+  "_meta": {
+    "agent": "option_suggester",
+    "sources": []
+  }
+}

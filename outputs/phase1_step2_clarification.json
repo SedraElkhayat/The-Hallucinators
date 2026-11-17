@@ -1,0 +1,82 @@
+{
+  "fields": {
+    "target_customer": {
+      "value": "Freelance designers in Egypt and the wider MENA region who work with several clients at once",
+      "status": "answered",
+      "source": "brief"
+    },
+    "problem": {
+      "value": "Freelance graphic designers in Egypt need a way to track client projects, invoices sent, and revision rounds.",
+      "status": "answered",
+      "source": "brief"
+    },
+    "product_type": {
+      "value": "A digital template pack (Notion and Google Sheets)",
+      "status": "answered",
+      "source": "brief"
+    },
+    "budget": {
+      "value": "USD 100 total",
+      "status": "answered",
+      "source": "brief"
+    },
+    "time_per_week": {
+      "value": "8 hours per week for 3 months",
+      "status": "answered",
+      "source": "brief"
+    },
+    "founder_skills": {
+      "value": "4 years as a freelance designer; comfortable with Notion, Google Sheets and Canva; no coding",
+      "status": "answered",
+      "source": "brief"
+    },
+    "monetization_idea": {
+      "value": "One-time purchase",
+      "status": "answered",
+      "source": "founder"
+    },
+    "distribution_channel": {
+      "value": "unknown",
+      "status": "unknown",
+      "source": null
+    },
+    "differentiation": {
+      "value": "Bilingual Arabic and English, built for local freelancing habits",
+      "status": "answered",
+      "source": "founder"
+    },
+    "values_and_limits": {
+      "value": "Bilingual (Arabic and English). No subscriptions that lock users in. Will not collect client data",
+      "status": "answered",
+      "source": "brief"
+    }
+  },
+  "questions_asked": [
+    {
+      "round": 1,
+      "field": "monetization_idea",
+      "question": "How do you plan to monetize the product?",
+      "answer_status": "answered"
+    },
+    {
+      "round": 1,
+      "field": "distribution_channel",
+      "question": "Which distribution channels will you use to reach your target customers?",
+      "answer_status": "unknown"
+    },
+    {
+      "round": 1,
+      "field": "differentiation",
+      "question": "What makes your product different from existing solutions in the market?",
+      "answer_status": "answered"
+    }
+  ],
+  "rounds": 1,
+  "idea": "A digital template pack (Notion and Google Sheets) that helps freelance graphic designers in Egypt track client projects, invoices sent, and revision rounds.",
+  "gap_score_remaining": 3,
+  "stopped_by_founder": false,
+  "_meta": {
+    "agent": "clarifier",
+    "sources": []
+  }
+}

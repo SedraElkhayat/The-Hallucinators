@@ -1,0 +1,13 @@
+{
+  "signups": 140,
+  "days": 14,
+  "provenance": "MOCKED",
+  "ratio": 1.4,
+  "target": 100,
+  "window_days": 14,
+  "mocked": true,
+  "_meta": {
+    "agent": "demand_results",
+    "sources": []
+  }
+}

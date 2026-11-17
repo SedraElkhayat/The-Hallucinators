@@ -1,0 +1,137 @@
+# phase3_step1_spec (spec_writer)
+
+## mvp_scope
+
+```json
+[
+  "index.html: Value proposition showing a bilingual (Arabic and English) digital template pack for freelance designers in Egypt and the MENA region, with no subscriptions and no client data collection",
+  "index.html: Features section listing tracking client projects, invoices sent, and revision rounds using Notion and Google Sheets",
+  "index.html: Evidence section highlighting the founder's 4 years as a freelance designer and comfort with Notion, Google Sheets, and Canva",
+  "index.html: Price section showing USD 100 one-time purchase (to be set in Phase 4)",
+  "index.html: FAQ section with 3-5 questions about the template pack, bilingual support, and data privacy",
+  "index.html: Policy links section with draft links to privacy and terms (to be drafted in Phase 4)",
+  "index.html: Demo sign-up box with a label showing 'Sign up for a demo' (no form or network calls)"
+]
+```
+
+## user_stories
+
+```json
+[
+  "As a freelance graphic designer in Egypt, I want to track client projects, invoices sent, and revision rounds using a bilingual template pack, so that I can manage my workload efficiently",
+  "As a freelance designer in the MENA region, I want to use a template pack that supports Arabic and English, so that I can work with both local and international clients",
+  "As a founder, I want to showcase the template pack's unique value proposition, so that potential customers understand its benefits",
+  "As a customer, I want to know the price of the template pack, so that I can decide if it fits my budget",
+  "As a customer, I want to see evidence of the template pack's effectiveness, so that I can trust its value",
+  "As a customer, I want to know the policies related to data privacy and terms of use, so that I can understand how my data is handled",
+  "As a customer, I want to sign up for a demo, so that I can explore the template pack's features before purchasing"
+]
+```
+
+## acceptance_tests
+
+```json
+[
+  {
+    "id": "AT1",
+    "description": "The website page exists",
+    "check": {
+      "type": "file_exists",
+      "path": "index.html",
+      "text": ""
+    }
+  },
+  {
+    "id": "AT2",
+    "description": "The page has the value proposition section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"value-proposition\""
+    }
+  },
+  {
+    "id": "AT3",
+    "description": "The page has the features section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"features\""
+    }
+  },
+  {
+    "id": "AT4",
+    "description": "The page has the evidence section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"evidence\""
+    }
+  },
+  {
+    "id": "AT5",
+    "description": "The page has the price section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"price\""
+    }
+  },
+  {
+    "id": "AT6",
+    "description": "The page has the FAQ section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"faq\""
+    }
+  },
+  {
+    "id": "AT7",
+    "description": "The page has the policy links section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"policies\""
+    }
+  },
+  {
+    "id": "AT8",
+    "description": "The page has the sign-up box section",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "id=\"signup\""
+    }
+  },
+  {
+    "id": "AT9",
+    "description": "The sign-up box shows the demo label",
+    "check": {
+      "type": "text_contains",
+      "path": "index.html",
+      "text": "Demo only: nothing is sent or stored"
+    }
+  }
+]
+```
+
+## out_of_scope
+
+```json
+[
+  "Payment processing",
+  "User accounts or sign-ups",
+  "Dynamic content or network calls",
+  "Subscription models",
+  "Client data collection",
+  "Multilingual support beyond the template pack",
+  "Marketing or sales automation"
+]
+```
+
+## dropped_tests
+
+```json
+[]
+```

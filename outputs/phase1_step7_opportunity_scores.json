@@ -1,0 +1,55 @@
+{
+  "ranked": [
+    {
+      "name": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
+      "score": 4.0,
+      "reasons": [
+        "need: Freelance designers need to track projects, invoices, and revisions",
+        "market: 90% of designers are freelancers",
+        "fit: Founder has skills for Notion/Google Sheets",
+        "effort: 100 hours estimated"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A digital invoicing and revision tracking tool for freelance designers in Egypt and the MENA region",
+      "score": 3.0,
+      "reasons": [
+        "need: Freelance designers need to track invoices and revisions",
+        "market: 49% of designers are freelancers",
+        "fit: Founder has skills for Notion/Google Sheets",
+        "effort: 100 hours estimated"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A bilingual template pack for managing multiple client projects and invoices",
+      "score": 3.0,
+      "reasons": [
+        "need: Freelance designers need to track projects, invoices, and revisions",
+        "market: 90% of designers are freelancers",
+        "fit: Founder has skills for Notion/Google Sheets",
+        "effort: 100 hours estimated"
+      ],
+      "is_founder_idea": false
+    },
+    {
+      "name": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
+      "score": 3.0,
+      "reasons": [
+        "need: Freelance designers need to track projects, invoices, and revisions",
+        "market: 90% of designers are freelancers",
+        "fit: Founder has skills for Notion/Google Sheets",
+        "effort: 100 hours estimated"
+      ],
+      "is_founder_idea": false
+    }
+  ],
+  "chosen": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
+  "top_scored": "A bilingual project management tool for freelance designers in Egypt and the MENA region",
+  "switch_suggested": false,
+  "_meta": {
+    "agent": "opportunity_scorer",
+    "sources": []
+  }
+}

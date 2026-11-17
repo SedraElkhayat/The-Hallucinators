@@ -1,0 +1,42 @@
+{
+  "phase": 4,
+  "checks": [
+    {
+      "id": "chk_p4_price",
+      "metric": "price_sourced_or_labeled",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p4_policies",
+      "metric": "policies_labeled",
+      "op": ">=",
+      "value": 1.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p4_claims",
+      "metric": "banned_claims",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "repeat"
+    },
+    {
+      "id": "chk_p4_no_payment_sdk",
+      "metric": "payment_code_present",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "stop"
+    },
+    {
+      "id": "chk_p4_compliance",
+      "metric": "compliance_must_fix",
+      "op": "<=",
+      "value": 0.0,
+      "on_fail": "repeat"
+    }
+  ],
+  "sha256": "1fc3e4f1eda189e319e7d186dbe58e3c5f4c7a35ebc951860d79523edc5b2507",
+  "note": "Written before the phase ran. The gate applies exactly these checks."
+}
