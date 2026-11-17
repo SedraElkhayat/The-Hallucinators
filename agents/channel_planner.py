@@ -29,19 +29,19 @@ class ChannelPlanner(M4Agent):
                 if isinstance(c, dict):
                     clean_channels.append({
                         "name": str(c.get("name", "Organic Community")),
-                        "evidence": str(c.get("evidence", "Sourced from Phase 1 audience research")),
+                        "evidence": str(c.get("evidence") or "ASSUMPTION (no evidence given)"),
                         "first_actions": list(c.get("first_actions", [])) if isinstance(c.get("first_actions"), list) else [str(c.get("first_actions", ""))],
                     })
         if not clean_channels:
             clean_channels = [
                 {
                     "name": "Design Freelancer Communities",
-                    "evidence": "Freelancers actively share workflow templates in designer forums",
+                    "evidence": "ASSUMPTION (STUBBED: the model returned no channels; no source)",
                     "first_actions": ["Share template preview", "Collect feedback on invoice tracker"],
                 },
                 {
                     "name": "LinkedIn Organic Content",
-                    "evidence": "Discussions regarding unpaid client invoices and revision scope creep",
+                    "evidence": "ASSUMPTION (STUBBED: the model returned no channels; no source)",
                     "first_actions": ["Post short breakdown of invoice management", "Link to project dashboard"],
                 },
             ]

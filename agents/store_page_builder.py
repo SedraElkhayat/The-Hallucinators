@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import html
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, price_from_pricing, to_float
 from core.contracts import Context
 
 
@@ -28,7 +28,8 @@ class StorePageBuilder(M4Agent):
     def render_html(self, data: dict) -> str:
         title = html.escape(str(data.get("title", "Digital Product Store")))
         description = html.escape(str(data.get("description", "")))
-        price = float(data.get("price_usd", 29.0))
+        price = data.get("price_usd")
+        price_html = f"${float(price):.2f} USD" if price is not None else "Price: to be set by the founder"
         bullets = data.get("bullets", [])
         bullet_items = "\n".join(f"      <li>{html.escape(str(b))}</li>" for b in bullets)
 
@@ -54,7 +55,7 @@ class StorePageBuilder(M4Agent):
   <div class="badge">DRAFT: prepared for founder review</div>
   <h1>{title}</h1>
   <p class="desc">{description}</p>
-  <div class="price">${price:.2f} USD</div>
+  <div class="price">{price_html}</div>
   <ul>
 {bullet_items}
   </ul>
@@ -69,17 +70,16 @@ class StorePageBuilder(M4Agent):
 """
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        try:
-            data["price_usd"] = float(data.get("price_usd", 29.0))
-        except (ValueError, TypeError):
-            data["price_usd"] = 29.0
+        pricing_price = price_from_pricing(ctx)
+        data["price_usd"] = to_float(data.get("price_usd"), pricing_price)
+        if pricing_price is not None and data["price_usd"] != pricing_price:
+            # The page shows the price chosen in Phase 4, not a new one.
+            data["price_usd"] = pricing_price
 
         bullets = data.get("bullets")
         if not isinstance(bullets, list) or not bullets:
             data["bullets"] = [
-                "Bilingual Notion & Google Sheets dashboard",
-                "Client revision and invoice tracking",
-                "MOCKED checkout: no real payment",
+                "STUBBED: the model returned no feature bullets; the founder fills these in.",
             ]
 
         # Render static HTML
@@ -89,5 +89,6 @@ class StorePageBuilder(M4Agent):
         # Request founder approval
         approved = ctx.approvals.request("store_page", f"Store Page: {data.get('title')}", html_content, self.phase)
         data["released"] = bool(approved)
-        data["mocked"] = True
+        data["checkout"] = "MOCKED: no real payment"
+        data.pop("mocked", None)
         return data

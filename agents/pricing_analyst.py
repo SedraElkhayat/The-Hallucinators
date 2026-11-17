@@ -5,7 +5,7 @@ Analyzes competitor pricing and demand validation to recommend price and price r
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, to_float
 from core.contracts import Context
 
 
@@ -29,10 +29,14 @@ class PricingAnalyst(M4Agent):
         pass
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        try:
-            data["price_usd"] = float(data.get("price_usd", 29.0))
-        except (ValueError, TypeError):
-            data["price_usd"] = 29.0
+        data["price_usd"] = to_float(data.get("price_usd"))
+        if data["price_usd"] is None:
+            # No invented number: the founder sets the price; labeled as an open assumption.
+            data["is_assumption"] = True
+            data["note"] = "STUBBED: the model returned no price; the founder must set one."
+            data["range"] = None
+            data["comparable_claims"] = data.get("comparable_claims") if isinstance(data.get("comparable_claims"), list) else []
+            return data
 
         r = data.get("range")
         if isinstance(r, (list, tuple)) and len(r) == 2:

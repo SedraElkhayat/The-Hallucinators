@@ -32,7 +32,8 @@ def measure(ctx: Context) -> dict:
     if ctx.store.has("phase6_step2_metrics"):
         m_data = ctx.store.get("phase6_step2_metrics")
         prov = str(m_data.get("provenance", "")).upper()
-        if "SAMPLE" in prov or "MOCKED" in prov:
+        # Labeled = provenance is stated (SAMPLE, MOCKED or FOUNDER-PROVIDED), never blank.
+        if prov and prov != "NONE PROVIDED":
             inputs_labeled = 1
 
     memo_written = 0

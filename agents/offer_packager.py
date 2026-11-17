@@ -5,7 +5,7 @@ Structures honest tiers and positioning without income promises.
 """
 from __future__ import annotations
 
-from agents.m4_common import M4Agent
+from agents.m4_common import M4Agent, price_from_pricing, to_float
 from core.contracts import Context
 
 
@@ -22,22 +22,25 @@ class OfferPackager(M4Agent):
         pass
 
     def post_process(self, ctx: Context, data: dict) -> dict:
+        default_price = price_from_pricing(ctx)
         raw_tiers = data.get("tiers")
         clean_tiers = []
         if isinstance(raw_tiers, list):
             for t in raw_tiers:
                 if isinstance(t, dict):
+                    inc = t.get("includes", [])
                     clean_tiers.append({
-                        "name": str(t.get("name", "Standard Tier")),
-                        "price_usd": float(t.get("price_usd", 29.0)),
-                        "includes": list(t.get("includes", [])) if isinstance(t.get("includes"), list) else [str(t.get("includes", ""))],
+                        "name": str(t.get("name", "Standard")),
+                        "price_usd": to_float(t.get("price_usd"), default_price),
+                        "includes": [str(i) for i in inc] if isinstance(inc, list) else [str(inc)],
                     })
         if not clean_tiers:
             clean_tiers = [{
-                "name": "Standard Tier",
-                "price_usd": 29.0,
-                "includes": ["Digital template pack", "Quickstart documentation"],
+                "name": "Standard",
+                "price_usd": default_price,
+                "includes": ["STUBBED: the model returned no tier contents; the founder fills this in."],
             }]
+            data["stubbed"] = "Tiers filled by a code fallback."
         data["tiers"] = clean_tiers
-        data["positioning"] = str(data.get("positioning", "Streamlined workflow toolkit for freelance designers."))
+        data["positioning"] = str(data.get("positioning") or "STUBBED: no positioning was generated.")
         return data

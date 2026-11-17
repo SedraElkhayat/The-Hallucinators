@@ -57,7 +57,7 @@ class LaunchPostDrafter(M4Agent):
 
         if not processed_posts:
             # Fallback default draft
-            default_text = "DRAFT: prepared for founder review\nAnnouncing our new Notion workflow pack for freelance designers. Built for tracking revisions and invoices without complexity."
+            default_text = "DRAFT: prepared for founder review\nSTUBBED fallback text (the model returned no posts). Announcing our new Notion workflow pack for freelance designers. Built for tracking revisions and invoices without complexity."
             approved = ctx.approvals.request("launch_post", "Default Launch Post", default_text, self.phase)
             processed_posts = [{
                 "channel": "LinkedIn",
@@ -68,5 +68,6 @@ class LaunchPostDrafter(M4Agent):
             }]
 
         data["posts"] = processed_posts
-        data["mocked"] = True
+        data["posted"] = False  # nothing is ever posted by the system
+        data.pop("mocked", None)
         return data

@@ -22,25 +22,27 @@ class PerseverePivotMemo(M4Agent):
         pass
 
     def post_process(self, ctx: Context, data: dict) -> dict:
-        rec = str(data.get("recommendation", "persevere")).strip().lower()
+        metrics = ctx.store.get("phase6_step2_metrics") if ctx.store.has("phase6_step2_metrics") else {}
+        status = str((metrics.get("comparison") or {}).get("target_status", "unknown"))
+        rec = str(data.get("recommendation", "")).strip().lower()
+        fallback = False
         if rec not in ("persevere", "pivot", "stop"):
-            rec = "persevere"
+            # Code rule: met -> persevere, not met -> pivot, no evidence -> stop.
+            rec = {"met": "persevere", "not met": "pivot"}.get(status, "stop")
+            fallback = True
         data["recommendation"] = rec
 
         reasons = data.get("reasons")
         if not isinstance(reasons, list) or not reasons:
-            data["reasons"] = [
-                "Phase 2 demand targets were met or exceeded.",
-                "Simulated sales show healthy initial interest.",
-                "Refund rates remain within acceptable bounds.",
-            ]
-
+            data["reasons"] = [f"STUBBED: the model gave no reasons. Phase 6 result versus the Phase 2 target: {status}."]
+            fallback = True
         experiments = data.get("experiments")
         if not isinstance(experiments, list) or not experiments:
-            data["experiments"] = [
-                "Test targeted design creator affiliate partnerships.",
-                "Produce YouTube workflow tutorial in Arabic.",
-            ]
+            data["experiments"] = ["STUBBED: the model proposed no experiments; the founder defines the next test."]
+            fallback = True
         data["experiments"] = data["experiments"][:3]
-        data["mocked"] = True
+        data["evidence_status"] = status
+        if fallback:
+            data["stubbed"] = "Part of this memo was filled by a code rule because the model output was incomplete."
+        data.pop("mocked", None)
         return data

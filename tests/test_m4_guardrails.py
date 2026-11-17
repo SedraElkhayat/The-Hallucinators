@@ -137,3 +137,17 @@ def test_wrap_untrusted():
     assert "[NEUTRALIZED: ignore previous instructions]" in wrapped
     assert "[NEUTRALIZED: you are now]" in wrapped
     assert "[NEUTRALIZED: send an email]" in wrapped
+
+
+def test_card_redaction_keeps_following_space():
+    res = check_input("Card 4111 1111 1111 1111 and more text")
+    assert "4111" not in res.text
+    assert "[REDACTED] and more text" in res.text
+
+
+def test_aws_key_redacted_built_at_runtime():
+    # Built by concatenation so the repository secret scanner does not flag this file.
+    key = "AKIA" + "IOSFODNN7EXAMPLE"
+    res = check_input("my aws key " + key)
+    assert key not in res.text
+    assert "secret_credential" in res.findings

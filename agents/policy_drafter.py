@@ -37,17 +37,17 @@ class PolicyDrafter(M4Agent):
             clean_docs = [
                 {
                     "name": "Terms of Service",
-                    "text": "Single user license for digital template. Redistribution is prohibited.",
+                    "text": "STUBBED default text (the model returned no policy): " + "Single user license for digital template. Redistribution is prohibited.",
                     "needs_legal_review": True,
                 },
                 {
                     "name": "Privacy Policy",
-                    "text": "We do not store passwords, card numbers or client records.",
+                    "text": "STUBBED default text (the model returned no policy): " + "We do not store passwords, card numbers or client records.",
                     "needs_legal_review": True,
                 },
                 {
                     "name": "Refund Policy",
-                    "text": "Refunds are processed upon request to the founder within 14 days of purchase.",
+                    "text": "STUBBED default text (the model returned no policy): " + "Refund requests go to the founder, who reviews each one manually.",
                     "needs_legal_review": True,
                 },
             ]
