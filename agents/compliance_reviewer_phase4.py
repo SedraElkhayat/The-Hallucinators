@@ -5,6 +5,8 @@ Scans offer packaging and policies for banned claims and missing legal review la
 """
 from __future__ import annotations
 
+import re
+
 from agents.m4_common import (M4Agent, draft_strings, normalize_critique, verify_model_issues,
                               _COMPLIANCE_CLAIM_RX, _WINDOW_RX)
 from core.contracts import Context
@@ -53,6 +55,46 @@ class ComplianceReviewerPhase4(M4Agent):
             if not pr.get("comparable_claims") and pr.get("is_assumption") is not True:
                 code_issues.append("phase4_step1_pricing: price has no verified comparable and is not labeled an assumption")
         data = verify_model_issues(data, draft_strings(ctx, *self.inputs))
+        docs = ctx.store.get("phase4_step3_policies").get("documents", []) if ctx.store.has("phase4_step3_policies") else []
+        data = downgrade_legal_review_only(ctx, self.name, data, docs)
         data = normalize_critique(data, code_issues)
         data.pop("mocked", None)
         return data
+
+
+# A finding that only asks for legal review is already handled when the document carries needs_legal_review: true
+# (a real run held Gate 4 on "Privacy Policy document needs legal review"). Real legal or honesty problems stay must_fix.
+_LEGAL_REVIEW_RX = re.compile(r"legal(?:ly)?\W+review|review(?:ed)?\W+by\W+(?:a\W+)?(?:lawyer|attorney|legal)|"
+                              r"lawyer|attorney|legal\W+counsel|needs[_ ]legal[_ ]review", re.I)
+_REAL_PROBLEM_RX = re.compile(
+    r"promis|guarant|\bincome|\bearn|profit|\broi\b|success|fake|testimonial|reviews?\W+from|countdown|"
+    r"complian|\bcomply|gdpr|ccpa|violat|illegal|unlawful|mislead|decept|\bfalse|inaccurate|"
+    r"missing|\black|without|\bomit|does\W+not|doesn't|\bno\W+(?:refund|contact|mention)|"
+    r"window|\bdays?\b|\bfees?\b|\bprice|\bbanned|impersonat|\bposes?\b|\bposing", re.I)
+
+
+def downgrade_legal_review_only(ctx, agent: str, data: dict, documents: list) -> dict:
+    flagged = {str(d.get("name", "")).strip().lower(): d.get("needs_legal_review") is True
+               for d in documents if isinstance(d, dict) and d.get("name")}
+    if not flagged:
+        return data
+    out = []
+    for i in data.get("issues") or []:
+        if isinstance(i, dict) and str(i.get("severity", "")).lower().replace("-", "_") == "must_fix":
+            text = str(i.get("text", ""))
+            if _LEGAL_REVIEW_RX.search(text) and not _REAL_PROBLEM_RX.search(_LEGAL_REVIEW_RX.sub(" ", text)):
+                hay = (text + " " + str(i.get("quote", ""))).lower()
+                named = [n for n in flagged if n and (n in hay or n.replace(" ", "_") in hay)]
+                docs_ok = all(flagged[n] for n in named) if named else all(flagged.values())
+                if docs_ok:
+                    reason = ("only asks for legal review, and the document already has needs_legal_review: true "
+                              "(a lawyer reviews it before publishing)")
+                    # normalize_critique keeps only severity/text/quote, so the reason goes in the text too.
+                    i = {**i, "severity": "should_fix", "text": f"{text} [downgraded from must_fix: {reason}]"}
+                    data.setdefault("downgraded", []).append({"issue": text, "reason": reason})
+                    ctx.log.action(agent, "issue_downgraded", sources=[], reason=reason, issue=text[:200])
+        out.append(i)
+    data["issues"] = out
+    if not any(isinstance(i, dict) and str(i.get("severity", "")).lower() == "must_fix" for i in out):
+        data["verdict"] = "ok"
+    return data
