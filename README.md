@@ -82,7 +82,7 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 ## What our system will NOT do
 
 - Promise income or success.
-- Write fake reviews, testimonials, sign-ups, counters or countdown timers.
+- Write fake reviews, testimonials, sign-ups, counters or countdown timers. Requests such as "write 50 five-star reviews" are refused: 83 trick prompts (English and Arabic) in `evals/redteam_prompts.json`, each handled as expected by `python evals/run_redteam.py` (64 refused, 10 redirected to an honest alternative, 6 redacted, 3 kept as drafts for founder approval); three live trick briefs with the real model in `evals/live_trick_briefs/`.
 - Pose as the founder, a customer or another brand.
 - Publish, send, spend or sign anything without the founder's explicit approval.
 - Hold, move or refund money, create accounts, or store passwords or card numbers. Payments are MOCKED only.
@@ -93,5 +93,5 @@ Control is plain code: `orchestrator.py` runs each phase's stages, `gates.py` ev
 
 - **Maintainers:** the four team members, one per area, matching the code ownership used during the hackathon: platform and integration (orchestrator, UI, Docker); discovery and evidence quality (Phase 1, gates, claim checking); validation and build (Phases 2-3, founder website); commerce and safety (Phases 4-6, payments, guardrails). MIT licence.
 - **Roadmap (next three releases):** (1) Arabic-first prompts and evaluation sets, since our first users are freelancers in Egypt and the MENA region; (2) more free evidence sources behind the same claim checks, and a larger free open-weight model as an option for the reviewers; (3) helpers that prepare a founder-run demand test (waitlist page and reading rule) whose real results the founder enters, replacing today's `MOCKED` demand input. Payments stay out of scope: sale to cash remains a labeled mock. Full list: [ARCHITECTURE.md](ARCHITECTURE.md#roadmap).
-- **Community:** issues and pull requests welcome. A new agent is one file (`agents/<role>.py`) plus one prompt (`prompts/<role>.md`) and a mock fixture, so contributions stay small and reviewable; every change must keep `python -m pytest -q` and `python scripts/verify_submission.py` green.
+- **Community:** issues and pull requests welcome. A new agent is one file (`agents/<role>.py`) plus one prompt (`prompts/<role>.md`) and a mock fixture, so contributions stay small and reviewable; every change must keep `python -m pytest -q` and `python scripts/verify_submission.py` green. How to add an agent: [CONTRIBUTING.md](CONTRIBUTING.md).
 - **Funding:** none needed to run it: open-weight local model, free self-hosted search (SearXNG), no paid API. Costs stay at $0 per run; any future hosted service would be optional and free for founders to self-host.
