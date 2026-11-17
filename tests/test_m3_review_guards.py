@@ -7,6 +7,8 @@ Code downgrades exactly those disputes to should_fix, records why, and keeps eve
 """
 import json
 
+import pytest
+
 from tests.test_m3_helpers import ROOT, ScriptedLLM, fixture, get_agent, make_ctx, put
 
 REAL = ROOT / "tests" / "fixtures" / "m3_real"
@@ -107,3 +109,40 @@ def test_TC_M3_review_prompts_state_the_code_rules_and_labels():
     assert "Any sign-up, waitlist or user number on the page is `must_fix`" in reviewer
     for name in ("builder", "copywriter", "landing_page_builder", "spec_writer"):
         assert "No sign-up, waitlist or user numbers anywhere" in read(name), name
+
+
+# ---------------------------------------------------------------- the SIMULATED downgrade is narrow (15:13 review)
+
+def test_TC_M3_review_fake_testimonial_issue_mentioning_simulated_stays_must_fix(tmp_path):
+    resp = {"issues": [{"severity": "must_fix", "file": "index.html",
+                        "text": "The page shows simulated testimonials from fake customers as real praise"}],
+            "verdict": "revise"}
+    data = _reviewer(tmp_path, resp)
+    assert data["issues"][0]["severity"] == "must_fix" and "downgraded_by_code" not in data["issues"][0]
+    assert data["verdict"] == "revise" and "verdict_changed_by_code" not in data
+
+
+def test_TC_M3_review_label_request_is_still_downgraded_next_to_a_real_must_fix(tmp_path):
+    resp = {"issues": [{"severity": "must_fix", "text": "Claim labeled MOCKED but not labeled SIMULATED, not real users"},
+                       {"severity": "must_fix", "text": "Simulated ratings are shown as real reviews"}],
+            "verdict": "revise"}
+    data = _reviewer(tmp_path, resp)
+    assert [i["severity"] for i in data["issues"]] == ["should_fix", "must_fix"]
+    assert data["verdict"] == "revise"  # a real must_fix remains, so the verdict is not changed
+
+
+@pytest.mark.parametrize("text,downgraded", [
+    ("Claim labeled MOCKED but not labeled SIMULATED, not real users", True),
+    ("Add the SIMULATED label to the example numbers", True),
+    ("Example timeline needs the simulated label", True),
+    ("The page shows simulated testimonials from fake customers as real praise", False),
+    ("Simulated reviews shown as real; add a label", False),
+    ("Add SIMULATED label: invented customer quote", False),
+    ("Fabricated numbers, add simulated label", False),
+    ("Simulated rating needs a label", False),
+    ("Customer says the kit is great; add simulated label", False),
+    ("Mentions simulated data", False),  # does not ask for the label
+])
+def test_TC_M3_review_downgrade_rule_boundaries(text, downgraded):
+    from agents.content_reviewer import asks_for_simulated_label
+    assert asks_for_simulated_label(text) is downgraded

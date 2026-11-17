@@ -232,7 +232,8 @@ _SIGNUP_WORDS = r"(?:sign[- ]?ups?|signups|registrations?|subscribers?|waitlist)
 SIGNUP_NUMBER = re.compile(
     r"\d[\d,.]*\s*(?:k\b|\+)?\s*(?:[A-Za-z]+\s+){0,2}?" + _SIGNUP_WORDS + r"(?![\w-])"            # "140 MOCKED sign-ups"
     r"|\d[\d,.]*\s*(?:k\b|\+)?\s+(?:users|customers|members|people|designers|freelancers|buyers)\s+"
-    r"(?:have\s+|already\s+)?(?:joined|signed|registered|subscribed|are\s+on)\b"                    # "40 users joined"
+    r"(?:have\s+|already\s+|who\s+(?:have\s+|already\s+)?)?(?:joined|signed|registered|subscribed|are\s+on)\b"
+    # "40 users joined", "1,200 users who joined"
     r"|(?<![\w-])" + _SIGNUP_WORDS + r"\s*(?::|=|\bof\b|\breached\b|\bhit\b|\bat\b|\btotal\b|\bcount\b)\s*"
     r"(?:of\s+)?\d"                                                                                # "waitlist of 140"
     r"|\bjoined\s+by\s+\d",

@@ -86,7 +86,9 @@ def test_signup_and_user_counts_are_never_allowed_even_labeled():
     assert "invented count" in content_violations("Join 40 designers on the waitlist")
     assert "invented count" in content_violations("Join 40 designers on the waitlist (SIMULATED, not real users)")
     for text in ["140 MOCKED sign-ups show demand", "140 waitlist sign-ups (SIMULATED, not real users)",
-                 "Waitlist of 140", "sign-ups: 140", "joined by 1,200 freelancers", "40 users joined"]:
+                 "Waitlist of 140", "sign-ups: 140", "joined by 1,200 freelancers", "40 users joined",
+                 "1,200 users who joined", "300 customers who have joined", "50 people who signed up"]:
         assert "sign-up number" in content_violations(text), text
-    for text in ["Join the waitlist", "Sign up in 2 minutes", "3 templates for designers", "Step 2: join the waitlist"]:
+    for text in ["Join the waitlist", "Sign up in 2 minutes", "3 templates for designers", "Step 2: join the waitlist",
+                 "3 steps to join the waitlist", "the 2 founders who joined forces"]:
         assert "sign-up number" not in content_violations(text), text
