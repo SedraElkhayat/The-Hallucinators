@@ -36,11 +36,13 @@ def test_store_site_written_and_checked(tmp_path):
     assert out["site"]["site_checks"]["passed"] is True, out["site"]["site_checks"]
     for f in root.rglob("*"):
         assert f.is_dir() or f.suffix in (".html",)
-    # mocked sale to cash never appears on the website
-    assert "checkout" not in index.lower() or "never takes payments" in index
+    # no buy button or payment UI on the website, one honest line in the price section
+    assert "<button" not in index.lower() and "<form" not in index.lower()
     assert "MOCKED checkout" not in index
-    # the single-page draft for M1's e2e test is still written
-    assert (ctx.out_dir / "phase5_step2_store_page.html").exists()
+    assert "Purchasing opens when the founder sets up checkout." in index
+    # the single-page draft for M1's e2e test keeps its labeled MOCKED checkout button
+    draft = (ctx.out_dir / "phase5_step2_store_page.html").read_text(encoding="utf-8")
+    assert "MOCKED checkout: no real payment" in draft
 
 
 def test_store_site_price_assumption_label(tmp_path):
