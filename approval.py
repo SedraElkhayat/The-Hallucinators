@@ -25,7 +25,7 @@ class Approvals:
 
     def _decide(self, kind: str, title: str, content: str, phase: int) -> tuple[str, str]:
         if self.mode == "scripted":
-            return self.scripted.approval(kind), "SCRIPTED"
+            return self.scripted.approval(kind, phase), "SCRIPTED"
         if self.mode == "cli":
             print(f"\n===== APPROVAL NEEDED (phase {phase}, {kind}) =====\n{title}\n\n{content[:3000]}\n")
             return self.input_fn("[FOUNDER] approve or reject? > ").strip(), "CLI"

@@ -60,8 +60,16 @@ class RealClient(LLMClient):
         # qwen3 "thinks" before answering by default; the thinking can use the whole token budget
         # and leave no JSON. "auto" turns thinking off for qwen3 models with the documented /no_think switch.
         self.no_think = os.getenv("LLM_NO_THINK", "auto").strip().lower()
-        # Optional, for reasoning models on hosted endpoints (e.g. gpt-oss): "low" keeps reasoning short.
-        self.reasoning_effort = os.getenv("LLM_REASONING_EFFORT", "").strip() or None
+        # For reasoning models on hosted endpoints (e.g. gpt-oss): "low" keeps reasoning short.
+        # Unset/empty: "none" when thinking is off (qwen3 on Ollama ignores /no_think, and hidden
+        # thinking used the whole token budget), else not sent. "omit" never sends the field.
+        effort = os.getenv("LLM_REASONING_EFFORT", "").strip()
+        if effort.lower() == "omit":
+            self.reasoning_effort = None
+        elif effort:
+            self.reasoning_effort = effort
+        else:
+            self.reasoning_effort = "none" if self.thinking_off() else None
         # Free tiers limit tokens per minute: on 429/5xx wait (Retry-After if given) and try again.
         self.retries = int(os.getenv("LLM_RETRIES", "6"))
         self.max_wait = float(os.getenv("LLM_RETRY_MAX_WAIT", "65"))

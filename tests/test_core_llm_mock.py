@@ -164,3 +164,20 @@ def test_other_client_errors_show_the_endpoint_reason(monkeypatch):
     _sequence(monkeypatch, [_R(400, text='{"error":{"message":"model not found"}}')])
     with pytest.raises(requests.HTTPError, match="model not found"):
         RealClient(base_url="http://x/v1", model="nope").chat("S", "U", agent="a")
+
+
+def test_reasoning_effort_none_by_default_for_qwen3(monkeypatch):
+    """qwen3 on Ollama ignores /no_think; reasoning_effort "none" really turns thinking off."""
+    monkeypatch.delenv("LLM_REASONING_EFFORT", raising=False)
+    monkeypatch.setenv("LLM_NO_THINK", "auto")
+    calls, _ = _sequence(monkeypatch, [_R(200), _R(200), _R(200), _R(200)])
+    RealClient(base_url="http://x/v1", model="qwen3:8b").chat("S", "U", agent="a")
+    monkeypatch.setenv("LLM_REASONING_EFFORT", "")  # docker compose passes an empty value
+    RealClient(base_url="http://x/v1", model="qwen3:8b").chat("S", "U", agent="a")
+    monkeypatch.setenv("LLM_REASONING_EFFORT", "omit")
+    RealClient(base_url="http://x/v1", model="qwen3:8b").chat("S", "U", agent="a")
+    monkeypatch.setenv("LLM_REASONING_EFFORT", "")
+    monkeypatch.setenv("LLM_NO_THINK", "false")
+    RealClient(base_url="http://x/v1", model="qwen3:8b").chat("S", "U", agent="a")
+    assert calls[0]["reasoning_effort"] == "none" and calls[1]["reasoning_effort"] == "none"
+    assert "reasoning_effort" not in calls[2] and "reasoning_effort" not in calls[3]

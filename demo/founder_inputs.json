@@ -21,6 +21,9 @@
     "gate_override_": "stop"
   },
   "approvals": {
-    "default": "approve"
-  }
+    "default": "approve",
+    "gate_1": "reject"
+  },
+  "_gate_1_override": "Founder decision (human): reject the Gate 1 STOP and continue with 'go'. Only Gate 1 is rejected (approvals.gate_1); every later gate is approved as the system recommends. The system's own Gate 1 verdict stays unchanged in phase1_gate_decision.md.",
+  "gate_override_1": "go"
 }
