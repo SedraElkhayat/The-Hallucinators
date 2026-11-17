@@ -1,9 +1,3 @@
----
-noteId: "5a1bd120e28b11f1a33f473d9afad760"
-tags: []
-
----
-
 # builder
 
 ## Role
