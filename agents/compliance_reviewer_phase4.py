@@ -71,6 +71,13 @@ _REAL_PROBLEM_RX = re.compile(
     r"complian|\bcomply|gdpr|ccpa|violat|illegal|unlawful|mislead|decept|\bfalse|inaccurate|"
     r"missing|\black|without|\bomit|does\W+not|doesn't|\bno\W+(?:refund|contact|mention)|"
     r"window|\bdays?\b|\bfees?\b|\bprice|\bbanned|impersonat|\bposes?\b|\bposing", re.I)
+# "A policy without needs_legal_review: true": the flag said to be missing. Only false when code sees that EVERY
+# document has the flag (a rerun held Gate 4 on three of these, since "without" counts as a real problem above).
+_MISSING_FLAG_RX = re.compile(
+    r"\b(?:without|missing|lacks?|lacking|no|not\W+(?:marked|flagged|labell?ed)(?:\W+(?:with|as))?)"
+    r"\W+(?:(?:the|a|an)\W+)?needs[_ ]legal[_ ]review(?:\W+(?:set\W+to\W+)?true)?(?:\W+(?:flag|label|field))?|"
+    r"needs[_ ]legal[_ ]review\W+(?:(?:flag|label|field)\W+)?(?:is\W+|=\W*)?"
+    r"(?:false|missing|absent|not\W+(?:set|true|present))", re.I)
 
 
 def downgrade_legal_review_only(ctx, agent: str, data: dict, documents: list) -> dict:
@@ -82,12 +89,17 @@ def downgrade_legal_review_only(ctx, agent: str, data: dict, documents: list) ->
     for i in data.get("issues") or []:
         if isinstance(i, dict) and str(i.get("severity", "")).lower().replace("-", "_") == "must_fix":
             text = str(i.get("text", ""))
-            if _LEGAL_REVIEW_RX.search(text) and not _REAL_PROBLEM_RX.search(_LEGAL_REVIEW_RX.sub(" ", text)):
+            all_flagged = all(flagged.values())
+            missing_flag = all_flagged and bool(_MISSING_FLAG_RX.search(text))
+            rest = _LEGAL_REVIEW_RX.sub(" ", _MISSING_FLAG_RX.sub(" ", text) if missing_flag else text)
+            if _LEGAL_REVIEW_RX.search(text) and not _REAL_PROBLEM_RX.search(rest):
                 hay = (text + " " + str(i.get("quote", ""))).lower()
                 named = [n for n in flagged if n and (n in hay or n.replace(" ", "_") in hay)]
-                docs_ok = all(flagged[n] for n in named) if named else all(flagged.values())
+                docs_ok = all_flagged if missing_flag else (all(flagged[n] for n in named) if named else all_flagged)
                 if docs_ok:
-                    reason = ("only asks for legal review, and the document already has needs_legal_review: true "
+                    reason = ("says a policy lacks needs_legal_review, but every policy document has "
+                              "needs_legal_review: true" if missing_flag else
+                              "only asks for legal review, and the document already has needs_legal_review: true "
                               "(a lawyer reviews it before publishing)")
                     # normalize_critique keeps only severity/text/quote, so the reason goes in the text too.
                     i = {**i, "severity": "should_fix", "text": f"{text} [downgraded from must_fix: {reason}]"}
