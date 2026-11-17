@@ -22,7 +22,7 @@ from urllib.parse import urlparse
 
 from agents.m3_common import (BLOCK_MARK, DEMO_FORM_LABEL, ROOT, SIMULATED_LABEL, SITE_DIRNAME,
                               content_violations, form_problems, guardrail_findings, network_code_present,
-                              scan_forms, signup_number_present)
+                              scan_forms, signup_number_present, claim_supported_by_quote)
 
 TEMPLATE_PATH = ROOT / "site_template" / "index.html"
 REQUIRED_SECTIONS = ("value-proposition", "features", "evidence", "price", "faq", "policies", "signup")
@@ -118,10 +118,13 @@ def sanitize_content(data: dict) -> tuple[dict, list]:
         if not text:
             continue
         url = c.get("source_url")
-        is_fact = c.get("verified") is True and valid_https_url(url)
+        quote = " ".join(str(c.get("quote") or "").split())[:LIMITS["text"]]
+        supported = claim_supported_by_quote(text, quote)
+        is_fact = c.get("verified") is True and valid_https_url(url) and supported
         claims.append({"claim": text, "source_url": url if valid_https_url(url) else None,
-                       "quote": " ".join(str(c.get("quote") or "").split())[:LIMITS["text"]],
+                       "quote": quote,
                        "verified": c.get("verified") is True,
+                       "supported_by_quote": supported,
                        # The audit and the gates read "assumption"; "shown_as" says how the page shows it.
                        "assumption": not is_fact,
                        "shown_as": "fact" if is_fact else "ASSUMPTION"})
@@ -134,7 +137,10 @@ def sanitize_content(data: dict) -> tuple[dict, list]:
 def _claim_item(c: dict) -> str:
     text = re.sub(r"\s*ASSUMPTION\s*$", "", str(c.get("claim", ""))).strip()
     url = c.get("source_url")
-    if c.get("verified") is True and valid_https_url(url):
+    # sanitize_content decides shown_as (a verified claim whose quote does not support it is ASSUMPTION); content that
+    # did not pass through it keeps the old rule.
+    is_fact = c.get("shown_as") == "fact" if "shown_as" in c else c.get("verified") is True
+    if is_fact and valid_https_url(url):
         return (f'<li class="claim fact">{esc(text)} '
                 f'<a class="source" href="{esc(url)}" rel="noopener noreferrer">source</a></li>')
     return f'<li class="claim">{esc(text)} <span class="label">ASSUMPTION</span></li>'

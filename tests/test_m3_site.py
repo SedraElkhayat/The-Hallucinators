@@ -486,7 +486,7 @@ def test_TC_M3_audit_unverified_claim_is_an_assumption(tmp_path):
 
 def test_sanitize_content_sets_assumption_for_every_claim():
     content, _ = sanitize_content(_content(claims=[
-        {"claim": "fact", "source_url": "https://example.com/a", "verified": True, "quote": "q"},
+        {"claim": "fact", "source_url": "https://example.com/a", "verified": True, "quote": "A fact on the page."},
         {"claim": "unverified", "source_url": "https://example.com/b", "verified": False},
         {"claim": "no source", "verified": True},
         {"claim": "http source", "source_url": "http://example.com/c", "verified": True}]))
