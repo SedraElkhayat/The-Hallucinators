@@ -1,83 +1,32 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Venture Builder: founder console</title>
-<style>
-  body { font-family: system-ui, sans-serif; max-width: 980px; margin: 24px auto; padding: 0 16px; color: #1b1b1b; }
-  h1 { font-size: 22px; } h2 { font-size: 17px; margin-top: 28px; }
-  textarea { width: 100%; min-height: 160px; font: inherit; }
-  .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
-  .mock { background: #fff4d6; border: 1px solid #e0b84c; padding: 6px 10px; border-radius: 6px; font-weight: 600; }
-  pre { white-space: pre-wrap; background: #f6f6f6; padding: 8px; border-radius: 6px; max-height: 320px; overflow: auto; }
-  button { padding: 6px 14px; margin-right: 6px; cursor: pointer; }
-  .muted { color: #666; font-size: 13px; }
-</style>
-</head>
-<body>
-<h1>Venture Builder: founder console</h1>
-<p class="muted">Model: {{ model }} (open-weight, local via Ollama). Nothing is published, sent, spent or signed without your approval below. Payments are MOCKED.</p>
+{% extends "base.html" %}
+{% block body %}
+<p class="muted">Model: <b>{{ model }}</b> (open-weight, local via Ollama). The system drafts; you decide. Nothing is published, sent, spent or signed without your approval in the founder inbox. Payments are <span class="badge mocked">MOCKED</span>.</p>
 
-<h2>1. Brief</h2>
-<select id="preset" onchange="document.getElementById('brief').value=this.value">
-  <option value="">Load a demo brief (SAMPLE)</option>
-  {% for name, text in briefs.items() %}<option value="{{ text }}">{{ name }}</option>{% endfor %}
-</select>
-<textarea id="brief" placeholder="Starting idea, skills, budget, time, target market, values"></textarea>
-<label><input type="checkbox" id="mock"> Offline mode (MockLLM, all outputs labeled MOCKED)</label>
-<label> Through phase <input type="number" id="through" min="1" max="6" value="6" style="width:48px"></label>
-<button onclick="start()">Start run</button>
-<div id="runinfo" class="muted"></div>
+<h2>Start a run</h2>
+<form method="post" action="/start" class="card">
+  <p><label>Demo brief (SAMPLE):
+    <select name="preset">
+      <option value="">none, use the text below</option>
+      {% for name in briefs %}<option value="{{ name }}">{{ name }}</option>{% endfor %}
+    </select></label></p>
+  <p><textarea name="brief" placeholder="Or paste a brief: starting idea, skills, budget, time per week, target market, values"></textarea></p>
+  <p><label><input type="checkbox" name="mock"> Offline mode: MockLLM, every output labeled MOCKED</label>
+     &nbsp; <label>Through phase <input type="number" name="through" min="1" max="6" value="6" style="width:50px"></label></p>
+  <button type="submit">Start run</button>
+</form>
 
-<h2>2. Founder inbox (questions and approvals)</h2>
-<div id="inbox"><p class="muted">Nothing waiting.</p></div>
-
-<h2>3. Outputs</h2>
-<div id="files" class="muted">No run yet.</div>
-
-<script>
-let runId = null;
-async function start() {
-  const r = await fetch('/api/runs', {method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({brief: document.getElementById('brief').value,
-                          mock: document.getElementById('mock').checked,
-                          through: +document.getElementById('through').value})});
-  if (!r.ok) { alert(await r.text()); return; }
-  runId = (await r.json()).run_id;
-}
-function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-async function reply(id, answer) {
-  await fetch('/api/inbox/' + id, {method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({answer})});
-  poll();
-}
-async function poll() {
-  const items = await (await fetch('/api/inbox')).json();
-  const box = document.getElementById('inbox');
-  box.innerHTML = items.length ? '' : '<p class="muted">Nothing waiting.</p>';
-  for (const it of items) {
-    const d = document.createElement('div'); d.className = 'card';
-    if (it.kind === 'approval') {
-      d.innerHTML = `<b>APPROVAL NEEDED (phase ${it.phase}, ${esc(it.key)})</b>: ${esc(it.prompt)}<pre>${esc(it.content)}</pre>
-        <button onclick="reply(${it.id}, 'approve')">Approve</button><button onclick="reply(${it.id}, 'reject')">Reject</button>`;
-    } else {
-      const opts = (it.options || []).map(o => `<button onclick="reply(${it.id}, '${esc(o)}')">${esc(o)}</button>`).join('');
-      d.innerHTML = `<b>Question (${esc(it.key)})</b>: ${esc(it.prompt)}<br>${opts}
-        <textarea id="a${it.id}" style="min-height:60px"></textarea>
-        <button onclick="reply(${it.id}, document.getElementById('a${it.id}').value)">Send</button>`;
-    }
-    box.appendChild(d);
-  }
-  if (runId) {
-    const s = await (await fetch('/api/runs/' + runId)).json();
-    document.getElementById('runinfo').innerHTML = `Run ${runId}: <b>${esc(s.status)}</b>` +
-      (s.mock ? ' <span class="mock">MOCKED run (MockLLM)</span>' : '') +
-      (s.result ? ` · ended at Gate ${s.result.phase}: <b>${esc(s.result.outcome.toUpperCase())}</b>` : '');
-    document.getElementById('files').innerHTML = s.files.map(f =>
-      `<a href="/runs/${runId}/${encodeURIComponent(f)}" target="_blank">${esc(f)}</a>`).join('<br>') || 'No outputs yet.';
-  }
-}
-setInterval(poll, 2000); poll();
-</script>
-</body>
-</html>
+<h2>Runs</h2>
+{% if runs %}
+<table>
+  <tr><th>Run</th><th>Brief</th><th>Status</th><th>Result</th></tr>
+  {% for r in runs %}
+  <tr>
+    <td><a href="/run/{{ r.id }}">{{ r.id }}</a> {% if r.mock %}<span class="badge mocked">MOCKED</span>{% endif %}</td>
+    <td>{{ r.brief }}</td>
+    <td>{{ r.status }}</td>
+    <td>{% if r.result %}Gate {{ r.result.phase }}: <span class="badge {{ r.result.outcome }}">{{ r.result.outcome|upper }}</span>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}<p class="muted">No runs yet.</p>{% endif %}
+{% endblock %}
