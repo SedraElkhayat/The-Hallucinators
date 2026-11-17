@@ -1,0 +1,12 @@
+# Local SearXNG for the app's web search (core/tools.py). Free, no account, no key.
+use_default_settings: true
+server:
+  # SEARXNG_SECRET in docker-compose overrides this; the instance is only reachable from this machine.
+  secret_key: "local-placeholder-change-me"
+  limiter: false        # the only client is our own app
+  image_proxy: false
+search:
+  safe_search: 1
+  formats:
+    - html
+    - json              # core/tools.py reads /search?format=json
